@@ -2,7 +2,7 @@
 
 Tests will live here.
 
-Planned coverage:
+Coverage:
 
 - CLI argument parsing.
 - JSON envelope schemas.

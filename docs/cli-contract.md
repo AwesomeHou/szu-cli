@@ -15,6 +15,8 @@ szu doctor --json
 szu auth status --json
 szu notice list --limit 10 --json
 szu notice search 奖学金 --json
+szu notice view 577444 --json
+szu notice download 577444 --dir downloads --json
 ```
 
 ## Global Flags
@@ -89,3 +91,56 @@ Failure:
 - Dates use ISO 8601 where possible.
 - Do not print warnings to stdout when `--json` is used.
 - Do not expose cookies, tokens, full student IDs, phone numbers, or private identity details in normal output.
+
+## Notice Detail Schema
+
+`szu notice view <id|url> --json` returns:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "id": "577444",
+    "title": "Notice title",
+    "publisher": "Publishing unit",
+    "publishedAt": "2026-06-22 10:30:00",
+    "contentText": "Plain text content",
+    "attachments": [
+      {
+        "name": "attachment.docx",
+        "url": "https://www1.szu.edu.cn/board/uploadfiles/attachment.docx"
+      }
+    ],
+    "url": "https://www1.szu.edu.cn/board/view.asp?id=577444"
+  },
+  "meta": {
+    "command": "notice view",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+## Notice Download Schema
+
+`szu notice download <id|url> --dir <path> --json` downloads an attachment by opening the logged-in notice detail page and clicking the attachment link there. Use `--index <n>` to select an attachment; the default is `1`.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "id": "577444",
+    "attachment": {
+      "name": "attachment.doc",
+      "url": "https://www1.szu.edu.cn/board/down1oad.asp?fn=attachment.doc"
+    },
+    "savedPath": "downloads/attachment.doc",
+    "url": "https://www1.szu.edu.cn/board/view.asp?id=577444"
+  },
+  "meta": {
+    "command": "notice download",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```

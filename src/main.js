@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { loginWithBrowserProfile, getAuthStatus } from './modules/auth.js';
 import { getDoctorReport } from './modules/doctor.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
-import { getNoticeItems } from './modules/notice.js';
+import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
 
 export async function run(argv) {
   const packageInfo = await readPackageInfo();
@@ -49,6 +49,36 @@ export async function run(argv) {
     return;
   }
 
+  if (domain === 'notice' && action === 'view') {
+    try {
+      const options = parseNoticeViewOptions(argv.slice(2));
+      const data = await getNoticeDetail(options.target, options);
+      writeJson(successEnvelope(data, {
+        command: 'notice view',
+        gateway: 'direct',
+        sourceUrl: data.url
+      }));
+    } catch (error) {
+      handleKnownError(error, 'notice view');
+    }
+    return;
+  }
+
+  if (domain === 'notice' && action === 'download') {
+    try {
+      const options = parseNoticeDownloadOptions(argv.slice(2));
+      const data = await downloadNoticeAttachment(options.target, options);
+      writeJson(successEnvelope(data, {
+        command: 'notice download',
+        gateway: 'direct',
+        sourceUrl: data.url
+      }));
+    } catch (error) {
+      handleKnownError(error, 'notice download');
+    }
+    return;
+  }
+
   const error = {
     code: 'UNSUPPORTED_ACTION',
     message: `Unsupported command: ${argv.join(' ') || '(empty)'}`,
@@ -61,6 +91,82 @@ export async function run(argv) {
     process.stderr.write(`${error.message}\n${error.hint}\n`);
   }
   process.exitCode = 2;
+}
+
+function parseNoticeDownloadOptions(argv) {
+  const args = [...argv];
+  const target = args.shift();
+  if (!target || target.startsWith('--')) {
+    throw new Error('notice download requires an id or URL.');
+  }
+
+  const options = {
+    target,
+    headless: true,
+    index: 1,
+    dir: process.cwd(),
+    output: null
+  };
+
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    if (arg === '--index') {
+      options.index = Number.parseInt(requireValue(args, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--dir') {
+      options.dir = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--output') {
+      options.output = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  if (!Number.isInteger(options.index) || options.index < 1) {
+    throw new Error('--index must be a positive integer.');
+  }
+
+  return options;
+}
+
+function parseNoticeViewOptions(argv) {
+  const args = [...argv];
+  const target = args.shift();
+  if (!target || target.startsWith('--')) {
+    throw new Error('notice view requires an id or URL.');
+  }
+
+  const options = {
+    target,
+    headless: true
+  };
+
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  return options;
 }
 
 function parseNoticeOptions(action, argv) {

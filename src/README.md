@@ -1,12 +1,11 @@
 # Source Layout
 
-Runtime code will live here.
+Runtime code lives here.
 
-Planned structure:
+Current structure:
 
-- `cli/`: argument parsing and output rendering.
-- `commands/`: feature modules such as `doctor`, `auth`, `notice`, and `course`.
-- `browser/`: Playwright persistent-profile backend.
-- `gateway/`: direct campus and WebVPN URL resolution.
-- `schemas/`: shared JSON result and error schemas.
-- `adapters/`: campus page parsers.
+- `cli.js`: executable entrypoint.
+- `main.js`: command parsing and routing.
+- `modules/`: feature modules, browser-profile helpers, output helpers, and page parsers.
+
+The first implemented campus module is `notice`, covering homepage list/search and detail-page view.

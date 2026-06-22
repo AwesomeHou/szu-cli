@@ -43,6 +43,8 @@ szu auth status --json
 szu auth login
 szu notice list --limit 10 --json
 szu notice search 奖学金 --json
+szu notice view 577444 --json
+szu notice download 577444 --dir downloads --json
 szu course today --json
 szu grade list --json
 szu electricity query --json
@@ -57,6 +59,8 @@ npm run szu -- auth status --json
 npm run szu -- auth login --url https://www1.szu.edu.cn/board/
 npm run szu -- notice list --limit 10 --json
 npm run szu -- notice search 奖学金 --limit 10 --json
+npm run szu -- notice view 577444 --json
+npm run szu -- notice download 577444 --dir downloads --json
 ```
 
 `auth login` opens a persistent browser profile. Complete login in the browser, then close the browser window. Later commands reuse the saved profile under `~/.szu-cli/browser-profile/`.
@@ -71,7 +75,7 @@ npm run szu -- auth login --url https://www1.szu.edu.cn/board/
 npm run szu -- auth status --json
 ```
 
-Notice commands read the current board homepage with the persistent browser profile. The first version searches the notices visible on the board homepage; it does not submit the site's search form or turn pages.
+Notice commands read the current board pages with the persistent browser profile. The first version lists and searches notices visible on the board homepage; it does not submit the site's search form or turn pages. `notice view` accepts either a numeric notice id or an absolute notice detail URL. Attachment links may reject direct browser opening, so use `notice download` to download through the logged-in detail page.
 
 State-changing commands, such as reservations, must begin with dry-run behavior:
 
@@ -91,4 +95,4 @@ szu gym reserve --date 2026-06-23 --slot 19:00 --dry-run --json
 
 ## Status
 
-This repository currently contains the project structure and design documents. Runtime implementation should begin with `szu doctor`, persistent-profile login, and the read-only notice adapter.
+This repository currently contains the project structure, design documents, persistent-profile login foundation, and the first read-only notice adapter.
