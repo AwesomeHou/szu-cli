@@ -34,6 +34,8 @@ szu notice search 奖学金 --json
 szu course today --json
 ```
 
+The notice search command currently searches notices visible on the board homepage. It does not submit the website's full search form or paginate.
+
 ## Error Handling
 
 Branch on `error.code`, not natural-language messages.

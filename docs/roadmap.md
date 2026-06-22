@@ -63,6 +63,11 @@ Exit criteria:
 
 - A local agent can query campus notices without knowing browser details.
 
+Status:
+
+- `notice list --json` and `notice search <keyword> --json` are implemented for the board homepage.
+- The first version parses visible homepage notices only.
+
 ## Stage 4: More Read-Only Services
 
 Deliverables:

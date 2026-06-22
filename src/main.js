@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { loginWithBrowserProfile, getAuthStatus } from './modules/auth.js';
 import { getDoctorReport } from './modules/doctor.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
+import { getNoticeItems } from './modules/notice.js';
 
 export async function run(argv) {
   const packageInfo = await readPackageInfo();
@@ -33,6 +34,21 @@ export async function run(argv) {
     return;
   }
 
+  if (domain === 'notice' && (action === 'list' || action === 'search')) {
+    try {
+      const options = parseNoticeOptions(action, argv.slice(2));
+      const data = await getNoticeItems(options);
+      writeJson(successEnvelope(data, {
+        command: `notice ${action}`,
+        gateway: 'direct',
+        sourceUrl: data.sourceUrl
+      }));
+    } catch (error) {
+      handleKnownError(error, `notice ${action}`);
+    }
+    return;
+  }
+
   const error = {
     code: 'UNSUPPORTED_ACTION',
     message: `Unsupported command: ${argv.join(' ') || '(empty)'}`,
@@ -45,6 +61,65 @@ export async function run(argv) {
     process.stderr.write(`${error.message}\n${error.hint}\n`);
   }
   process.exitCode = 2;
+}
+
+function parseNoticeOptions(action, argv) {
+  const options = {
+    limit: 10,
+    headless: true,
+    keyword: null
+  };
+  const args = [...argv];
+
+  if (action === 'search') {
+    const keyword = args.shift();
+    if (!keyword || keyword.startsWith('--')) {
+      throw new Error('notice search requires a keyword.');
+    }
+    options.keyword = keyword;
+  }
+
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--limit') {
+      options.limit = Number.parseInt(requireValue(args, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  if (!Number.isInteger(options.limit) || options.limit < 1) {
+    throw new Error('--limit must be a positive integer.');
+  }
+
+  return options;
+}
+
+function handleKnownError(error, command) {
+  const code = error.code ?? 'UNKNOWN_ERROR';
+  const exitCodes = {
+    BACKEND_UNAVAILABLE: 10,
+    LOGIN_REQUIRED: 11,
+    NETWORK_REQUIRED: 12,
+    PERMISSION_DENIED: 13,
+    PAGE_CHANGED: 20,
+    RATE_LIMITED: 30
+  };
+
+  writeJson(errorEnvelope({
+    code,
+    message: error.message,
+    ...(error.hint ? { hint: error.hint } : {})
+  }, { command }));
+  process.exitCode = exitCodes[code] ?? 1;
 }
 
 function parseLoginOptions(argv) {

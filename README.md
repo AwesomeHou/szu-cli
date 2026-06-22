@@ -55,6 +55,8 @@ npm run szu -- --version
 npm run szu -- doctor --json
 npm run szu -- auth status --json
 npm run szu -- auth login --url https://www1.szu.edu.cn/board/
+npm run szu -- notice list --limit 10 --json
+npm run szu -- notice search 奖学金 --limit 10 --json
 ```
 
 `auth login` opens a persistent browser profile. Complete login in the browser, then close the browser window. Later commands reuse the saved profile under `~/.szu-cli/browser-profile/`.
@@ -68,6 +70,8 @@ $env:SZU_BROWSER_CHANNEL='msedge'
 npm run szu -- auth login --url https://www1.szu.edu.cn/board/
 npm run szu -- auth status --json
 ```
+
+Notice commands read the current board homepage with the persistent browser profile. The first version searches the notices visible on the board homepage; it does not submit the site's search form or turn pages.
 
 State-changing commands, such as reservations, must begin with dry-run behavior:
 
