@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
 import { loginWithBrowserProfile, getAuthStatus } from './modules/auth.js';
+import { getCourseList, getCourseStatus, getTodayCourses } from './modules/course.js';
 import { getDoctorReport } from './modules/doctor.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
 import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
@@ -31,6 +32,25 @@ export async function run(argv) {
   if (domain === 'auth' && action === 'login') {
     const data = await loginWithBrowserProfile(parseLoginOptions(argv.slice(2)));
     writeJson(successEnvelope(data, { command: 'auth login' }));
+    return;
+  }
+
+  if (domain === 'course' && (action === 'status' || action === 'list' || action === 'today')) {
+    try {
+      const options = parseCourseOptions(argv.slice(2));
+      const data = action === 'status'
+        ? await getCourseStatus(options)
+        : action === 'today'
+          ? await getTodayCourses(options)
+          : await getCourseList(options);
+      writeJson(successEnvelope(data, {
+        command: `course ${action}`,
+        gateway: 'direct',
+        sourceUrl: data.sourceUrl
+      }));
+    } catch (error) {
+      handleKnownError(error, `course ${action}`);
+    }
     return;
   }
 
@@ -91,6 +111,33 @@ export async function run(argv) {
     process.stderr.write(`${error.message}\n${error.hint}\n`);
   }
   process.exitCode = 2;
+}
+
+function parseCourseOptions(argv) {
+  const options = {
+    headless: true,
+    url: null,
+    today: process.env.SZU_MOCK_TODAY ? new Date(process.env.SZU_MOCK_TODAY) : undefined
+  };
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--url') {
+      options.url = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  return options;
 }
 
 function parseNoticeDownloadOptions(argv) {

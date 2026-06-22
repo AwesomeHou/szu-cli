@@ -29,6 +29,28 @@ test('classifies CAS page as login required', () => {
   });
 });
 
+test('classifies eHall home as logged in', () => {
+  assert.deepEqual(classifyAuthPage({
+    url: 'https://ehall.szu.edu.cn/new/index.html',
+    title: '深圳大学网上办事服务大厅',
+    text: '深圳大学网上办事服务大厅 我的课表 个人中心 安全退出'
+  }), {
+    loggedIn: true,
+    reason: 'ehall-home-page'
+  });
+});
+
+test('classifies eHall course page as logged in', () => {
+  assert.deepEqual(classifyAuthPage({
+    url: 'https://ehall.szu.edu.cn/jwapp/sys/wdkb/*default/index.do#/xskcb',
+    title: '我的课程表',
+    text: '我的课程表 课表查看2025-2026学年第二学期'
+  }), {
+    loggedIn: true,
+    reason: 'ehall-course-page'
+  });
+});
+
 test('classifies unknown page as not logged in with unknown reason', () => {
   const result = classifyAuthPage({
     url: 'https://www1.szu.edu.cn/board/',

@@ -19,6 +19,9 @@ szu notice search 奖学金 --json
 szu notice search 奖学金 --type title --range 6m --json
 szu notice view 577444 --json
 szu notice download 577444 --dir downloads --json
+szu course status --json
+szu course list --json
+szu course today --json
 ```
 
 ## Global Flags
@@ -160,3 +163,50 @@ Failure:
   }
 }
 ```
+
+## Course List Schema
+
+`szu course list --json` returns the current eHall timetable. It does not expose student names or IDs.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "term": {
+      "id": "2025-2026-2",
+      "name": "2025-2026学年第二学期",
+      "year": "2025-2026",
+      "semester": "2",
+      "currentWeek": 16
+    },
+    "items": [
+      {
+        "courseCode": "0901970032",
+        "courseName": "交通设计与管控",
+        "section": "01",
+        "teachers": ["王京元", "刘明辉"],
+        "weeksText": "1-17周",
+        "weekday": 2,
+        "startSection": 3,
+        "endSection": 4,
+        "location": "致理楼L3-416",
+        "campus": "01",
+        "rawId": "202520262090197003201"
+      }
+    ],
+    "extraItems": {
+      "adjusted": [],
+      "unlisted": [],
+      "practice": []
+    },
+    "sourceUrl": "https://ehall.szu.edu.cn/jwapp/sys/wdkb/*default/index.do?EMAP_LANG=zh&THEME=cherry#/xskcb"
+  },
+  "meta": {
+    "command": "course list",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+`szu course today --json` returns the same item shape filtered to the current local date and current teaching week. `szu course status --json` only checks access and returns `loggedIn`, `reason`, `term`, and `sourceUrl`.

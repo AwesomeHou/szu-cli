@@ -75,7 +75,9 @@ Status:
 
 Deliverables:
 
-- Course schedule.
+- `szu course status --json`.
+- `szu course list --json`.
+- `szu course today --json`.
 - Grades.
 - Electricity balance.
 - WebVPN gateway support.
@@ -83,6 +85,10 @@ Deliverables:
 Exit criteria:
 
 - Common read-only campus tasks are available through stable commands.
+
+Status:
+
+- Course status, current timetable list, and today's timetable are implemented for direct campus/eHall access.
 
 ## Stage 5: Controlled Actions
 

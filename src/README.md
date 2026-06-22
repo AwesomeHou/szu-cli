@@ -8,4 +8,7 @@ Current structure:
 - `main.js`: command parsing and routing.
 - `modules/`: feature modules, browser-profile helpers, output helpers, and page parsers.
 
-The first implemented campus module is `notice`, covering homepage list, paged full-list queries, site-backed search, detail-page view, and attachment download.
+The implemented campus modules are:
+
+- `notice`: homepage list, paged full-list queries, site-backed search, detail-page view, and attachment download.
+- `course`: eHall timetable status, current term list, and today's courses.

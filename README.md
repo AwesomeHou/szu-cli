@@ -47,6 +47,8 @@ szu notice search 奖学金 --json
 szu notice search 奖学金 --type title --range 6m --json
 szu notice view 577444 --json
 szu notice download 577444 --dir downloads --json
+szu course status --json
+szu course list --json
 szu course today --json
 szu grade list --json
 szu electricity query --json
@@ -65,6 +67,9 @@ npm run szu -- notice search 奖学金 --limit 10 --json
 npm run szu -- notice search 奖学金 --type title --range 6m --limit 10 --json
 npm run szu -- notice view 577444 --json
 npm run szu -- notice download 577444 --dir downloads --json
+npm run szu -- course status --json
+npm run szu -- course list --json
+npm run szu -- course today --json
 ```
 
 `auth login` opens a persistent browser profile. Complete login in the browser, then close the browser window. Later commands reuse the saved profile under `~/.szu-cli/browser-profile/`.
@@ -80,6 +85,8 @@ npm run szu -- auth status --json
 ```
 
 Notice commands read the current board pages with the persistent browser profile. `notice list` reads the homepage by default and switches to the full `infolist.asp` source when `--page` or `--pages` is used. `notice search` submits the site's search form; default search is `--type full --range 6m`. `notice view` accepts either a numeric notice id or an absolute notice detail URL and includes attachment indexes. Attachment links may reject direct browser opening, so use `notice download --index <n>` to download through the logged-in detail page.
+
+Course commands read the current undergraduate timetable from eHall. They reuse the same persistent browser profile, initialize eHall through the service hall homepage, then open the stable timetable entry automatically. You do not need to pass the full eHall URL for normal use.
 
 State-changing commands, such as reservations, must begin with dry-run behavior:
 
