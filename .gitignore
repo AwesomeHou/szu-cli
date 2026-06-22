@@ -49,7 +49,6 @@ desktop.ini
 !.vscode/extensions.json
 !.vscode/settings.example.json
 
-# Package manager lockfiles: commit one after the package manager is chosen.
-package-lock.json
+# Alternative package manager lockfiles. Keep package-lock.json when npm is used.
 pnpm-lock.yaml
 yarn.lock

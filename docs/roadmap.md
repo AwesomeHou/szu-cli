@@ -28,6 +28,10 @@ Exit criteria:
 
 - CLI can report environment readiness in a stable schema.
 
+Status:
+
+- Minimal `--version`, `doctor --json`, and structured unsupported-command handling are implemented.
+
 ## Stage 2: Browser Login Profile
 
 Deliverables:
@@ -40,6 +44,11 @@ Deliverables:
 Exit criteria:
 
 - User can log in manually once and reuse that browser profile.
+
+Status:
+
+- `auth status --json` and `auth login` command shape are implemented.
+- `auth login` launches a Playwright persistent profile when Playwright is installed.
 
 ## Stage 3: Notice MVP
 

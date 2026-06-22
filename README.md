@@ -48,6 +48,27 @@ szu grade list --json
 szu electricity query --json
 ```
 
+Current implemented foundation:
+
+```bash
+npm run szu -- --version
+npm run szu -- doctor --json
+npm run szu -- auth status --json
+npm run szu -- auth login --url https://www1.szu.edu.cn/board/
+```
+
+`auth login` opens a persistent browser profile. Complete login in the browser, then close the browser window. Later commands reuse the saved profile under `~/.szu-cli/browser-profile/`.
+
+`auth status` opens the board page with the same persistent profile and checks whether the page still shows the SZU user menu.
+
+On Windows, the browser backend uses the system Chrome channel by default, so it does not require downloading Playwright's bundled Chromium. To use Edge instead:
+
+```powershell
+$env:SZU_BROWSER_CHANNEL='msedge'
+npm run szu -- auth login --url https://www1.szu.edu.cn/board/
+npm run szu -- auth status --json
+```
+
 State-changing commands, such as reservations, must begin with dry-run behavior:
 
 ```bash

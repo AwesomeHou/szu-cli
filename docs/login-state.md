@@ -10,13 +10,15 @@ Use a persistent browser profile managed by the CLI:
 ~/.szu-cli/browser-profile/
 ```
 
+On Windows, the CLI uses the system Chrome channel by default through Playwright. This avoids requiring Playwright's bundled Chromium download before the first login. Users can override the channel with `SZU_BROWSER_CHANNEL`, for example `msedge`.
+
 Flow:
 
 ```text
 szu auth login
   -> launch browser with persistent profile
   -> user completes SZU or WebVPN login manually
-  -> CLI verifies authenticated page state
+  -> user closes the browser window after login
   -> profile remains local for future commands
 ```
 
@@ -27,6 +29,15 @@ szu notice list --json
   -> open page with persistent profile
   -> if logged in, parse data
   -> if redirected to login, return LOGIN_REQUIRED
+```
+
+Current login check:
+
+```text
+szu auth status --json
+  -> open https://www1.szu.edu.cn/board/ with the persistent profile
+  -> logged in if the page shows the SZU user menu, including 个人中心 and 注销
+  -> logged out if the browser reaches the CAS login page
 ```
 
 ## Why Not Store Passwords

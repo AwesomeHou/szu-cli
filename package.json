@@ -5,7 +5,7 @@
   "description": "Agent-friendly CLI for Shenzhen University web services.",
   "type": "module",
   "bin": {
-    "szu": "./dist/cli.js"
+    "szu": "./src/cli.js"
   },
   "files": [
     "dist",
@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "docs:check": "node scripts/check-docs.mjs",
+    "szu": "node src/cli.js",
     "test": "node --test"
   },
   "keywords": [
@@ -24,5 +25,8 @@
     "campus",
     "playwright"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.61.0"
+  }
 }
