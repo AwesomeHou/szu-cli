@@ -30,13 +30,15 @@ Use JSON output for agent workflows:
 
 ```bash
 szu notice list --limit 10 --json
+szu notice list --page 2 --limit 10 --json
 szu notice search 奖学金 --json
+szu notice search 奖学金 --type title --range 6m --json
 szu notice view 577444 --json
 szu notice download 577444 --dir downloads --json
 szu course today --json
 ```
 
-The notice search command currently searches notices visible on the board homepage. It does not submit the website's full search form or paginate. Use `notice view <id|url>` to fetch the title, publisher, publish time, plain-text body, and attachment links for a notice detail page. Do not ask users to open attachment URLs directly; use `notice download <id|url> --dir <path>` so the CLI downloads through the logged-in detail page.
+Use `notice list --page <n> --limit <n>` for paged full-list queries. `notice search` submits the website search form; default search is full text over the last 6 months. Use `--type title` when the user expects the keyword to appear in titles. Use `notice view <id|url>` to fetch the title, publisher, publish time, plain-text body, and indexed attachment links. Do not ask users to open attachment URLs directly; use `notice download <id|url> --index <n> --dir <path>` so the CLI downloads through the logged-in detail page.
 
 ## Error Handling
 

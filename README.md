@@ -42,7 +42,9 @@ szu doctor --json
 szu auth status --json
 szu auth login
 szu notice list --limit 10 --json
+szu notice list --page 2 --limit 10 --json
 szu notice search 奖学金 --json
+szu notice search 奖学金 --type title --range 6m --json
 szu notice view 577444 --json
 szu notice download 577444 --dir downloads --json
 szu course today --json
@@ -58,7 +60,9 @@ npm run szu -- doctor --json
 npm run szu -- auth status --json
 npm run szu -- auth login --url https://www1.szu.edu.cn/board/
 npm run szu -- notice list --limit 10 --json
+npm run szu -- notice list --page 2 --limit 10 --json
 npm run szu -- notice search 奖学金 --limit 10 --json
+npm run szu -- notice search 奖学金 --type title --range 6m --limit 10 --json
 npm run szu -- notice view 577444 --json
 npm run szu -- notice download 577444 --dir downloads --json
 ```
@@ -75,7 +79,7 @@ npm run szu -- auth login --url https://www1.szu.edu.cn/board/
 npm run szu -- auth status --json
 ```
 
-Notice commands read the current board pages with the persistent browser profile. The first version lists and searches notices visible on the board homepage; it does not submit the site's search form or turn pages. `notice view` accepts either a numeric notice id or an absolute notice detail URL. Attachment links may reject direct browser opening, so use `notice download` to download through the logged-in detail page.
+Notice commands read the current board pages with the persistent browser profile. `notice list` reads the homepage by default and switches to the full `infolist.asp` source when `--page` or `--pages` is used. `notice search` submits the site's search form; default search is `--type full --range 6m`. `notice view` accepts either a numeric notice id or an absolute notice detail URL and includes attachment indexes. Attachment links may reject direct browser opening, so use `notice download --index <n>` to download through the logged-in detail page.
 
 State-changing commands, such as reservations, must begin with dry-run behavior:
 

@@ -74,6 +74,7 @@ function extractAttachments(html, pageUrl) {
       continue;
     }
     attachments.push({
+      index: attachments.length + 1,
       name,
       url: new URL(href, pageUrl).toString()
     });

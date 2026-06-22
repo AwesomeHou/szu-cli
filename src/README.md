@@ -8,4 +8,4 @@ Current structure:
 - `main.js`: command parsing and routing.
 - `modules/`: feature modules, browser-profile helpers, output helpers, and page parsers.
 
-The first implemented campus module is `notice`, covering homepage list/search and detail-page view.
+The first implemented campus module is `notice`, covering homepage list, paged full-list queries, site-backed search, detail-page view, and attachment download.

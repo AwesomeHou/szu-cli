@@ -172,8 +172,12 @@ function parseNoticeViewOptions(argv) {
 function parseNoticeOptions(action, argv) {
   const options = {
     limit: 10,
+    page: 1,
+    pages: 1,
     headless: true,
-    keyword: null
+    keyword: null,
+    range: '6m',
+    type: 'full'
   };
   const args = [...argv];
 
@@ -195,6 +199,26 @@ function parseNoticeOptions(action, argv) {
       i += 1;
       continue;
     }
+    if (arg === '--page') {
+      options.page = Number.parseInt(requireValue(args, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--pages') {
+      options.pages = Number.parseInt(requireValue(args, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--range') {
+      options.range = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--type') {
+      options.type = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
     if (arg === '--headed') {
       options.headless = false;
       continue;
@@ -204,6 +228,12 @@ function parseNoticeOptions(action, argv) {
 
   if (!Number.isInteger(options.limit) || options.limit < 1) {
     throw new Error('--limit must be a positive integer.');
+  }
+  if (!Number.isInteger(options.page) || options.page < 1) {
+    throw new Error('--page must be a positive integer.');
+  }
+  if (!Number.isInteger(options.pages) || options.pages < 1) {
+    throw new Error('--pages must be a positive integer.');
   }
 
   return options;

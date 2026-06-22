@@ -5,15 +5,21 @@ import { dirname, join } from 'node:path';
 import { classifyAuthPage } from './auth-detector.js';
 import { getLaunchOptions } from './browser-options.js';
 import { getProfilePath } from './paths.js';
-import { filterNotices, parseBoardHtml } from './notice-parser.js';
+import { filterNotices, paginateNotices, parseBoardHtml, parseNoticeListHtml } from './notice-parser.js';
 import { parseNoticeDetailHtml, resolveNoticeViewUrl } from './notice-detail-parser.js';
 
 const BOARD_URL = 'https://www1.szu.edu.cn/board/';
+const LIST_URL = 'https://www1.szu.edu.cn/board/infolist.asp';
 
 export async function getNoticeItems(options = {}) {
-  const html = await loadBoardHtml(options);
+  const useListPage = options.keyword || options.page > 1 || options.pages > 1;
+  const html = options.keyword
+    ? await loadNoticeSearchHtml(options)
+    : useListPage
+      ? await loadPageHtml(LIST_URL, options)
+      : await loadBoardHtml(options);
   const authState = classifyAuthPage({
-    url: options.finalUrl ?? BOARD_URL,
+    url: options.finalUrl ?? (useListPage ? LIST_URL : BOARD_URL),
     title: extractTitle(html),
     text: stripTags(html)
   });
@@ -25,18 +31,34 @@ export async function getNoticeItems(options = {}) {
     throw error;
   }
 
-  const notices = parseBoardHtml(html, {
-    baseUrl: BOARD_URL,
-    now: options.now ?? new Date()
-  });
+  const notices = useListPage
+    ? parseNoticeListHtml(html, { baseUrl: BOARD_URL })
+    : parseBoardHtml(html, {
+      baseUrl: BOARD_URL,
+      now: options.now ?? new Date()
+    });
   assertCompleteNoticeSchema(notices);
+  const filtered = useListPage
+    ? notices
+    : filterNotices(notices, { keyword: options.keyword });
+  const page = options.page ?? 1;
+  const pages = options.pages ?? 1;
+  const limit = options.limit ?? 10;
 
   return {
-    items: filterNotices(notices, {
-      keyword: options.keyword,
-      limit: options.limit
-    }),
-    sourceUrl: options.finalUrl ?? BOARD_URL
+    items: paginateNotices(filtered, { page, pages, limit }),
+    page,
+    pages,
+    limit,
+    total: filtered.length,
+    ...(options.keyword ? {
+      search: {
+        keyword: options.keyword,
+        range: options.range,
+        type: options.type
+      }
+    } : {}),
+    sourceUrl: options.finalUrl ?? (useListPage ? LIST_URL : BOARD_URL)
   };
 }
 
@@ -197,8 +219,44 @@ async function loadBoardHtml(options) {
   return loadPageHtml(BOARD_URL, options);
 }
 
+async function loadNoticeSearchHtml(options) {
+  if (process.env.SZU_BROWSER_BACKEND === 'mock') {
+    return process.env.SZU_MOCK_NOTICE_SEARCH_HTML ?? process.env.SZU_MOCK_NOTICE_LIST_HTML ?? '';
+  }
+
+  const profilePath = getProfilePath();
+  if (!existsSync(profilePath)) {
+    throwLoginRequired('Browser profile does not exist.', 'Run `szu auth login --url https://www1.szu.edu.cn/board/` first.');
+  }
+
+  const { chromium } = await importPlaywright();
+  const context = await chromium.launchPersistentContext(
+    profilePath,
+    getLaunchOptions({ headless: options.headless ?? true })
+  );
+
+  try {
+    const page = context.pages()[0] ?? await context.newPage();
+    await page.goto(BOARD_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.selectOption('select[name="dayy"]', rangeToSiteValue(options.range));
+    await page.selectOption('select[name="search_type"]', typeToSiteValue(options.type));
+    await page.fill('input[name="keyword"]', options.keyword);
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => null),
+      page.locator('input[name="searchb1"]').click()
+    ]);
+    options.finalUrl = page.url();
+    return await page.content();
+  } finally {
+    await context.close();
+  }
+}
+
 async function loadPageHtml(url, options) {
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
+    if (url.includes('infolist.asp')) {
+      return process.env.SZU_MOCK_NOTICE_LIST_HTML ?? '';
+    }
     return url.includes('view.asp')
       ? process.env.SZU_MOCK_NOTICE_DETAIL_HTML ?? ''
       : process.env.SZU_MOCK_NOTICE_HTML ?? '';
@@ -226,6 +284,25 @@ async function loadPageHtml(url, options) {
   } finally {
     await context.close();
   }
+}
+
+function rangeToSiteValue(range = '6m') {
+  const values = {
+    '24h': '1#24小时内',
+    '7d': '7#1周内',
+    '30d': '30#1个月内',
+    '6m': '183#6个月内'
+  };
+  return values[range] ?? range;
+}
+
+function typeToSiteValue(type = 'full') {
+  const values = {
+    title: '标题',
+    body: '正文',
+    full: '全文'
+  };
+  return values[type] ?? type;
 }
 
 function extractTitle(html) {

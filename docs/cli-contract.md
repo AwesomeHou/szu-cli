@@ -14,7 +14,9 @@ Examples:
 szu doctor --json
 szu auth status --json
 szu notice list --limit 10 --json
+szu notice list --page 2 --pages 1 --limit 10 --json
 szu notice search 奖学金 --json
+szu notice search 奖学金 --type title --range 6m --json
 szu notice view 577444 --json
 szu notice download 577444 --dir downloads --json
 ```
@@ -107,6 +109,7 @@ Failure:
     "contentText": "Plain text content",
     "attachments": [
       {
+        "index": 1,
         "name": "attachment.docx",
         "url": "https://www1.szu.edu.cn/board/uploadfiles/attachment.docx"
       }
@@ -120,6 +123,19 @@ Failure:
   }
 }
 ```
+
+## Notice List and Search Pagination
+
+`notice list` and `notice search` support:
+
+- `--limit <n>`: items per page, default `10`.
+- `--page <n>`: page number, default `1`.
+- `--pages <n>`: number of pages to return from `--page`, default `1`.
+
+`notice search` submits the website search form. It also supports:
+
+- `--type <title|body|full>`, default `full`.
+- `--range <24h|7d|30d|6m|2026|2025|...>`, default `6m`.
 
 ## Notice Download Schema
 

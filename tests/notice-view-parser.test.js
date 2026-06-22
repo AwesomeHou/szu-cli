@@ -30,11 +30,17 @@ test('parses notice detail page into normalized detail data', () => {
     title: '深圳南特金融科技学院 2026届深圳大学本科毕业（学位）证书（第一批）领取安排',
     publisher: '深圳南特金融科技学院',
     publishedAt: '2026-06-22 10:30:00',
-    contentText: '各位同学：\n请符合条件的毕业生按时领取毕业证书和学位证书。\n领取地点：汇元楼。\n附件：领取名单.docx',
+    contentText: '各位同学：\n请符合条件的毕业生按时领取毕业证书和学位证书。\n领取地点：汇元楼。\n附件：领取名单.docx\n附件：办理说明.pdf',
     attachments: [
       {
+        index: 1,
         name: '领取名单.docx',
         url: 'https://www1.szu.edu.cn/board/uploadfiles/file.docx'
+      },
+      {
+        index: 2,
+        name: '办理说明.pdf',
+        url: 'https://www1.szu.edu.cn/board/uploadfiles/guide.pdf'
       }
     ],
     url: 'https://www1.szu.edu.cn/board/view.asp?id=577444'
@@ -78,6 +84,7 @@ test('parses legacy full-page notice detail without leaking chrome text', () => 
     detail.contentText,
     '根据学校规定及学院工作安排，证书领取安排如下：\n地点：汇星楼564办公室\n附件：\n·深圳南特金融科技学院代领本科毕业证学位证委托书.doc'
   );
+  assert.equal(detail.attachments[0].index, 1);
   assert.equal(detail.attachments[0].url, 'https://www1.szu.edu.cn/board/down1oad.asp?fn=file.doc');
   assert.equal(detail.contentText.includes('2023000000'), false);
   assert.equal(detail.contentText.includes('function getstr'), false);

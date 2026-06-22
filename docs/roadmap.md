@@ -55,7 +55,9 @@ Status:
 Deliverables:
 
 - `szu notice list --limit <n> --json`.
+- `szu notice list --page <n> --pages <n> --json`.
 - `szu notice search <keyword> --json`.
+- Site search through the board search form.
 - `szu notice view <id|url> --json`.
 - `szu notice download <id|url> --dir <path> --json`.
 - Redacted fixtures.
@@ -67,8 +69,7 @@ Exit criteria:
 
 Status:
 
-- `notice list --json`, `notice search <keyword> --json`, `notice view <id|url> --json`, and `notice download <id|url> --json` are implemented.
-- The first version parses visible homepage notices only.
+- `notice list --json`, paged list queries, site-backed `notice search <keyword> --json`, `notice view <id|url> --json`, and `notice download <id|url> --json` are implemented.
 
 ## Stage 4: More Read-Only Services
 

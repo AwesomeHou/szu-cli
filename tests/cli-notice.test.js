@@ -10,9 +10,10 @@ import assert from 'node:assert/strict';
 
 const cliPath = fileURLToPath(new URL('../src/cli.js', import.meta.url));
 const html = readFileSync(new URL('./fixtures/board.html', import.meta.url), 'utf8');
+const listHtml = readFileSync(new URL('./fixtures/notice-list.html', import.meta.url), 'utf8');
 const detailHtml = readFileSync(new URL('./fixtures/notice-view.html', import.meta.url), 'utf8');
 
-function runNotice(args, text = html, detailText = detailHtml) {
+function runNotice(args, text = html, detailText = detailHtml, listText = listHtml) {
   const home = mkdtempSync(join(tmpdir(), 'szu-cli-test-'));
   const result = spawnSync(process.execPath, [cliPath, ...args], {
     encoding: 'utf8',
@@ -21,7 +22,9 @@ function runNotice(args, text = html, detailText = detailHtml) {
       SZU_CLI_HOME: home,
       SZU_BROWSER_BACKEND: 'mock',
       SZU_MOCK_NOTICE_HTML: text,
-      SZU_MOCK_NOTICE_DETAIL_HTML: detailText
+      SZU_MOCK_NOTICE_DETAIL_HTML: detailText,
+      SZU_MOCK_NOTICE_LIST_HTML: listText,
+      SZU_MOCK_NOTICE_SEARCH_HTML: listText
     }
   });
   rmSync(home, { recursive: true, force: true });
@@ -48,7 +51,9 @@ test('notice view prints JSON detail by id', () => {
   assert.equal(body.meta.command, 'notice view');
   assert.equal(body.data.id, '577444');
   assert.equal(body.data.publisher, '深圳南特金融科技学院');
-  assert.equal(body.data.attachments.length, 1);
+  assert.equal(body.data.attachments.length, 2);
+  assert.equal(body.data.attachments[0].index, 1);
+  assert.equal(body.data.attachments[1].index, 2);
 });
 
 test('notice view returns LOGIN_REQUIRED when mock detail page is CAS login', () => {
@@ -81,15 +86,44 @@ test('notice download saves selected attachment through the backend', async () =
   }
 });
 
-test('notice search filters JSON items by keyword', () => {
-  const result = runNotice(['notice', 'search', 'Researcher', '--json']);
+test('notice search uses site search source by default', () => {
+  const result = runNotice(['notice', 'search', '奖学金', '--json']);
 
   assert.equal(result.status, 0, result.stderr);
   const body = JSON.parse(result.stdout);
   assert.equal(body.ok, true);
   assert.equal(body.meta.command, 'notice search');
-  assert.equal(body.data.items.length, 1);
-  assert.equal(body.data.items[0].id, '576900');
+  assert.equal(body.data.search.keyword, '奖学金');
+  assert.equal(body.data.search.range, '6m');
+  assert.equal(body.data.search.type, 'full');
+  assert.equal(body.data.items.length, 4);
+  assert.equal(body.data.items[3].id, '577085');
+});
+
+test('notice list supports page and pages over infolist results', () => {
+  const result = runNotice(['notice', 'list', '--json', '--page', '2', '--pages', '1', '--limit', '2']);
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, true);
+  assert.equal(body.data.items.length, 2);
+  assert.deepEqual(body.data.items.map((item) => item.id), ['577444', '577085']);
+  assert.equal(body.data.page, 2);
+  assert.equal(body.data.pages, 1);
+  assert.equal(body.data.total, 4);
+});
+
+test('notice search uses site search result source and then paginates', () => {
+  const result = runNotice(['notice', 'search', '奖学金', '--json', '--limit', '1', '--page', '2', '--range', '6m', '--type', 'full']);
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, true);
+  assert.equal(body.meta.command, 'notice search');
+  assert.equal(body.data.search.keyword, '奖学金');
+  assert.equal(body.data.search.range, '6m');
+  assert.equal(body.data.search.type, 'full');
+  assert.deepEqual(body.data.items.map((item) => item.id), ['577097']);
 });
 
 test('notice list returns LOGIN_REQUIRED when mock page is CAS login', () => {
