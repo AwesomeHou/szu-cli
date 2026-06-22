@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.yarn/
+
+# Build and coverage
+dist/
+build/
+coverage/
+.nyc_output/
+
+# Local runtime state
+.cache/
+.tmp/
+tmp/
+logs/
+*.log
+scratch/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Browser auth state and automation artifacts
+profiles/
+browser-profiles/
+.szu-profile/
+playwright/.auth/
+cookies*.json
+session*.json
+storage-state*.json
+*.har
+*.trace.zip
+playwright-report/
+test-results/
+
+# Redaction-sensitive captures
+screenshots/
+captures/
+fixtures/private/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+
+# Package manager lockfiles: commit one after the package manager is chosen.
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
