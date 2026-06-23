@@ -14,3 +14,4 @@ The implemented campus modules are:
 - `course`: eHall timetable status, current term list, and today's courses.
 - `grade`: eHall grade status, list, and term filtering.
 - `electricity`: direct intranet electricity status, campus/building discovery, and room usage query.
+- `library`: OPAC status and catalog search.

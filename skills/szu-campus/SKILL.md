@@ -44,6 +44,10 @@ szu grade list --term 2025-2026-1 --json
 szu electricity status --json
 szu electricity buildings --json
 szu electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
+szu library status --json
+szu library search 交通设计 --json
+szu library search --title 交通设计 --author 刘立新 --json
+szu library item 3706432 --json
 ```
 
 Use `notice list --page <n> --limit <n>` for paged full-list queries. `notice search` submits the website search form; default search is full text over the last 6 months. Use `--type title` when the user expects the keyword to appear in titles. Use `notice view <id|url>` to fetch the title, publisher, publish time, plain-text body, and indexed attachment links. Do not ask users to open attachment URLs directly; use `notice download <id|url> --index <n> --dir <path>` so the CLI downloads through the logged-in detail page.
@@ -53,6 +57,8 @@ Use `course status` to check eHall timetable access, `course list` for the curre
 Use `grade status` to check eHall grade-query access and `grade list` for read-only grade records. Use `grade list --term <termId>` when the user asks for one term. Grade output must not be treated as public data; avoid echoing full grade records unless the user explicitly needs them.
 
 Use `electricity status` to check whether the SIMS electricity intranet system is reachable, `electricity buildings` to discover valid campus/building names, and `electricity query --campus <name> --building <name> --room <room>` to read recent usage records and latest remaining kWh. Electricity payment is not supported.
+
+Use `library status` to check OPAC reachability and login state. Use `library search <keyword>` for quick catalog search. Use `library search --title <text> --author <text> --isbn <isbn>` and related field flags for advanced OPAC search. Use `library item <id|url>` to inspect copy-level holdings, locations, barcodes, status, and reservation queues. OPAC commands use the persistent browser profile so search history can be recorded when logged in.
 
 ## Error Handling
 

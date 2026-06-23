@@ -5,6 +5,7 @@ import { getCourseList, getCourseStatus, getTodayCourses } from './modules/cours
 import { getDoctorReport } from './modules/doctor.js';
 import { getElectricityBuildings, getElectricityStatus, queryElectricity } from './modules/electricity.js';
 import { getGradeList, getGradeStatus } from './modules/grade.js';
+import { getLibraryItem, getLibraryStatus, searchLibrary } from './modules/library.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
 import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
 
@@ -88,6 +89,25 @@ export async function run(argv) {
       }));
     } catch (error) {
       handleKnownError(error, `electricity ${action}`);
+    }
+    return;
+  }
+
+  if (domain === 'library' && (action === 'status' || action === 'search' || action === 'item')) {
+    try {
+      const options = parseLibraryOptions(action, argv.slice(2));
+      const data = action === 'status'
+        ? await getLibraryStatus(options)
+        : action === 'item'
+          ? await getLibraryItem(options.target, options)
+          : await searchLibrary(options);
+      writeJson(successEnvelope(data, {
+        command: `library ${action}`,
+        gateway: 'direct',
+        sourceUrl: data.sourceUrl
+      }));
+    } catch (error) {
+      handleKnownError(error, `library ${action}`);
     }
     return;
   }
@@ -265,6 +285,200 @@ function parseElectricityOptions(argv) {
   }
 
   return options;
+}
+
+function parseLibraryOptions(action, argv) {
+  const args = [...argv];
+  const options = {
+    headless: true,
+    url: null,
+    keyword: null,
+    target: null,
+    limit: 10,
+    advanced: {}
+  };
+
+  if (action === 'search' && args[0] && !args[0].startsWith('--')) {
+    options.keyword = args.shift();
+  }
+
+  if (action === 'item') {
+    const target = args.shift();
+    if (!target || target.startsWith('--')) {
+      throw new Error('library item requires an id or URL.');
+    }
+    options.target = target;
+  }
+
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--url') {
+      options.url = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--limit') {
+      options.limit = Number.parseInt(requireValue(args, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--title') {
+      options.advanced.title = requireValue(args, i, arg);
+      options.keyword ??= options.advanced.title;
+      i += 1;
+      continue;
+    }
+    if (arg === '--author') {
+      options.advanced.author = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--subject') {
+      options.advanced.subject = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--publisher') {
+      options.advanced.publisher = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--isbn') {
+      options.advanced.isbn = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--issn') {
+      options.advanced.issn = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--call-number') {
+      options.advanced.callNumber = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--classification') {
+      options.advanced.classification = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--doc-type') {
+      options.advanced.docType = normalizeLibraryDocType(requireValue(args, i, arg));
+      i += 1;
+      continue;
+    }
+    if (arg === '--language') {
+      options.advanced.language = normalizeLibraryLanguage(requireValue(args, i, arg));
+      i += 1;
+      continue;
+    }
+    if (arg === '--location') {
+      options.advanced.location = normalizeLibraryLocation(requireValue(args, i, arg));
+      i += 1;
+      continue;
+    }
+    if (arg === '--sort') {
+      options.advanced.sort = normalizeLibrarySort(requireValue(args, i, arg));
+      i += 1;
+      continue;
+    }
+    if (arg === '--order') {
+      options.advanced.order = requireValue(args, i, arg).toUpperCase();
+      i += 1;
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  if (!Number.isInteger(options.limit) || options.limit < 1) {
+    throw new Error('--limit must be a positive integer.');
+  }
+
+  if (action === 'search' && !options.keyword && !hasAnyLibraryAdvancedField(options.advanced)) {
+    throw new Error('library search requires a keyword or advanced search field.');
+  }
+
+  return options;
+}
+
+function hasAnyLibraryAdvancedField(advanced) {
+  return Boolean(
+    advanced.title
+    || advanced.author
+    || advanced.subject
+    || advanced.publisher
+    || advanced.isbn
+    || advanced.issn
+    || advanced.callNumber
+    || advanced.classification
+  );
+}
+
+function normalizeLibraryDocType(value) {
+  return mapLibraryOption(value, {
+    全部: 'ALL',
+    普通图书: '0',
+    连续出版物: '1',
+    非书资料: '2',
+    测绘资料: '3',
+    档案: '4',
+    乐谱: '5',
+    计算机文档: '6',
+    古籍善本: '7',
+    学位论文: '8'
+  });
+}
+
+function normalizeLibraryLanguage(value) {
+  return mapLibraryOption(value, {
+    全部: 'ALL',
+    中文: '1',
+    西文: '2',
+    日文: '3',
+    俄文: '4',
+    其它: '5'
+  });
+}
+
+function normalizeLibraryLocation(value) {
+  return mapLibraryOption(value, {
+    全部: 'ALL',
+    北馆: '70',
+    '学科分馆与学院/部门资料室': '71',
+    南馆: '125',
+    丽湖馆: '243'
+  });
+}
+
+function normalizeLibrarySort(value) {
+  return mapLibraryOption(value, {
+    title: 'M_TITLE',
+    题名: 'M_TITLE',
+    publisher: 'M_PUBLISHER',
+    出版社: 'M_PUBLISHER',
+    year: 'M_PUB_YEAR',
+    出版日期: 'M_PUB_YEAR',
+    author: 'M_AUTHOR',
+    著者: 'M_AUTHOR',
+    subject: 'M_SUBJECT',
+    主题词: 'M_SUBJECT',
+    classification: 'M_CLC',
+    分类号: 'M_CLC',
+    catalogDate: 'M_CATALOGDATE',
+    进馆日期: 'M_CATALOGDATE'
+  });
+}
+
+function mapLibraryOption(value, map) {
+  return map[value] ?? value;
 }
 
 function addDays(date, days) {

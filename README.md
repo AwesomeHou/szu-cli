@@ -56,6 +56,10 @@ szu grade list --term 2025-2026-1 --json
 szu electricity status --json
 szu electricity buildings --json
 szu electricity query --json
+szu library status --json
+szu library search 交通设计 --json
+szu library search --title 交通设计 --author 刘立新 --json
+szu library item 3706432 --json
 ```
 
 Current implemented foundation:
@@ -80,6 +84,10 @@ npm run szu -- grade list --term 2025-2026-1 --json
 npm run szu -- electricity status --json
 npm run szu -- electricity buildings --json
 npm run szu -- electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
+npm run szu -- library status --json
+npm run szu -- library search 交通设计 --limit 10 --json
+npm run szu -- library search --title 交通设计 --author 刘立新 --doc-type 普通图书 --location 南馆 --json
+npm run szu -- library item 3706432 --json
 ```
 
 `auth login` opens a persistent browser profile. Complete login in the browser, then close the browser window. Later commands reuse the saved profile under `~/.szu-cli/browser-profile/`.
@@ -102,6 +110,8 @@ Grade commands read the current eHall grade query page. They reuse the same pers
 
 Electricity commands read the campus intranet SIMS electricity query system. They do not require login, do not use the persistent browser profile, and currently support direct campus-network access only. Use `electricity buildings --json` to list available campuses and buildings before querying a room. `electricity query` defaults to the last 7 days of usage records and reports the latest remaining kWh found in that range.
 
+Library commands read the SZU OPAC catalog. They use the same persistent browser profile by default so the OPAC can record search history when the profile is logged in. Search still works when OPAC is not logged in, but `historyRecorded` will be `false`. `library search <keyword>` uses quick search; `library search --title ... --author ...` uses OPAC advanced search.
+
 State-changing commands, such as reservations, must begin with dry-run behavior:
 
 ```bash
@@ -120,4 +130,4 @@ szu gym reserve --date 2026-06-23 --slot 19:00 --dry-run --json
 
 ## Status
 
-This repository currently contains the project structure, design documents, persistent-profile login foundation, and read-only adapters for notices, course timetable, grades, and electricity usage.
+This repository currently contains the project structure, design documents, persistent-profile login foundation, and read-only adapters for notices, course timetable, grades, electricity usage, and library catalog search.

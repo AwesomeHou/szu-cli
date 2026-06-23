@@ -28,6 +28,10 @@ szu grade list --term 2025-2026-1 --json
 szu electricity status --json
 szu electricity buildings --json
 szu electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
+szu library status --json
+szu library search 交通设计 --json
+szu library search --title 交通设计 --author 刘立新 --json
+szu library item 3706432 --json
 ```
 
 ## Global Flags
@@ -333,3 +337,112 @@ Use `--term <termId>` to filter one term, for example `--term 2025-2026-1`.
 ```
 
 `szu electricity status --json` only checks whether the intranet system is reachable and returns `available`, `campusCount`, and `sourceUrl`. If the system is unreachable, commands return `NETWORK_REQUIRED`.
+
+## Library Search Schema
+
+`szu library search <keyword> --json` searches the SZU OPAC catalog. It uses the persistent browser profile, so OPAC search history can be recorded when the profile is logged in. Use `--limit <n>` to limit returned rows; default is `10`.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "keyword": "交通设计",
+    "total": 96,
+    "page": 1,
+    "pageCount": 5,
+    "loggedIn": true,
+    "historyRecorded": true,
+    "items": [
+      {
+        "index": 3,
+        "id": "3706432",
+        "title": "交通设计",
+        "authors": "刘立新, 孟祥海, 陈亮主编",
+        "publisher": "北京理工大学出版社",
+        "publishYear": "2025",
+        "callNumber": "U491/L73",
+        "holdings": 2,
+        "available": 2,
+        "detailUrl": "https://www.lib.szu.edu.cn/opac/bookinfo.aspx?ctrlno=3706432"
+      }
+    ],
+    "sourceUrl": "https://www.lib.szu.edu.cn/opac/searchresult.aspx?anywords=..."
+  },
+  "meta": {
+    "command": "library search",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+`szu library status --json` checks OPAC reachability and login state. It returns `available`, `loggedIn`, `historyRecorded`, and `sourceUrl`.
+
+The same `library search` command supports advanced OPAC fields. If a positional keyword is provided, it uses quick search. If field flags are provided, it uses advanced search. Supported field flags include `--title`, `--author`, `--subject`, `--publisher`, `--isbn`, `--issn`, `--call-number`, `--classification`, `--doc-type`, `--language`, `--location`, `--sort`, and `--order`.
+
+```bash
+szu library search --title 交通设计 --author 刘立新 --doc-type 普通图书 --location 南馆 --json
+```
+
+Advanced search output keeps the same item shape and adds an `advanced` object:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "keyword": "交通设计",
+    "advanced": {
+      "title": "交通设计",
+      "author": "刘立新",
+      "docType": "0",
+      "location": "125"
+    },
+    "total": 1,
+    "items": []
+  },
+  "meta": {
+    "command": "library search",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+`szu library item <id|url> --json` returns one catalog item and its copy-level holdings.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "id": "3706432",
+    "title": "交通设计",
+    "authors": "刘立新, 孟祥海, 陈亮主编",
+    "publisher": "北京理工大学出版社",
+    "publishYear": "2025",
+    "isbn": "978-7-5763-4896-5",
+    "price": "CNY76.00",
+    "loggedIn": true,
+    "holdings": 2,
+    "available": 2,
+    "copies": [
+      {
+        "location": "南馆5楼工科阅览室TU-X(汇智楼五楼主题书架1 - 1排1架1层)",
+        "callNumber": "U491/L73",
+        "barcode": "A4414341",
+        "volume": null,
+        "year": null,
+        "status": "可供出借",
+        "loanType": "中文图书",
+        "reservationQueue": 0,
+        "readerQueue": 0
+      }
+    ],
+    "sourceUrl": "https://www.lib.szu.edu.cn/opac/bookinfo.aspx?ctrlno=3706432"
+  },
+  "meta": {
+    "command": "library item",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
