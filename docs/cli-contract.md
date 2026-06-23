@@ -25,6 +25,9 @@ szu course today --json
 szu grade status --json
 szu grade list --json
 szu grade list --term 2025-2026-1 --json
+szu electricity status --json
+szu electricity buildings --json
+szu electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
 ```
 
 ## Global Flags
@@ -265,3 +268,68 @@ Use `--term <termId>` to filter one term, for example `--term 2025-2026-1`.
 ```
 
 `szu grade status --json` only checks access and returns `loggedIn`, `reason`, `total`, `terms`, and `sourceUrl`.
+
+## Electricity Schema
+
+`szu electricity buildings --json` returns the available campuses and buildings from the SIMS electricity query page. This command requires campus intranet access.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "campuses": [
+      {
+        "name": "深大新斋区",
+        "client": "192.168.84.87",
+        "buildings": [
+          {
+            "name": "红豆斋",
+            "id": "18120"
+          }
+        ]
+      }
+    ],
+    "sourceUrl": "http://192.168.84.3:9090/cgcSims/login.do?task=station&client=192.168.84.110"
+  },
+  "meta": {
+    "command": "electricity buildings",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+`szu electricity query --campus <name> --building <name> --room <room> --json` queries usage records and reports the latest remaining kWh found in the date range. It defaults to the last 7 days. Use `--from YYYY-MM-DD --to YYYY-MM-DD` to override the range.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "campus": "深大新斋区",
+    "building": "红豆斋",
+    "room": "838",
+    "from": "2026-06-16",
+    "to": "2026-06-23",
+    "remainingKwh": 253,
+    "totalUsedKwh": 21920.49,
+    "totalPurchasedKwh": 22173.49,
+    "latestRecord": {
+      "index": 7,
+      "room": "838",
+      "remainingKwh": 253,
+      "totalUsedKwh": 21920.49,
+      "totalPurchasedKwh": 22173.49,
+      "recordedAt": "2026-06-22 23:59:00"
+    },
+    "records": [],
+    "sourceUrl": "http://192.168.84.3:9090/cgcSims/selectList.do"
+  },
+  "meta": {
+    "command": "electricity query",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+`szu electricity status --json` only checks whether the intranet system is reachable and returns `available`, `campusCount`, and `sourceUrl`. If the system is unreachable, commands return `NETWORK_REQUIRED`.

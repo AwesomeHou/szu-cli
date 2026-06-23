@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { loginWithBrowserProfile, getAuthStatus } from './modules/auth.js';
 import { getCourseList, getCourseStatus, getTodayCourses } from './modules/course.js';
 import { getDoctorReport } from './modules/doctor.js';
+import { getElectricityBuildings, getElectricityStatus, queryElectricity } from './modules/electricity.js';
 import { getGradeList, getGradeStatus } from './modules/grade.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
 import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
@@ -68,6 +69,25 @@ export async function run(argv) {
       }));
     } catch (error) {
       handleKnownError(error, `grade ${action}`);
+    }
+    return;
+  }
+
+  if (domain === 'electricity' && (action === 'status' || action === 'buildings' || action === 'query')) {
+    try {
+      const options = parseElectricityOptions(argv.slice(2));
+      const data = action === 'status'
+        ? await getElectricityStatus(options)
+        : action === 'buildings'
+          ? await getElectricityBuildings(options)
+          : await queryElectricity(options);
+      writeJson(successEnvelope(data, {
+        command: `electricity ${action}`,
+        gateway: 'direct',
+        sourceUrl: data.sourceUrl
+      }));
+    } catch (error) {
+      handleKnownError(error, `electricity ${action}`);
     }
     return;
   }
@@ -188,6 +208,76 @@ function parseGradeOptions(argv) {
   }
 
   return options;
+}
+
+function parseElectricityOptions(argv) {
+  const today = process.env.SZU_MOCK_TODAY ? new Date(process.env.SZU_MOCK_TODAY) : new Date();
+  const options = {
+    headless: true,
+    url: null,
+    campus: null,
+    building: null,
+    room: null,
+    from: formatDate(addDays(today, -7)),
+    to: formatDate(today)
+  };
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--url') {
+      options.url = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--campus') {
+      options.campus = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--building') {
+      options.building = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--room') {
+      options.room = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--from') {
+      options.from = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--to') {
+      options.to = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  return options;
+}
+
+function addDays(date, days) {
+  const copy = new Date(date);
+  copy.setDate(copy.getDate() + days);
+  return copy;
+}
+
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function parseNoticeDownloadOptions(argv) {

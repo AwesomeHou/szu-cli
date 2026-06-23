@@ -53,6 +53,8 @@ szu course today --json
 szu grade status --json
 szu grade list --json
 szu grade list --term 2025-2026-1 --json
+szu electricity status --json
+szu electricity buildings --json
 szu electricity query --json
 ```
 
@@ -75,6 +77,9 @@ npm run szu -- course today --json
 npm run szu -- grade status --json
 npm run szu -- grade list --json
 npm run szu -- grade list --term 2025-2026-1 --json
+npm run szu -- electricity status --json
+npm run szu -- electricity buildings --json
+npm run szu -- electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
 ```
 
 `auth login` opens a persistent browser profile. Complete login in the browser, then close the browser window. Later commands reuse the saved profile under `~/.szu-cli/browser-profile/`.
@@ -95,6 +100,8 @@ Course commands read the current undergraduate timetable from eHall. They reuse 
 
 Grade commands read the current eHall grade query page. They reuse the same persistent browser profile and automatically open the stable grade entry. Normal output includes course, term, credit, grade, and GPA fields, but does not include student name or student ID.
 
+Electricity commands read the campus intranet SIMS electricity query system. They do not require login, do not use the persistent browser profile, and currently support direct campus-network access only. Use `electricity buildings --json` to list available campuses and buildings before querying a room. `electricity query` defaults to the last 7 days of usage records and reports the latest remaining kWh found in that range.
+
 State-changing commands, such as reservations, must begin with dry-run behavior:
 
 ```bash
@@ -113,4 +120,4 @@ szu gym reserve --date 2026-06-23 --slot 19:00 --dry-run --json
 
 ## Status
 
-This repository currently contains the project structure, design documents, persistent-profile login foundation, and read-only adapters for notices, course timetable, and grades.
+This repository currently contains the project structure, design documents, persistent-profile login foundation, and read-only adapters for notices, course timetable, grades, and electricity usage.

@@ -41,6 +41,9 @@ szu course today --json
 szu grade status --json
 szu grade list --json
 szu grade list --term 2025-2026-1 --json
+szu electricity status --json
+szu electricity buildings --json
+szu electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
 ```
 
 Use `notice list --page <n> --limit <n>` for paged full-list queries. `notice search` submits the website search form; default search is full text over the last 6 months. Use `--type title` when the user expects the keyword to appear in titles. Use `notice view <id|url>` to fetch the title, publisher, publish time, plain-text body, and indexed attachment links. Do not ask users to open attachment URLs directly; use `notice download <id|url> --index <n> --dir <path>` so the CLI downloads through the logged-in detail page.
@@ -48,6 +51,8 @@ Use `notice list --page <n> --limit <n>` for paged full-list queries. `notice se
 Use `course status` to check eHall timetable access, `course list` for the current term timetable, and `course today` for today's courses. Course commands do not require the user to provide the eHall URL in normal use.
 
 Use `grade status` to check eHall grade-query access and `grade list` for read-only grade records. Use `grade list --term <termId>` when the user asks for one term. Grade output must not be treated as public data; avoid echoing full grade records unless the user explicitly needs them.
+
+Use `electricity status` to check whether the SIMS electricity intranet system is reachable, `electricity buildings` to discover valid campus/building names, and `electricity query --campus <name> --building <name> --room <room>` to read recent usage records and latest remaining kWh. Electricity payment is not supported.
 
 ## Error Handling
 

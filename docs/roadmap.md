@@ -90,6 +90,7 @@ Status:
 
 - Course status, current timetable list, and today's timetable are implemented for direct campus/eHall access.
 - Grade status and grade list are implemented for direct campus/eHall access, with `--term` filtering and student identity fields removed from normal output.
+- Electricity status, campus/building discovery, and room usage query are implemented for direct campus-network access. Payment is intentionally out of scope.
 
 ## Stage 5: Controlled Actions
 
