@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { loginWithBrowserProfile, getAuthStatus } from './modules/auth.js';
 import { getCourseList, getCourseStatus, getTodayCourses } from './modules/course.js';
 import { getDoctorReport } from './modules/doctor.js';
+import { getGradeList, getGradeStatus } from './modules/grade.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
 import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
 
@@ -50,6 +51,23 @@ export async function run(argv) {
       }));
     } catch (error) {
       handleKnownError(error, `course ${action}`);
+    }
+    return;
+  }
+
+  if (domain === 'grade' && (action === 'status' || action === 'list')) {
+    try {
+      const options = parseGradeOptions(argv.slice(2));
+      const data = action === 'status'
+        ? await getGradeStatus(options)
+        : await getGradeList(options);
+      writeJson(successEnvelope(data, {
+        command: `grade ${action}`,
+        gateway: 'direct',
+        sourceUrl: data.sourceUrl
+      }));
+    } catch (error) {
+      handleKnownError(error, `grade ${action}`);
     }
     return;
   }
@@ -127,6 +145,38 @@ function parseCourseOptions(argv) {
     }
     if (arg === '--url') {
       options.url = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  return options;
+}
+
+function parseGradeOptions(argv) {
+  const options = {
+    headless: true,
+    url: null,
+    term: null
+  };
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--url') {
+      options.url = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--term') {
+      options.term = requireValue(argv, i, arg);
       i += 1;
       continue;
     }

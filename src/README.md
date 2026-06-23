@@ -12,3 +12,4 @@ The implemented campus modules are:
 
 - `notice`: homepage list, paged full-list queries, site-backed search, detail-page view, and attachment download.
 - `course`: eHall timetable status, current term list, and today's courses.
+- `grade`: eHall grade status, list, and term filtering.

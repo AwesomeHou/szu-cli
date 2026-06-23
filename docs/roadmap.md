@@ -89,6 +89,7 @@ Exit criteria:
 Status:
 
 - Course status, current timetable list, and today's timetable are implemented for direct campus/eHall access.
+- Grade status and grade list are implemented for direct campus/eHall access, with `--term` filtering and student identity fields removed from normal output.
 
 ## Stage 5: Controlled Actions
 

@@ -51,6 +51,17 @@ test('classifies eHall course page as logged in', () => {
   });
 });
 
+test('classifies eHall grade page as logged in', () => {
+  assert.deepEqual(classifyAuthPage({
+    url: 'https://ehall.szu.edu.cn/jwapp/sys/cjcx/*default/index.do#/cjcx',
+    title: '成绩查询',
+    text: '成绩查询 2025-2026学年第一学期'
+  }), {
+    loggedIn: true,
+    reason: 'ehall-grade-page'
+  });
+});
+
 test('classifies unknown page as not logged in with unknown reason', () => {
   const result = classifyAuthPage({
     url: 'https://www1.szu.edu.cn/board/',

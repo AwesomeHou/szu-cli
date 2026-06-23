@@ -22,6 +22,9 @@ szu notice download 577444 --dir downloads --json
 szu course status --json
 szu course list --json
 szu course today --json
+szu grade status --json
+szu grade list --json
+szu grade list --term 2025-2026-1 --json
 ```
 
 ## Global Flags
@@ -210,3 +213,55 @@ Failure:
 ```
 
 `szu course today --json` returns the same item shape filtered to the current local date and current teaching week. `szu course status --json` only checks access and returns `loggedIn`, `reason`, `term`, and `sourceUrl`.
+
+## Grade List Schema
+
+`szu grade list --json` returns eHall grade-query records. It does not expose student names or IDs.
+
+Use `--term <termId>` to filter one term, for example `--term 2025-2026-1`.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "items": [
+      {
+        "termId": "2025-2026-1",
+        "termName": "2025-2026学年第一学期",
+        "courseCode": "0902260001",
+        "courseName": "应用统计学",
+        "courseNatureCode": "02",
+        "courseNature": "选修",
+        "credit": 2,
+        "earnedCredit": 2,
+        "score": "A+",
+        "gradePoint": 4.5,
+        "creditGradePoint": 9,
+        "section": "02",
+        "examDate": "2026-01-18",
+        "valid": true,
+        "rawId": "202520261090226000102"
+      }
+    ],
+    "terms": [
+      {
+        "termId": "2025-2026-1",
+        "termName": "2025-2026学年第一学期",
+        "selectedCredits": 22,
+        "earnedCredits": 22,
+        "averageGradePoint": 3.91,
+        "percent": 100,
+        "itemCount": 9
+      }
+    ],
+    "sourceUrl": "https://ehall.szu.edu.cn/jwapp/sys/cjcx/*default/index.do?EMAP_LANG=zh&THEME=cherry#/cjcx"
+  },
+  "meta": {
+    "command": "grade list",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+`szu grade status --json` only checks access and returns `loggedIn`, `reason`, `total`, `terms`, and `sourceUrl`.

@@ -24,6 +24,13 @@ export function classifyAuthPage(pageState) {
     };
   }
 
+  if (title.includes('成绩查询') || (url.includes('/jwapp/sys/cjcx/') && text.includes('成绩查询'))) {
+    return {
+      loggedIn: true,
+      reason: 'ehall-grade-page'
+    };
+  }
+
   if (title.includes('深圳大学网上办事服务大厅') || (text.includes('深圳大学网上办事服务大厅') && text.includes('安全退出'))) {
     return {
       loggedIn: true,
