@@ -97,6 +97,38 @@ test('cnki search returns normalized metadata results', () => {
   assert.equal(body.data.items[0].source, '公路交通科技');
 });
 
+test('cnki search supports advanced title and abstract fields', () => {
+  const result = runAcademic([
+    'cnki',
+    'search',
+    '--title',
+    '优化',
+    '--abstract',
+    '交通',
+    '--abstract',
+    '调度',
+    '--headed',
+    '--limit',
+    '1',
+    '--json'
+  ], {
+    SZU_MOCK_CNKI_JSON: cnkiMockData
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, true);
+  assert.equal(body.data.keyword, '优化 交通 调度');
+  assert.deepEqual(body.data.advanced, {
+    scope: { field: 'database', label: '学术期刊', code: 'YSTT4HG0' },
+    conditions: [
+      { field: 'title', label: '篇名', code: 'TI', value: '优化', match: 'exact', operator: 'AND' },
+      { field: 'abstract', label: '摘要', code: 'AB', value: '交通', match: 'exact', operator: 'AND' },
+      { field: 'abstract', label: '摘要', code: 'AB', value: '调度', match: 'exact', operator: null }
+    ]
+  });
+});
+
 test('wanfang status reports headed metadata-search readiness', () => {
   const result = runAcademic(['wanfang', 'status', '--headed', '--json'], {
     SZU_MOCK_WANFANG_JSON: wanfangMockData

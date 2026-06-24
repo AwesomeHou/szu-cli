@@ -438,7 +438,10 @@ function parseAcademicOptions(domain, action, argv) {
     headless: true,
     url: null,
     keyword: null,
-    limit: 10
+    limit: 10,
+    advanced: {
+      conditions: []
+    }
   };
 
   if (action === 'search' && args[0] && !args[0].startsWith('--')) {
@@ -460,6 +463,16 @@ function parseAcademicOptions(domain, action, argv) {
       i += 1;
       continue;
     }
+    if (arg === '--title') {
+      addCnkiAdvancedCondition(domain, options, 'title', requireValue(args, i, arg));
+      i += 1;
+      continue;
+    }
+    if (arg === '--abstract') {
+      addCnkiAdvancedCondition(domain, options, 'abstract', requireValue(args, i, arg));
+      i += 1;
+      continue;
+    }
     if (arg === '--headed') {
       options.headless = false;
       continue;
@@ -471,11 +484,46 @@ function parseAcademicOptions(domain, action, argv) {
     throw new Error('--limit must be a positive integer.');
   }
 
+  if (options.advanced.conditions.length) {
+    options.keyword ??= options.advanced.conditions.map((condition) => condition.value).join(' ');
+    options.advanced.scope = {
+      field: 'database',
+      label: '学术期刊',
+      code: 'YSTT4HG0'
+    };
+    options.advanced.conditions = options.advanced.conditions.map((condition, index, conditions) => ({
+      ...condition,
+      operator: index === conditions.length - 1 ? null : 'AND'
+    }));
+  } else {
+    delete options.advanced;
+  }
+
   if (action === 'search' && !options.keyword) {
     throw new Error(`${domain} search requires a keyword.`);
   }
 
   return options;
+}
+
+function addCnkiAdvancedCondition(domain, options, field, value) {
+  if (domain !== 'cnki') {
+    throw new Error(`--${field} is only supported by cnki search.`);
+  }
+
+  const fields = {
+    title: { label: '篇名', code: 'TI' },
+    abstract: { label: '摘要', code: 'AB' }
+  };
+  const config = fields[field];
+  options.advanced.conditions.push({
+    field,
+    label: config.label,
+    code: config.code,
+    value,
+    match: 'exact',
+    operator: 'AND'
+  });
 }
 
 function hasAnyLibraryAdvancedField(advanced) {

@@ -3,6 +3,7 @@ import { buildCnkiSearchPayload, parseCnkiSearchMeta } from './cnki-parser.js';
 import { getProfilePath } from './paths.js';
 
 const CNKI_ACCESS_URL = 'https://www.lib.szu.edu.cn/er/access/16084';
+const CNKI_ADVANCED_URL = 'https://kns.cnki.net/kns8s/AdvSearch';
 
 export async function getCnkiStatus(options = {}) {
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
@@ -32,13 +33,14 @@ export async function getCnkiStatus(options = {}) {
 }
 
 export async function searchCnki(options = {}) {
-  if (!options.keyword) {
+  if (!options.keyword && !hasAdvancedConditions(options)) {
     throw new Error('cnki search requires a keyword.');
   }
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
     return {
       ...mockData().search,
       keyword: options.keyword,
+      ...(options.advanced ? { advanced: options.advanced } : {}),
       items: (mockData().search?.items ?? []).slice(0, options.limit)
     };
   }
@@ -47,10 +49,11 @@ export async function searchCnki(options = {}) {
   const context = await launchContext(options);
   try {
     const page = context.pages()[0] ?? await context.newPage();
-    await gotoPage(page, options.url ?? CNKI_ACCESS_URL);
-    await waitForAcademicPage(page);
-    await page.fill('#txt_search', options.keyword);
-    await page.locator('input.search-btn').click({ timeout: 10000 });
+    if (hasAdvancedConditions(options)) {
+      await runAdvancedSearch(page, options);
+    } else {
+      await runQuickSearch(page, options);
+    }
     await waitForAcademicPage(page);
     await page.waitForSelector('.result-table-list tr, table tbody tr', { timeout: 25000 }).catch(() => {});
     const state = await extractState(page);
@@ -62,11 +65,92 @@ export async function searchCnki(options = {}) {
       text: state.text,
       rows,
       limit: options.limit,
+      advanced: options.advanced,
       sourceUrl: page.url()
     });
   } finally {
     await context.close();
   }
+}
+
+async function runQuickSearch(page, options) {
+  await gotoPage(page, options.url ?? CNKI_ACCESS_URL);
+  await waitForAcademicPage(page);
+  await page.fill('#txt_search', options.keyword);
+  await page.locator('input.search-btn').click({ timeout: 10000 });
+}
+
+async function runAdvancedSearch(page, options) {
+  await gotoPage(page, options.url ?? CNKI_ADVANCED_URL);
+  await waitForAcademicPage(page);
+  const state = await extractState(page);
+  assertAccessible(state, 'CNKI');
+
+  await page.evaluate((conditions) => {
+    const checkedDb = document.querySelector('#CheckedDB');
+    if (checkedDb) {
+      checkedDb.value = 'YSTT4HG0';
+      checkedDb.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    const classId = document.querySelector('#classid');
+    if (classId) {
+      classId.value = 'YSTT4HG0';
+      classId.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    const resource = document.querySelector('#resource');
+    if (resource) {
+      resource.value = 'JOURNAL';
+      resource.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    const rows = [...document.querySelectorAll('#gradetxt > dd')]
+      .filter((row) => row.querySelector('input[type="text"]'));
+    if (conditions.length > rows.length) {
+      throw new Error(`CNKI advanced page only exposed ${rows.length} condition rows.`);
+    }
+
+    conditions.forEach((condition, index) => {
+      const row = rows[index];
+      const fieldSpan = row.querySelector('.sort.reopt .sort-default span');
+      const input = row.querySelector('input[type="text"]');
+      if (!fieldSpan || !input) {
+        throw new Error('CNKI advanced search fields changed.');
+      }
+
+      const fieldOption = row.querySelector(`.sort.reopt .sort-list a[title="${condition.label}"]`);
+      if (fieldOption) {
+        fieldOption.click();
+      } else {
+        fieldSpan.textContent = condition.label;
+        fieldSpan.setAttribute('value', condition.code);
+        fieldSpan.dataset.value = condition.code;
+        fieldSpan.dataset.opter = 'DEFAULT';
+      }
+
+      const exactSpan = row.querySelector('.sort.special .sort-default span');
+      if (exactSpan) {
+        exactSpan.textContent = '精确';
+        exactSpan.setAttribute('value', '=');
+      }
+
+      const logicalSpan = [...row.querySelectorAll('.sort-default span')]
+        .find((span) => /^(AND|OR|NOT)$/.test(span.textContent.trim()));
+      if (logicalSpan && index < conditions.length - 1) {
+        logicalSpan.textContent = condition.operator ?? 'AND';
+        logicalSpan.setAttribute('value', condition.operator ?? 'AND');
+      }
+
+      input.value = condition.value;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+  }, options.advanced.conditions);
+
+  await page.locator('input.btn-search[value="检索"], .btn-search').first().click({ timeout: 10000 });
+}
+
+function hasAdvancedConditions(options) {
+  return Boolean(options.advanced?.conditions?.length);
 }
 
 async function extractCnkiRows(page) {

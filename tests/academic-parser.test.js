@@ -54,6 +54,29 @@ test('builds CNKI search payload with limit', () => {
   assert.equal(payload.items[0].source, '铁道建筑技术');
 });
 
+test('builds CNKI advanced search payload', () => {
+  const advanced = {
+    scope: { field: 'database', label: '学术期刊', code: 'YSTT4HG0' },
+    conditions: [
+      { field: 'title', label: '篇名', code: 'TI', value: '优化', match: 'exact', operator: 'AND' },
+      { field: 'abstract', label: '摘要', code: 'AB', value: '交通', match: 'exact', operator: 'AND' },
+      { field: 'abstract', label: '摘要', code: 'AB', value: '调度', match: 'exact', operator: null }
+    ]
+  };
+  const payload = buildCnkiSearchPayload({
+    keyword: '优化 交通 调度',
+    advanced,
+    text: extractText(cnkiFixture),
+    rows: extractCnkiRows(cnkiFixture),
+    limit: 1,
+    sourceUrl: 'https://kns.cnki.net/kns8s/AdvSearch'
+  });
+
+  assert.equal(payload.keyword, '优化 交通 调度');
+  assert.deepEqual(payload.advanced, advanced);
+  assert.equal(payload.items.length, 1);
+});
+
 test('parses Wanfang result metadata and rows', () => {
   const text = extractText(wanfangFixture);
   const rows = extractWanfangRows(wanfangFixture);

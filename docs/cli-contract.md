@@ -33,6 +33,7 @@ szu library search 交通设计 --json
 szu library search --title 交通设计 --author 刘立新 --json
 szu library item 3706432 --json
 szu cnki search 交通设计 --headed --json
+szu cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
 szu wanfang search 交通设计 --headed --json
 ```
 
@@ -456,12 +457,28 @@ Advanced search output keeps the same item shape and adds an `advanced` object:
 
 These MVP commands require `--headed`. They do not download PDFs, CAJ files, original full text, or attachments. Use `--limit <n>` to limit returned rows; default is `10`.
 
+CNKI also supports a small advanced-search MVP through field flags:
+
+```bash
+szu cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
+```
+
+This maps to CNKI advanced search conditions: 篇名 = 优化 AND 摘要 = 交通 AND 摘要 = 调度. `--abstract` is repeatable. The MVP defaults to the 学术期刊 database scope (`YSTT4HG0`) for this academic-paper workflow. The output keeps the same item shape and adds an optional `advanced` object:
+
 ```json
 {
   "ok": true,
   "data": {
-    "keyword": "交通设计",
-    "total": 2627,
+    "keyword": "优化 交通 调度",
+    "advanced": {
+      "scope": { "field": "database", "label": "学术期刊", "code": "YSTT4HG0" },
+      "conditions": [
+        { "field": "title", "label": "篇名", "code": "TI", "value": "优化", "match": "exact", "operator": "AND" },
+        { "field": "abstract", "label": "摘要", "code": "AB", "value": "交通", "match": "exact", "operator": "AND" },
+        { "field": "abstract", "label": "摘要", "code": "AB", "value": "调度", "match": "exact", "operator": null }
+      ]
+    },
+    "total": 641,
     "authorized": true,
     "institution": "深圳大学",
     "items": [

@@ -40,6 +40,7 @@ export function buildCnkiSearchPayload(options) {
 
   return {
     keyword: options.keyword,
+    ...(options.advanced ? { advanced: options.advanced } : {}),
     total: meta.total,
     authorized: meta.authorized,
     institution: meta.institution,
