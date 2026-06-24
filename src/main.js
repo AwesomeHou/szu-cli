@@ -477,12 +477,22 @@ function parseAcademicOptions(domain, action, argv) {
       continue;
     }
     if (arg === '--title') {
-      addCnkiAdvancedCondition(domain, options, 'title', requireValue(args, i, arg));
+      addAcademicAdvancedCondition(domain, options, 'title', requireValue(args, i, arg));
+      i += 1;
+      continue;
+    }
+    if (arg === '--author') {
+      addAcademicAdvancedCondition(domain, options, 'author', requireValue(args, i, arg));
+      i += 1;
+      continue;
+    }
+    if (arg === '--keyword') {
+      addAcademicAdvancedCondition(domain, options, 'keyword', requireValue(args, i, arg));
       i += 1;
       continue;
     }
     if (arg === '--abstract') {
-      addCnkiAdvancedCondition(domain, options, 'abstract', requireValue(args, i, arg));
+      addAcademicAdvancedCondition(domain, options, 'abstract', requireValue(args, i, arg));
       i += 1;
       continue;
     }
@@ -499,11 +509,9 @@ function parseAcademicOptions(domain, action, argv) {
 
   if (options.advanced.conditions.length) {
     options.keyword ??= options.advanced.conditions.map((condition) => condition.value).join(' ');
-    options.advanced.scope = {
-      field: 'database',
-      label: '学术期刊',
-      code: 'YSTT4HG0'
-    };
+    options.advanced.scope = domain === 'cnki'
+      ? { field: 'database', label: '学术期刊', code: 'YSTT4HG0' }
+      : { field: 'database', label: '学术期刊', code: 'periodical' };
     options.advanced.conditions = options.advanced.conditions.map((condition, index, conditions) => ({
       ...condition,
       operator: index === conditions.length - 1 ? null : 'AND'
@@ -519,22 +527,29 @@ function parseAcademicOptions(domain, action, argv) {
   return options;
 }
 
-function addCnkiAdvancedCondition(domain, options, field, value) {
-  if (domain !== 'cnki') {
-    throw new Error(`--${field} is only supported by cnki search.`);
-  }
-
-  const fields = {
-    title: { label: '篇名', code: 'TI' },
-    abstract: { label: '摘要', code: 'AB' }
+function addAcademicAdvancedCondition(domain, options, field, value) {
+  const fieldsByDomain = {
+    cnki: {
+      title: { label: '篇名', code: 'TI', match: 'exact' },
+      abstract: { label: '摘要', code: 'AB', match: 'exact' }
+    },
+    wanfang: {
+      title: { label: '题名', code: 'title', match: 'fuzzy' },
+      author: { label: '作者', code: 'author', match: 'fuzzy' },
+      keyword: { label: '关键词', code: 'keyword', match: 'fuzzy' },
+      abstract: { label: '摘要', code: 'abstract', match: 'fuzzy' }
+    }
   };
-  const config = fields[field];
+  const config = fieldsByDomain[domain]?.[field];
+  if (!config) {
+    throw new Error(`--${field} is not supported by ${domain} search.`);
+  }
   options.advanced.conditions.push({
     field,
     label: config.label,
     code: config.code,
     value,
-    match: 'exact',
+    match: config.match,
     operator: 'AND'
   });
 }

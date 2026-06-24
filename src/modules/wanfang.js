@@ -3,6 +3,7 @@ import { buildWanfangItemPayload, buildWanfangSearchPayload, parseWanfangSearchM
 import { getProfilePath } from './paths.js';
 
 const WANFANG_ACCESS_URL = 'https://www.lib.szu.edu.cn/er/access/16075';
+const WANFANG_PERIODICAL_SEARCH_URL = 'https://s.wanfangdata.com.cn/periodical';
 
 export async function getWanfangStatus(options = {}) {
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
@@ -32,13 +33,16 @@ export async function getWanfangStatus(options = {}) {
 }
 
 export async function searchWanfang(options = {}) {
-  if (!options.keyword) {
+  const advancedQuery = buildWanfangAdvancedQuery(options.advanced);
+  const keyword = options.keyword ?? advancedQuery;
+  if (!keyword) {
     throw new Error('wanfang search requires a keyword.');
   }
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
     return {
       ...mockData().search,
-      keyword: options.keyword,
+      keyword,
+      ...(options.advanced ? { advanced: options.advanced } : {}),
       items: (mockData().search?.items ?? []).slice(0, options.limit)
     };
   }
@@ -49,8 +53,12 @@ export async function searchWanfang(options = {}) {
     const page = context.pages()[0] ?? await context.newPage();
     await gotoPage(page, options.url ?? WANFANG_ACCESS_URL);
     await waitForAcademicPage(page);
-    await page.fill('#search-input', options.keyword);
-    await page.locator('.search-button').first().click({ timeout: 10000 });
+    if (advancedQuery) {
+      await gotoPage(page, buildWanfangSearchUrl(advancedQuery));
+    } else {
+      await page.fill('#search-input', keyword);
+      await page.locator('.search-button').first().click({ timeout: 10000 });
+    }
     await waitForAcademicPage(page);
     await page.waitForSelector('.normal-list.periodical-list, .result-item, .list-item', { timeout: 25000 }).catch(() => {});
     const state = await extractState(page);
@@ -58,7 +66,8 @@ export async function searchWanfang(options = {}) {
     const rows = await extractWanfangRows(page);
 
     return buildWanfangSearchPayload({
-      keyword: options.keyword,
+      keyword,
+      advanced: options.advanced,
       text: state.text,
       rows,
       limit: options.limit,
@@ -95,6 +104,23 @@ export async function getWanfangItem(target, options = {}) {
   } finally {
     await context.close();
   }
+}
+
+function buildWanfangAdvancedQuery(advanced) {
+  const conditions = advanced?.conditions ?? [];
+  if (!conditions.length) {
+    return null;
+  }
+
+  return conditions
+    .map((condition) => `${condition.label}:${condition.value}`)
+    .join(' AND ');
+}
+
+function buildWanfangSearchUrl(query) {
+  const url = new URL(WANFANG_PERIODICAL_SEARCH_URL);
+  url.searchParams.set('q', query);
+  return url.toString();
 }
 
 async function extractWanfangDetail(page) {

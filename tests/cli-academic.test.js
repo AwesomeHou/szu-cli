@@ -205,6 +205,38 @@ test('wanfang search returns normalized metadata results', () => {
   assert.equal(body.data.items[0].title, '基于BIM技术的市政交通设计及应用');
 });
 
+test('wanfang search supports advanced title keyword and abstract fields', () => {
+  const result = runAcademic([
+    'wanfang',
+    'search',
+    '--title',
+    '优化',
+    '--keyword',
+    '交通',
+    '--abstract',
+    '调度',
+    '--headed',
+    '--limit',
+    '1',
+    '--json'
+  ], {
+    SZU_MOCK_WANFANG_JSON: wanfangMockData
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, true);
+  assert.equal(body.data.keyword, '优化 交通 调度');
+  assert.deepEqual(body.data.advanced, {
+    scope: { field: 'database', label: '学术期刊', code: 'periodical' },
+    conditions: [
+      { field: 'title', label: '题名', code: 'title', value: '优化', match: 'fuzzy', operator: 'AND' },
+      { field: 'keyword', label: '关键词', code: 'keyword', value: '交通', match: 'fuzzy', operator: 'AND' },
+      { field: 'abstract', label: '摘要', code: 'abstract', value: '调度', match: 'fuzzy', operator: null }
+    ]
+  });
+});
+
 test('wanfang item returns detail metadata', () => {
   const result = runAcademic([
     'wanfang',

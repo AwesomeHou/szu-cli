@@ -145,6 +145,29 @@ test('builds Wanfang search payload with limit', () => {
   assert.equal(payload.items[0].source, '公路交通科技');
 });
 
+test('builds Wanfang advanced search payload', () => {
+  const advanced = {
+    scope: { field: 'database', label: '学术期刊', code: 'periodical' },
+    conditions: [
+      { field: 'title', label: '题名', code: 'title', value: '优化', match: 'fuzzy', operator: 'AND' },
+      { field: 'keyword', label: '关键词', code: 'keyword', value: '交通', match: 'fuzzy', operator: 'AND' },
+      { field: 'abstract', label: '摘要', code: 'abstract', value: '调度', match: 'fuzzy', operator: null }
+    ]
+  };
+  const payload = buildWanfangSearchPayload({
+    keyword: '优化 交通 调度',
+    advanced,
+    text: extractText(wanfangFixture),
+    rows: extractWanfangRows(wanfangFixture),
+    limit: 1,
+    sourceUrl: 'https://s.wanfangdata.com.cn/periodical?q=题名:优化 AND 关键词:交通 AND 摘要:调度'
+  });
+
+  assert.equal(payload.keyword, '优化 交通 调度');
+  assert.deepEqual(payload.advanced, advanced);
+  assert.equal(payload.items.length, 1);
+});
+
 test('builds Wanfang item payload', () => {
   const payload = buildWanfangItemPayload({
     text: extractText(wanfangItemFixture),
