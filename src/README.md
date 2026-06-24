@@ -15,3 +15,5 @@ The implemented campus modules are:
 - `grade`: eHall grade status, list, and term filtering.
 - `electricity`: direct intranet electricity status, campus/building discovery, and room usage query.
 - `library`: OPAC status and catalog search.
+- `cnki`: headed-browser CNKI metadata status and search.
+- `wanfang`: headed-browser Wanfang metadata status and search.

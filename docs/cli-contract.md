@@ -32,6 +32,8 @@ szu library status --json
 szu library search 交通设计 --json
 szu library search --title 交通设计 --author 刘立新 --json
 szu library item 3706432 --json
+szu cnki search 交通设计 --headed --json
+szu wanfang search 交通设计 --headed --json
 ```
 
 ## Global Flags
@@ -84,6 +86,7 @@ Failure:
 - `PERMISSION_DENIED`: account lacks access.
 - `PAGE_CHANGED`: expected page structure changed.
 - `RATE_LIMITED`: remote service appears to limit requests.
+- `HEADED_REQUIRED`: command requires a visible browser session.
 - `UNSUPPORTED_ACTION`: command is known but not implemented.
 - `UNKNOWN_ERROR`: unexpected failure.
 
@@ -446,3 +449,43 @@ Advanced search output keeps the same item shape and adds an `advanced` object:
   }
 }
 ```
+
+## Academic Metadata Search Schema
+
+`szu cnki search <keyword> --headed --json` and `szu wanfang search <keyword> --headed --json` perform read-only metadata search through the SZU library campus channels.
+
+These MVP commands require `--headed`. They do not download PDFs, CAJ files, original full text, or attachments. Use `--limit <n>` to limit returned rows; default is `10`.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "keyword": "交通设计",
+    "total": 2627,
+    "authorized": true,
+    "institution": "深圳大学",
+    "items": [
+      {
+        "index": 1,
+        "title": "城市道路交通拥堵溯源分析方法：研究进展与展望",
+        "authors": ["杨晓光", "杨彦青"],
+        "source": "公路交通科技",
+        "publishedAt": "2026-05-15",
+        "year": "2026",
+        "type": "期刊",
+        "downloadCount": 80,
+        "url": "https://kns.cnki.net/kcms/detail/detail.aspx?...",
+        "rawText": "Original row text"
+      }
+    ],
+    "sourceUrl": "https://kns.cnki.net/kns8s/search?..."
+  },
+  "meta": {
+    "command": "cnki search",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+`szu cnki status --headed --json` and `szu wanfang status --headed --json` check reachability and campus authorization without returning result rows.

@@ -60,6 +60,8 @@ szu library status --json
 szu library search 交通设计 --json
 szu library search --title 交通设计 --author 刘立新 --json
 szu library item 3706432 --json
+szu cnki search 交通设计 --headed --json
+szu wanfang search 交通设计 --headed --json
 ```
 
 Current implemented foundation:
@@ -88,6 +90,10 @@ npm run szu -- library status --json
 npm run szu -- library search 交通设计 --limit 10 --json
 npm run szu -- library search --title 交通设计 --author 刘立新 --doc-type 普通图书 --location 南馆 --json
 npm run szu -- library item 3706432 --json
+npm run szu -- cnki status --headed --json
+npm run szu -- cnki search 交通设计 --headed --limit 10 --json
+npm run szu -- wanfang status --headed --json
+npm run szu -- wanfang search 交通设计 --headed --limit 10 --json
 ```
 
 `auth login` opens a persistent browser profile. Complete login in the browser, then close the browser window. Later commands reuse the saved profile under `~/.szu-cli/browser-profile/`.
@@ -112,6 +118,8 @@ Electricity commands read the campus intranet SIMS electricity query system. The
 
 Library commands read the SZU OPAC catalog. They use the same persistent browser profile by default so the OPAC can record search history when the profile is logged in. Search still works when OPAC is not logged in, but `historyRecorded` will be `false`. `library search <keyword>` uses quick search; `library search --title ... --author ...` uses OPAC advanced search.
 
+CNKI and Wanfang commands are headed-browser, read-only metadata MVPs. They use SZU library campus access channels and return search result metadata such as title, authors, source, year, download count, and detail URL. They intentionally do not download PDFs, CAJ files, or original full text. Use `--headed`; headless mode is not reliable for these providers.
+
 State-changing commands, such as reservations, must begin with dry-run behavior:
 
 ```bash
@@ -130,4 +138,4 @@ szu gym reserve --date 2026-06-23 --slot 19:00 --dry-run --json
 
 ## Status
 
-This repository currently contains the project structure, design documents, persistent-profile login foundation, and read-only adapters for notices, course timetable, grades, electricity usage, and library catalog search.
+This repository currently contains the project structure, design documents, persistent-profile login foundation, and read-only adapters for notices, course timetable, grades, electricity usage, library catalog search, and headed academic metadata search for CNKI and Wanfang.

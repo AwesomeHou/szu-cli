@@ -92,6 +92,7 @@ Status:
 - Grade status and grade list are implemented for direct campus/eHall access, with `--term` filtering and student identity fields removed from normal output.
 - Electricity status, campus/building discovery, and room usage query are implemented for direct campus-network access. Payment is intentionally out of scope.
 - Library OPAC status and catalog search are implemented with persistent-profile login reuse for search-history recording.
+- CNKI and Wanfang headed-browser metadata search are implemented for direct campus/library access. Full-text download is intentionally out of scope.
 
 ## Stage 5: Controlled Actions
 

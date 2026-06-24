@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
 import { loginWithBrowserProfile, getAuthStatus } from './modules/auth.js';
+import { getCnkiStatus, searchCnki } from './modules/cnki.js';
 import { getCourseList, getCourseStatus, getTodayCourses } from './modules/course.js';
 import { getDoctorReport } from './modules/doctor.js';
 import { getElectricityBuildings, getElectricityStatus, queryElectricity } from './modules/electricity.js';
@@ -8,6 +9,7 @@ import { getGradeList, getGradeStatus } from './modules/grade.js';
 import { getLibraryItem, getLibraryStatus, searchLibrary } from './modules/library.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
 import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
+import { getWanfangStatus, searchWanfang } from './modules/wanfang.js';
 
 export async function run(argv) {
   const packageInfo = await readPackageInfo();
@@ -108,6 +110,27 @@ export async function run(argv) {
       }));
     } catch (error) {
       handleKnownError(error, `library ${action}`);
+    }
+    return;
+  }
+
+  if ((domain === 'cnki' || domain === 'wanfang') && (action === 'status' || action === 'search')) {
+    try {
+      const options = parseAcademicOptions(domain, action, argv.slice(2));
+      const data = domain === 'cnki'
+        ? action === 'status'
+          ? await getCnkiStatus(options)
+          : await searchCnki(options)
+        : action === 'status'
+          ? await getWanfangStatus(options)
+          : await searchWanfang(options);
+      writeJson(successEnvelope(data, {
+        command: `${domain} ${action}`,
+        gateway: 'direct',
+        sourceUrl: data.sourceUrl
+      }));
+    } catch (error) {
+      handleKnownError(error, `${domain} ${action}`);
     }
     return;
   }
@@ -409,6 +432,52 @@ function parseLibraryOptions(action, argv) {
   return options;
 }
 
+function parseAcademicOptions(domain, action, argv) {
+  const args = [...argv];
+  const options = {
+    headless: true,
+    url: null,
+    keyword: null,
+    limit: 10
+  };
+
+  if (action === 'search' && args[0] && !args[0].startsWith('--')) {
+    options.keyword = args.shift();
+  }
+
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--url') {
+      options.url = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--limit') {
+      options.limit = Number.parseInt(requireValue(args, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  if (!Number.isInteger(options.limit) || options.limit < 1) {
+    throw new Error('--limit must be a positive integer.');
+  }
+
+  if (action === 'search' && !options.keyword) {
+    throw new Error(`${domain} search requires a keyword.`);
+  }
+
+  return options;
+}
+
 function hasAnyLibraryAdvancedField(advanced) {
   return Boolean(
     advanced.title
@@ -648,7 +717,8 @@ function handleKnownError(error, command) {
     NETWORK_REQUIRED: 12,
     PERMISSION_DENIED: 13,
     PAGE_CHANGED: 20,
-    RATE_LIMITED: 30
+    RATE_LIMITED: 30,
+    HEADED_REQUIRED: 2
   };
 
   writeJson(errorEnvelope({

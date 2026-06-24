@@ -27,6 +27,7 @@ SZU CLI should act like a careful local assistant using the user's own account.
 - High-frequency polling.
 - Hidden form submission.
 - Actions outside what the logged-in user can do manually.
+- Automated PDF, CAJ, original-text, or attachment downloading from academic databases.
 
 ## State-Changing Commands
 
@@ -41,3 +42,9 @@ State-changing features, such as gym reservations, require extra safeguards:
 ## Open Source Posture
 
 Public docs can describe architecture and redacted examples. They should not publish secrets, private account data, or bypass instructions.
+
+## Academic Database Boundaries
+
+CNKI and Wanfang support is metadata-search only. Commands may return titles, authors, sources, years, snippets or raw row text, download counts, and detail URLs for manual inspection.
+
+The CLI must not bypass CAPTCHA, slider verification, second-factor authentication, paywalls, or provider access controls. It must not implement batch downloading of PDFs, CAJ files, original full text, or attachments.
