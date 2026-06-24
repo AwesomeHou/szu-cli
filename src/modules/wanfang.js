@@ -1,5 +1,5 @@
 import { getLaunchOptions } from './browser-options.js';
-import { buildWanfangSearchPayload, parseWanfangSearchMeta } from './wanfang-parser.js';
+import { buildWanfangItemPayload, buildWanfangSearchPayload, parseWanfangSearchMeta } from './wanfang-parser.js';
 import { getProfilePath } from './paths.js';
 
 const WANFANG_ACCESS_URL = 'https://www.lib.szu.edu.cn/er/access/16075';
@@ -69,6 +69,79 @@ export async function searchWanfang(options = {}) {
   }
 }
 
+export async function getWanfangItem(target, options = {}) {
+  if (!target) {
+    throw new Error('wanfang item requires a URL.');
+  }
+  if (process.env.SZU_BROWSER_BACKEND === 'mock') {
+    return mockData().item;
+  }
+  assertHeaded(options);
+
+  const context = await launchContext(options);
+  try {
+    const page = context.pages()[0] ?? await context.newPage();
+    await gotoPage(page, target);
+    await waitForAcademicPage(page);
+    const state = await extractState(page);
+    assertAccessible(state, 'Wanfang');
+    const detail = await extractWanfangDetail(page);
+
+    return buildWanfangItemPayload({
+      text: state.text,
+      detail,
+      sourceUrl: page.url()
+    });
+  } finally {
+    await context.close();
+  }
+}
+
+async function extractWanfangDetail(page) {
+  return page.evaluate(() => {
+    return {
+      title: pickFirstText(['.detailTitleCN', '.detailTitle .title', 'h1, .title']),
+      authors: pickJoined('.author.detailTitle .test-detail-author, .author.detailTitle a, .author.detailTitle span.author-margin'),
+      institutions: pickText('.organization.detailOrganization .test-detail-org, .organization.detailOrganization'),
+      source: pickText('.periodicalName, .periodicalInformation a, .source, [class*="journal"]'),
+      abstract: pickText('.summary .text-overflow, .summary, .abstract, [class*="abstract"]') ?? pickByLabel(['摘要', 'Abstract']),
+      keywords: pickText('.keyword .itemKeyword, .keyword, .keywords, [class*="keyword"]')
+    };
+
+    function pickText(selector) {
+      return document.querySelector(selector)?.innerText?.trim() ?? '';
+    }
+
+    function pickFirstText(selectors) {
+      for (const selector of selectors) {
+        const text = pickText(selector);
+        if (text) {
+          return text;
+        }
+      }
+      return '';
+    }
+
+    function pickJoined(selector) {
+      return [...document.querySelectorAll(selector)]
+        .map((node) => node.innerText?.trim())
+        .filter(Boolean)
+        .join('; ');
+    }
+
+    function pickByLabel(labels) {
+      const bodyText = document.body.innerText ?? '';
+      for (const label of labels) {
+        const match = bodyText.match(new RegExp(`${label}[：:]\\s*([^\\n]+)`));
+        if (match?.[1]) {
+          return `${label}：${match[1].trim()}`;
+        }
+      }
+      return null;
+    }
+  });
+}
+
 async function extractWanfangRows(page) {
   return page.evaluate(() => {
     const cards = [
@@ -77,10 +150,11 @@ async function extractWanfangRows(page) {
     const rows = cards.map((card, index) => {
       const anchor = card.querySelector('.title-area a, a[href*="wanfangdata"], a[href*="/periodical"], a');
       const titleNode = card.querySelector('.title-area, .ajust, [class*="title"]');
+      const hiddenId = card.querySelector('.title-id-hidden')?.innerText?.trim();
       return {
         index: index + 1,
         title: cleanTitle(anchor?.innerText ?? titleNode?.innerText ?? firstLine(card.innerText)),
-        href: anchor?.href ?? null,
+        href: anchor?.href ?? hrefFromHiddenId(hiddenId),
         authors: textOf(card, '[class*="author"]'),
         source: textOf(card, '[class*="source"], [class*="journal"]'),
         abstract: textOf(card, '.abstract-area, [class*="abstract"], [class*="summary"]'),
@@ -116,6 +190,11 @@ async function extractWanfangRows(page) {
 
     function cleanTitle(text) {
       return String(text ?? '').replace(/^\s*\d+\.\s*/, '').trim();
+    }
+
+    function hrefFromHiddenId(value) {
+      const id = String(value ?? '').replace(/^periodical_/, '').trim();
+      return id ? `https://d.wanfangdata.com.cn/periodical/${id}` : null;
     }
 
     function nearestTextBlock(anchor) {

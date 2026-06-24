@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
 import { loginWithBrowserProfile, getAuthStatus } from './modules/auth.js';
-import { getCnkiStatus, searchCnki } from './modules/cnki.js';
+import { getCnkiItem, getCnkiStatus, searchCnki } from './modules/cnki.js';
 import { getCourseList, getCourseStatus, getTodayCourses } from './modules/course.js';
 import { getDoctorReport } from './modules/doctor.js';
 import { getElectricityBuildings, getElectricityStatus, queryElectricity } from './modules/electricity.js';
@@ -9,7 +9,7 @@ import { getGradeList, getGradeStatus } from './modules/grade.js';
 import { getLibraryItem, getLibraryStatus, searchLibrary } from './modules/library.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
 import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
-import { getWanfangStatus, searchWanfang } from './modules/wanfang.js';
+import { getWanfangItem, getWanfangStatus, searchWanfang } from './modules/wanfang.js';
 
 export async function run(argv) {
   const packageInfo = await readPackageInfo();
@@ -114,16 +114,20 @@ export async function run(argv) {
     return;
   }
 
-  if ((domain === 'cnki' || domain === 'wanfang') && (action === 'status' || action === 'search')) {
+  if ((domain === 'cnki' || domain === 'wanfang') && (action === 'status' || action === 'search' || action === 'item')) {
     try {
       const options = parseAcademicOptions(domain, action, argv.slice(2));
       const data = domain === 'cnki'
         ? action === 'status'
           ? await getCnkiStatus(options)
-          : await searchCnki(options)
+          : action === 'item'
+            ? await getCnkiItem(options.target, options)
+            : await searchCnki(options)
         : action === 'status'
           ? await getWanfangStatus(options)
-          : await searchWanfang(options);
+          : action === 'item'
+            ? await getWanfangItem(options.target, options)
+            : await searchWanfang(options);
       writeJson(successEnvelope(data, {
         command: `${domain} ${action}`,
         gateway: 'direct',
@@ -438,6 +442,7 @@ function parseAcademicOptions(domain, action, argv) {
     headless: true,
     url: null,
     keyword: null,
+    target: null,
     limit: 10,
     advanced: {
       conditions: []
@@ -446,6 +451,14 @@ function parseAcademicOptions(domain, action, argv) {
 
   if (action === 'search' && args[0] && !args[0].startsWith('--')) {
     options.keyword = args.shift();
+  }
+
+  if (action === 'item') {
+    const target = args.shift();
+    if (!target || target.startsWith('--')) {
+      throw new Error(`${domain} item requires a URL.`);
+    }
+    options.target = target;
   }
 
   for (let i = 0; i < args.length; i += 1) {

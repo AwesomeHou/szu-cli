@@ -52,11 +52,36 @@ export function buildWanfangSearchPayload(options) {
   };
 }
 
+export function buildWanfangItemPayload(options) {
+  const detail = options.detail ?? {};
+  const text = cleanText(options.text ?? '');
+  const sourceInfo = parseSource(detail.source, text);
+  return {
+    provider: 'wanfang',
+    title: stringOrNull(detail.title),
+    authors: splitAuthors(detail.authors),
+    institutions: splitAuthors(detail.institutions),
+    source: sourceInfo.source,
+    publishedAt: null,
+    year: sourceInfo.year,
+    type: sourceInfo.type,
+    abstract: cleanLabeledValue(detail.abstract, '摘要'),
+    keywords: splitAuthors(cleanLabeledValue(detail.keywords, '关键词')),
+    doi: matchValue(text, /DOI[：:]\s*([^\s]+)/i),
+    fund: matchValue(text, /基金[：:]\s*(.*?)(?=\s*(?:分类号|DOI)[：:]|$)/),
+    classification: matchValue(text, /分类号[：:]\s*([A-Z0-9.]+)/i),
+    sourceUrl: options.sourceUrl
+  };
+}
+
 function parseSource(value, rawValue) {
   const text = cleanText(value);
   const raw = cleanText(rawValue);
   const compact = raw.match(/\[(?<type>[^\]]+)\](?<authors>.*?)-《(?<source>[^》]+)》(?<date>\d{4}年[^ ]*)?/);
-  const year = text.match(/(\d{4})年/)?.[1] ?? compact?.groups?.date?.match(/(\d{4})年/)?.[1] ?? null;
+  const year = text.match(/(\d{4})年/)?.[1]
+    ?? compact?.groups?.date?.match(/(\d{4})年/)?.[1]
+    ?? raw.match(/年,卷\(期\)[：:]?\s*(\d{4})/)?.[1]
+    ?? null;
   const source = stringOrNull(text.replace(/\s*\d{4}年.*$/, '')) ?? stringOrNull(compact?.groups?.source);
   return {
     authors: compact?.groups?.authors ?? '',
@@ -78,12 +103,24 @@ function absoluteWanfangUrl(href) {
 }
 
 function splitAuthors(value) {
-  return cleanText(value).split(/[;；,，]/).map((item) => item.trim()).filter(Boolean);
+  return unique(cleanText(value).split(/[;；,，]/).map((item) => item.trim()).filter(Boolean));
+}
+
+function unique(items) {
+  return [...new Set(items)];
 }
 
 function cleanAuthorValue(value) {
   const text = cleanText(value);
   return text.startsWith('[') ? '' : text;
+}
+
+function cleanLabeledValue(value, label) {
+  return stringOrNull(cleanText(value).replace(new RegExp(`^${label}[：:]?\\s*`), ''));
+}
+
+function matchValue(text, pattern) {
+  return stringOrNull(cleanText(text).match(pattern)?.[1]);
 }
 
 function matchNumber(text, pattern) {

@@ -36,6 +36,22 @@ const cnkiMockData = JSON.stringify({
       }
     ],
     sourceUrl: 'https://kns.cnki.net/kns8s/search?kw=交通设计'
+  },
+  item: {
+    provider: 'cnki',
+    title: '城市道路交通拥堵溯源分析方法：研究进展与展望',
+    authors: ['杨晓光', '杨彦青'],
+    institutions: ['同济大学交通运输工程学院'],
+    source: '公路交通科技',
+    publishedAt: null,
+    year: '2026',
+    type: '期刊',
+    abstract: '系统梳理城市道路交通拥堵溯源分析方法。',
+    keywords: ['城市道路', '交通拥堵'],
+    doi: '10.1234/cnki.glkj.2026.05.002',
+    fund: '国家自然科学基金项目',
+    classification: 'U491',
+    sourceUrl: 'https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&filename=GLJK202605002'
   }
 });
 
@@ -68,6 +84,22 @@ const wanfangMockData = JSON.stringify({
       }
     ],
     sourceUrl: 'https://s.wanfangdata.com.cn/periodical?q=交通设计'
+  },
+  item: {
+    provider: 'wanfang',
+    title: '基于BIM技术的市政交通设计及应用',
+    authors: ['李帅', '杨沙'],
+    institutions: ['深圳大学土木与交通工程学院'],
+    source: '工程技术研究',
+    publishedAt: null,
+    year: '2026',
+    type: '期刊',
+    abstract: '分析BIM技术在市政交通设计中的应用路径。',
+    keywords: ['BIM', '市政交通'],
+    doi: '10.5678/wanfang.gcjs.2026.04.001',
+    fund: '广东省教育厅项目',
+    classification: 'U412',
+    sourceUrl: 'https://d.wanfangdata.com.cn/periodical/gcjs202604001'
   }
 });
 
@@ -129,6 +161,25 @@ test('cnki search supports advanced title and abstract fields', () => {
   });
 });
 
+test('cnki item returns detail metadata', () => {
+  const result = runAcademic([
+    'cnki',
+    'item',
+    'https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&filename=GLJK202605002',
+    '--headed',
+    '--json'
+  ], {
+    SZU_MOCK_CNKI_JSON: cnkiMockData
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, true);
+  assert.equal(body.meta.command, 'cnki item');
+  assert.equal(body.data.title, '城市道路交通拥堵溯源分析方法：研究进展与展望');
+  assert.equal(body.data.doi, '10.1234/cnki.glkj.2026.05.002');
+});
+
 test('wanfang status reports headed metadata-search readiness', () => {
   const result = runAcademic(['wanfang', 'status', '--headed', '--json'], {
     SZU_MOCK_WANFANG_JSON: wanfangMockData
@@ -152,6 +203,35 @@ test('wanfang search returns normalized metadata results', () => {
   assert.equal(body.meta.command, 'wanfang search');
   assert.equal(body.data.keyword, '交通设计');
   assert.equal(body.data.items[0].title, '基于BIM技术的市政交通设计及应用');
+});
+
+test('wanfang item returns detail metadata', () => {
+  const result = runAcademic([
+    'wanfang',
+    'item',
+    'https://d.wanfangdata.com.cn/periodical/gcjs202604001',
+    '--headed',
+    '--json'
+  ], {
+    SZU_MOCK_WANFANG_JSON: wanfangMockData
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, true);
+  assert.equal(body.meta.command, 'wanfang item');
+  assert.equal(body.data.title, '基于BIM技术的市政交通设计及应用');
+  assert.equal(body.data.doi, '10.5678/wanfang.gcjs.2026.04.001');
+});
+
+test('academic item requires a URL', () => {
+  const result = runAcademic(['cnki', 'item', '--headed', '--json'], {
+    SZU_MOCK_CNKI_JSON: cnkiMockData
+  });
+
+  assert.equal(result.status, 1);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, false);
 });
 
 test('academic search requires a keyword', () => {

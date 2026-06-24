@@ -50,7 +50,9 @@ szu library search --title 交通设计 --author 刘立新 --json
 szu library item 3706432 --json
 szu cnki search 交通设计 --headed --json
 szu cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
+szu cnki item <url> --headed --json
 szu wanfang search 交通设计 --headed --json
+szu wanfang item <url> --headed --json
 ```
 
 Use `notice list --page <n> --limit <n>` for paged full-list queries. `notice search` submits the website search form; default search is full text over the last 6 months. Use `--type title` when the user expects the keyword to appear in titles. Use `notice view <id|url>` to fetch the title, publisher, publish time, plain-text body, and indexed attachment links. Do not ask users to open attachment URLs directly; use `notice download <id|url> --index <n> --dir <path>` so the CLI downloads through the logged-in detail page.
@@ -63,7 +65,7 @@ Use `electricity status` to check whether the SIMS electricity intranet system i
 
 Use `library status` to check OPAC reachability and login state. Use `library search <keyword>` for quick catalog search. Use `library search --title <text> --author <text> --isbn <isbn>` and related field flags for advanced OPAC search. Use `library item <id|url>` to inspect copy-level holdings, locations, barcodes, status, and reservation queues. OPAC commands use the persistent browser profile so search history can be recorded when logged in.
 
-Use `cnki search <keyword> --headed --json` and `wanfang search <keyword> --headed --json` for academic metadata search. For CNKI advanced search, use field flags such as `cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json`; `--abstract` can be repeated, conditions are joined with AND, and the MVP defaults to the 学术期刊 database scope. These commands are headed-browser MVPs. They return metadata only and must not be used to download PDFs, CAJ files, original full text, or attachments.
+Use `cnki search <keyword> --headed --json` and `wanfang search <keyword> --headed --json` for academic metadata search. For CNKI advanced search, use field flags such as `cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json`; `--abstract` can be repeated, conditions are joined with AND, and the MVP defaults to the 学术期刊 database scope. Use `cnki item <url> --headed --json` or `wanfang item <url> --headed --json` to inspect one detail page's abstract, keywords, DOI, fund, and classification. These commands are headed-browser MVPs. They return metadata only and must not be used to download PDFs, CAJ files, original full text, or attachments.
 
 ## Error Handling
 

@@ -1,5 +1,5 @@
 import { getLaunchOptions } from './browser-options.js';
-import { buildCnkiSearchPayload, parseCnkiSearchMeta } from './cnki-parser.js';
+import { buildCnkiItemPayload, buildCnkiSearchPayload, parseCnkiSearchMeta } from './cnki-parser.js';
 import { getProfilePath } from './paths.js';
 
 const CNKI_ACCESS_URL = 'https://www.lib.szu.edu.cn/er/access/16084';
@@ -66,6 +66,34 @@ export async function searchCnki(options = {}) {
       rows,
       limit: options.limit,
       advanced: options.advanced,
+      sourceUrl: page.url()
+    });
+  } finally {
+    await context.close();
+  }
+}
+
+export async function getCnkiItem(target, options = {}) {
+  if (!target) {
+    throw new Error('cnki item requires a URL.');
+  }
+  if (process.env.SZU_BROWSER_BACKEND === 'mock') {
+    return mockData().item;
+  }
+  assertHeaded(options);
+
+  const context = await launchContext(options);
+  try {
+    const page = context.pages()[0] ?? await context.newPage();
+    await gotoPage(page, target);
+    await waitForAcademicPage(page);
+    const state = await extractState(page);
+    assertAccessible(state, 'CNKI');
+    const detail = await extractCnkiDetail(page);
+
+    return buildCnkiItemPayload({
+      text: state.text,
+      detail,
       sourceUrl: page.url()
     });
   } finally {
@@ -151,6 +179,62 @@ async function runAdvancedSearch(page, options) {
 
 function hasAdvancedConditions(options) {
   return Boolean(options.advanced?.conditions?.length);
+}
+
+async function extractCnkiDetail(page) {
+  return page.evaluate(() => {
+    const authorRows = [...document.querySelectorAll('.doc .wx-tit h3.author, .wx-tit h3.author')];
+    return {
+      title: pickFirstText(['.doc .wx-tit h1', '.wx-tit h1', '.doc h1', 'h1']),
+      authors: pickJoinedFrom(authorRows[0], 'a') || authorRows[0]?.innerText?.trim() || '',
+      institutions: pickJoinedFrom(authorRows[1], 'a') || authorRows[1]?.innerText?.trim() || '',
+      source: pickText('.doc .top-tip, .top-tip, .sourinfo, .source, [class*="journal"]'),
+      abstract: pickText('#ChDivSummary, .doc .abstract-text, .abstract, [class*="abstract"]') ?? pickByLabel(['摘要', '摘 要', 'Abstract']),
+      keywords: pickJoined('.doc p.keywords a, p.keywords a, .keywords a, [class*="keyword"] a') || pickText('.doc p.keywords, p.keywords, .keywords, [class*="keyword"]')
+    };
+
+    function pickText(selector) {
+      return document.querySelector(selector)?.innerText?.trim() ?? '';
+    }
+
+    function pickFirstText(selectors) {
+      for (const selector of selectors) {
+        const text = pickText(selector);
+        if (text) {
+          return text;
+        }
+      }
+      return '';
+    }
+
+    function pickJoined(selector) {
+      return [...document.querySelectorAll(selector)]
+        .map((node) => node.innerText?.trim())
+        .filter(Boolean)
+        .join('; ');
+    }
+
+    function pickJoinedFrom(root, selector) {
+      if (!root) {
+        return '';
+      }
+      return [...root.querySelectorAll(selector)]
+        .map((node) => node.innerText?.trim())
+        .filter(Boolean)
+        .join('; ');
+    }
+
+    function pickByLabel(labels) {
+      const bodyText = document.body.innerText ?? '';
+      for (const label of labels) {
+        const match = bodyText.match(new RegExp(`${label}[：:]\\s*([^\\n]+)`));
+        if (match?.[1]) {
+          return `${label}：${match[1].trim()}`;
+        }
+      }
+      return null;
+    }
+  });
 }
 
 async function extractCnkiRows(page) {

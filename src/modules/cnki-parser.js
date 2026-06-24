@@ -49,6 +49,28 @@ export function buildCnkiSearchPayload(options) {
   };
 }
 
+export function buildCnkiItemPayload(options) {
+  const detail = options.detail ?? {};
+  const text = cleanText(options.text ?? '');
+  const sourceInfo = parseSource(detail.source, text);
+  return {
+    provider: 'cnki',
+    title: stringOrNull(detail.title),
+    authors: splitAuthors(detail.authors).map(cleanAuthorName).filter(Boolean),
+    institutions: splitAuthors(detail.institutions).map(cleanInstitutionName).filter(Boolean),
+    source: sourceInfo.source,
+    publishedAt: sourceInfo.publishedAt,
+    year: sourceInfo.year,
+    type: sourceInfo.type,
+    abstract: cleanLabeledValue(detail.abstract, '摘要'),
+    keywords: splitAuthors(cleanLabeledValue(detail.keywords, '关键词')),
+    doi: matchValue(text, /DOI[：:]\s*([^\s]+)/i),
+    fund: matchValue(text, /基金[：:]\s*(.*?)(?=\s*(?:分类号|DOI)[：:]|$)/),
+    classification: matchValue(text, /分类号[：:]\s*([A-Z0-9.]+)/i),
+    sourceUrl: options.sourceUrl
+  };
+}
+
 function parseCnkiRawRow(row) {
   const rawText = cleanText(row.rawText);
   const index = matchNumber(rawText, /^(\d+)\s+/);
@@ -77,7 +99,43 @@ function absoluteCnkiUrl(href) {
 }
 
 function splitAuthors(value) {
-  return cleanText(value).split(/[;；,，]/).map((item) => item.trim()).filter(Boolean);
+  return unique(cleanText(value).split(/[;；,，]/).map((item) => item.trim()).filter(Boolean));
+}
+
+function unique(items) {
+  return [...new Set(items)];
+}
+
+function parseSource(value, text) {
+  const sourceText = cleanText(value).replace(/\s*[.。]\s*查看.*$/, '');
+  const year = sourceText.match(/(\d{4})年/)?.[1]
+    ?? text.match(/(?:网络首发时间|在线公开时间)[：:]?\s*(\d{4})/)?.[1]
+    ?? null;
+  const publishedAt = sourceText.match(/(\d{4}-\d{2}-\d{2}(?:\s+\d{2}:\d{2})?)/)?.[1] ?? null;
+  return {
+    source: stringOrNull(sourceText.replace(/\s*\d{4}年.*$/, '').replace(/\s*\d{4}-\d{2}-\d{2}.*$/, '')),
+    publishedAt,
+    year: publishedAt?.slice(0, 4) ?? year,
+    type: '期刊'
+  };
+}
+
+function cleanLabeledValue(value, label) {
+  return stringOrNull(cleanText(value).replace(new RegExp(`^${label}[：:]?\\s*`), ''));
+}
+
+function cleanAuthorName(value) {
+  const text = cleanText(value).replace(/^\d+$/, '').replace(/\d+$/g, '').trim();
+  return text || null;
+}
+
+function cleanInstitutionName(value) {
+  const text = cleanText(value).replace(/^\d+[.．、]\s*/, '').trim();
+  return text || null;
+}
+
+function matchValue(text, pattern) {
+  return stringOrNull(cleanText(text).match(pattern)?.[1]);
 }
 
 function matchNumber(text, pattern) {
