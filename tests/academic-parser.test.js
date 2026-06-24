@@ -130,6 +130,23 @@ test('parses Wanfang result metadata and rows', () => {
   });
 });
 
+test('splits compact Wanfang authors from live result cards', () => {
+  const rows = [
+    {
+      index: 1,
+      title: '城市交通网-快速充电站-配电网分层协同优化方法',
+      href: 'https://d.wanfangdata.com.cn/periodical/dlxtzdh202603004',
+      authors: '姜涛迟大硕吴成昊等',
+      source: '电力系统自动化',
+      abstract: '提出城市交通网-快速充电站-配电网分层协同优化调度策略。',
+      stats: '下载：8',
+      rawText: '1.城市交通网-快速充电站-配电网分层协同优化方法 [期刊论文]姜涛迟大硕吴成昊等-《电力系统自动化》2026年3期 摘要：提出城市交通网-快速充电站-配电网分层协同优化调度策略。 下载：8'
+    }
+  ];
+
+  assert.deepEqual(parseWanfangSearchRows(rows)[0].authors, ['姜涛', '迟大硕', '吴成昊']);
+});
+
 test('builds Wanfang search payload with limit', () => {
   const payload = buildWanfangSearchPayload({
     keyword: '交通设计',

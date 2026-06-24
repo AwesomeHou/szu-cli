@@ -61,13 +61,13 @@ export function buildWanfangItemPayload(options) {
     provider: 'wanfang',
     title: stringOrNull(detail.title),
     authors: splitAuthors(detail.authors),
-    institutions: splitAuthors(detail.institutions),
+    institutions: splitDelimitedValues(detail.institutions),
     source: sourceInfo.source,
     publishedAt: null,
     year: sourceInfo.year,
     type: sourceInfo.type,
     abstract: cleanLabeledValue(detail.abstract, '摘要'),
-    keywords: splitAuthors(cleanLabeledValue(detail.keywords, '关键词')),
+    keywords: splitDelimitedValues(cleanLabeledValue(detail.keywords, '关键词')),
     doi: matchValue(text, /DOI[：:]\s*([^\s]+)/i),
     fund: matchValue(text, /基金[：:]\s*(.*?)(?=\s*(?:分类号|DOI)[：:]|$)/),
     classification: matchValue(text, /分类号[：:]\s*([A-Z0-9.]+)/i),
@@ -104,7 +104,16 @@ function absoluteWanfangUrl(href) {
 }
 
 function splitAuthors(value) {
-  return unique(cleanText(value).split(/[;；,，]/).map((item) => item.trim()).filter(Boolean));
+  const text = cleanText(value).replace(/等$/, '');
+  const parts = splitDelimitedValues(text);
+  if (parts.length > 1) {
+    return unique(parts);
+  }
+  return unique(splitCompactChineseAuthors(text));
+}
+
+function splitDelimitedValues(value) {
+  return unique(cleanText(value).split(/[;；,，、\s]+/).map((item) => item.trim()).filter(Boolean));
 }
 
 function unique(items) {
@@ -118,6 +127,37 @@ function cleanAuthorValue(value) {
 
 function cleanLabeledValue(value, label) {
   return stringOrNull(cleanText(value).replace(new RegExp(`^${label}[：:]?\\s*`), ''));
+}
+
+function splitCompactChineseAuthors(value) {
+  const text = cleanText(value);
+  if (!text || /[A-Za-z]/.test(text) || text.length < 5) {
+    return text ? [text] : [];
+  }
+
+  const boundaries = [0];
+  for (let index = 2; index < text.length - 1; index += 1) {
+    if (isChineseSurnameAt(text, index) && index - boundaries.at(-1) >= 2) {
+      boundaries.push(index);
+    }
+  }
+
+  if (boundaries.length < 2) {
+    return [text];
+  }
+
+  return boundaries.map((start, index) => {
+    const end = boundaries[index + 1] ?? text.length;
+    return text.slice(start, end);
+  }).filter((name) => name.length >= 2);
+}
+
+function isChineseSurnameAt(text, index) {
+  const compoundSurnames = ['欧阳', '司马', '诸葛', '上官', '东方', '夏侯', '皇甫', '尉迟', '公孙', '慕容'];
+  if (compoundSurnames.some((surname) => text.startsWith(surname, index))) {
+    return true;
+  }
+  return '赵钱孙李周吴郑王冯陈褚卫蒋沈韩杨朱秦尤许何吕施张孔曹严华金魏陶姜戚谢邹喻柏水窦章云苏潘葛奚范彭郎鲁韦昌马苗凤花方俞任袁柳鲍史唐费廉岑薛雷贺倪汤滕殷罗毕郝邬安常乐于时傅皮卞齐康伍余元卜顾孟平黄和穆萧尹姚邵湛汪祁毛禹狄米贝明臧计伏成戴谈宋庞熊纪舒屈项祝董梁杜阮蓝闵席季麻强贾路娄危江童颜郭梅盛林刁钟徐邱骆高夏蔡田胡凌霍虞万支柯昝管卢莫经房裘缪干解应宗丁宣邓郁单杭洪包诸左石崔吉龚程邢裴陆荣翁荀羊於惠甄曲家封芮羿储靳汲邴糜松井段富巫乌焦巴弓牧隗山谷车侯宓蓬全郗班仰秋仲伊宫宁仇栾暴甘厉戎祖武符刘景詹龙叶幸司韶郜黎蓟薄印宿白怀蒲邰从鄂索咸籍赖卓蔺屠蒙池乔阴胥能苍双闻莘党翟谭贡劳逄姬申扶堵冉宰郦雍郤璩桑桂濮牛寿通边扈燕冀浦尚农温别庄晏柴瞿阎充连茹习宦艾鱼容向古易慎戈廖庾终暨居衡步都耿满弘匡国文寇广禄阙东殴殳沃利蔚越夔隆师巩厍聂晁勾敖融冷訾辛阚那简饶空曾毋沙乜养鞠须丰巢关蒯相查后荆红游竺权逯盖益桓公迟'.includes(text[index]);
 }
 
 function matchValue(text, pattern) {
