@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 
+import { normalizeAcademicFormat } from './modules/academic-format.js';
 import { loginWithBrowserProfile, getAuthStatus } from './modules/auth.js';
 import { getCnkiItem, getCnkiStatus, searchCnki } from './modules/cnki.js';
 import { getCourseList, getCourseStatus, getTodayCourses } from './modules/course.js';
@@ -473,6 +474,11 @@ function parseAcademicOptions(domain, action, argv) {
     }
     if (arg === '--limit') {
       options.limit = Number.parseInt(requireValue(args, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--format') {
+      options.format = normalizeAcademicFormat(requireValue(args, i, arg));
       i += 1;
       continue;
     }

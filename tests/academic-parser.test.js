@@ -5,12 +5,14 @@ import assert from 'node:assert/strict';
 import {
   buildCnkiSearchPayload,
   buildCnkiItemPayload,
+  formatCnkiSearchExports,
   parseCnkiSearchMeta,
   parseCnkiSearchRows
 } from '../src/modules/cnki-parser.js';
 import {
   buildWanfangItemPayload,
   buildWanfangSearchPayload,
+  formatWanfangSearchExports,
   parseWanfangSearchMeta,
   parseWanfangSearchRows
 } from '../src/modules/wanfang-parser.js';
@@ -58,6 +60,22 @@ test('builds CNKI search payload with limit', () => {
   assert.equal(payload.items[0].source, '铁道建筑技术');
 });
 
+test('builds CNKI search exports for citation formats', () => {
+  const items = parseCnkiSearchRows(extractCnkiRows(cnkiFixture)).slice(0, 1);
+
+  assert.deepEqual(formatCnkiSearchExports(items, 'markdown'), {
+    format: 'markdown',
+    items: [
+      '- 刘国平. 知识密集型企业一线项目精细化管理研究——以轨道交通土建设计项目为例[J]. 铁道建筑技术, 2026. https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&filename=TDJS202605001'
+    ]
+  });
+  assert.equal(
+    formatCnkiSearchExports(items, 'gbt7714').items[0],
+    '刘国平. 知识密集型企业一线项目精细化管理研究——以轨道交通土建设计项目为例[J]. 铁道建筑技术, 2026.'
+  );
+  assert.match(formatCnkiSearchExports(items, 'bibtex').items[0], /@article\{cnki2026tdjs202605001,/);
+});
+
 test('builds CNKI advanced search payload', () => {
   const advanced = {
     scope: { field: 'database', label: '学术期刊', code: 'YSTT4HG0' },
@@ -102,6 +120,10 @@ test('builds CNKI item payload', () => {
     doi: '10.1234/cnki.glkj.2026.05.002',
     fund: '国家自然科学基金项目',
     classification: 'U491',
+    citationTitle: '城市道路交通拥堵溯源分析方法：研究进展与展望',
+    citationAuthorsText: '杨晓光, 杨彦青, 朱际宸',
+    citationSourceText: '公路交通科技',
+    citationYear: '2026',
     sourceUrl: 'https://kns.cnki.net/kcms2/article/abstract?v=redacted'
   });
 });
@@ -162,6 +184,22 @@ test('builds Wanfang search payload with limit', () => {
   assert.equal(payload.items[0].source, '公路交通科技');
 });
 
+test('builds Wanfang search exports for citation formats', () => {
+  const items = parseWanfangSearchRows(extractWanfangRows(wanfangFixture)).slice(0, 1);
+
+  assert.deepEqual(formatWanfangSearchExports(items, 'markdown'), {
+    format: 'markdown',
+    items: [
+      '- 杨晓光, 杨彦青, 朱际宸. 城市道路交通拥堵溯源分析方法：研究进展与展望[J]. 公路交通科技, 2026. https://d.wanfangdata.com.cn/periodical/gljk202605002'
+    ]
+  });
+  assert.equal(
+    formatWanfangSearchExports(items, 'gbt7714').items[0],
+    '杨晓光, 杨彦青, 朱际宸. 城市道路交通拥堵溯源分析方法：研究进展与展望[J]. 公路交通科技, 2026.'
+  );
+  assert.match(formatWanfangSearchExports(items, 'bibtex').items[0], /@article\{wanfang2026gljk202605002,/);
+});
+
 test('builds Wanfang advanced search payload', () => {
   const advanced = {
     scope: { field: 'database', label: '学术期刊', code: 'periodical' },
@@ -206,8 +244,34 @@ test('builds Wanfang item payload', () => {
     doi: '10.5678/wanfang.gcjs.2026.04.001',
     fund: '广东省教育厅项目',
     classification: 'U412',
+    citationTitle: '基于BIM技术的市政交通设计及应用',
+    citationAuthorsText: '李帅, 杨沙',
+    citationSourceText: '工程技术研究',
+    citationYear: '2026',
     sourceUrl: 'https://d.wanfangdata.com.cn/periodical/gcjs202604001'
   });
+});
+
+test('cleans Wanfang item author affiliation numbers without splitting institution text on spaces', () => {
+  const payload = buildWanfangItemPayload({
+    text: 'DOI：10.7500/AEPS20250218002 分类号：U491',
+    detail: {
+      title: '城市交通网-快速充电站-配电网分层协同优化方法',
+      authors: '姜涛 1; 迟大硕 1; 吴成昊 1; 靳小龙 2; 李雪 1; 穆云飞 2',
+      institutions: '1.现代电力系统仿真控制与绿色电能新技术教育部重点实验室(东北电力大学) 吉林省吉林市 132012; 2.智能电网教育部重点实验室(天津大学) 天津市 300072',
+      source: '电力系统自动化 2026年3期',
+      abstract: '摘要：提出一种协同优化调度策略。',
+      keywords: '关键词：电动汽车; 城市交通网; 配电网'
+    },
+    sourceUrl: 'https://d.wanfangdata.com.cn/periodical/dlxtzdh202603004'
+  });
+
+  assert.deepEqual(payload.authors, ['姜涛', '迟大硕', '吴成昊', '靳小龙', '李雪', '穆云飞']);
+  assert.deepEqual(payload.institutions, [
+    '1.现代电力系统仿真控制与绿色电能新技术教育部重点实验室(东北电力大学) 吉林省吉林市 132012',
+    '2.智能电网教育部重点实验室(天津大学) 天津市 300072'
+  ]);
+  assert.equal(payload.citationAuthorsText, '姜涛, 迟大硕, 吴成昊, 靳小龙, 李雪, 穆云飞');
 });
 
 function extractCnkiRows(html) {

@@ -129,6 +129,22 @@ test('cnki search returns normalized metadata results', () => {
   assert.equal(body.data.items[0].source, '公路交通科技');
 });
 
+test('cnki search can include citation exports', () => {
+  const result = runAcademic(['cnki', 'search', '交通设计', '--headed', '--format', 'gbt7714', '--limit', '1', '--json'], {
+    SZU_MOCK_CNKI_JSON: cnkiMockData
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, true);
+  assert.deepEqual(body.data.exports, {
+    format: 'gbt7714',
+    items: [
+      '杨晓光, 杨彦青. 城市道路交通拥堵溯源分析方法：研究进展与展望[J]. 公路交通科技, 2026.'
+    ]
+  });
+});
+
 test('cnki search supports advanced title and abstract fields', () => {
   const result = runAcademic([
     'cnki',
@@ -203,6 +219,22 @@ test('wanfang search returns normalized metadata results', () => {
   assert.equal(body.meta.command, 'wanfang search');
   assert.equal(body.data.keyword, '交通设计');
   assert.equal(body.data.items[0].title, '基于BIM技术的市政交通设计及应用');
+});
+
+test('wanfang search can include citation exports', () => {
+  const result = runAcademic(['wanfang', 'search', '交通设计', '--headed', '--format', 'markdown', '--limit', '1', '--json'], {
+    SZU_MOCK_WANFANG_JSON: wanfangMockData
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, true);
+  assert.deepEqual(body.data.exports, {
+    format: 'markdown',
+    items: [
+      '- 李帅, 杨沙. 基于BIM技术的市政交通设计及应用[J]. 工程技术研究, 2026. https://d.wanfangdata.com.cn/periodical/gcjs202604001'
+    ]
+  });
 });
 
 test('wanfang search supports advanced title keyword and abstract fields', () => {

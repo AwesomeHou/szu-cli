@@ -1,5 +1,5 @@
 import { getLaunchOptions } from './browser-options.js';
-import { buildCnkiItemPayload, buildCnkiSearchPayload, parseCnkiSearchMeta } from './cnki-parser.js';
+import { buildCnkiItemPayload, buildCnkiSearchPayload, formatCnkiSearchExports, parseCnkiSearchMeta } from './cnki-parser.js';
 import { getProfilePath } from './paths.js';
 
 const CNKI_ACCESS_URL = 'https://www.lib.szu.edu.cn/er/access/16084';
@@ -41,6 +41,7 @@ export async function searchCnki(options = {}) {
       ...mockData().search,
       keyword: options.keyword,
       ...(options.advanced ? { advanced: options.advanced } : {}),
+      ...(options.format ? { exports: formatCnkiSearchExports((mockData().search?.items ?? []).slice(0, options.limit), options.format) } : {}),
       items: (mockData().search?.items ?? []).slice(0, options.limit)
     };
   }
@@ -66,6 +67,7 @@ export async function searchCnki(options = {}) {
       rows,
       limit: options.limit,
       advanced: options.advanced,
+      format: options.format,
       sourceUrl: page.url()
     });
   } finally {

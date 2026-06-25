@@ -1,3 +1,5 @@
+import { formatAcademicSearchExports } from './academic-format.js';
+
 const WANFANG_BASE_URL = 'https://s.wanfangdata.com.cn/';
 
 export function parseWanfangSearchMeta(text) {
@@ -41,6 +43,7 @@ export function buildWanfangSearchPayload(options) {
   const meta = parseWanfangSearchMeta(options.text ?? '');
   const items = parseWanfangSearchRows(options.rows ?? []);
   const limit = options.limit ?? items.length;
+  const limitedItems = items.slice(0, limit);
 
   return {
     keyword: options.keyword,
@@ -48,20 +51,28 @@ export function buildWanfangSearchPayload(options) {
     total: meta.total,
     authorized: meta.authorized,
     institution: meta.institution,
-    items: items.slice(0, limit),
+    items: limitedItems,
+    ...(options.format ? { exports: formatWanfangSearchExports(limitedItems, options.format) } : {}),
     sourceUrl: options.sourceUrl
   };
+}
+
+export function formatWanfangSearchExports(items, format) {
+  return formatAcademicSearchExports(items, format, 'wanfang');
 }
 
 export function buildWanfangItemPayload(options) {
   const detail = options.detail ?? {};
   const text = cleanText(options.text ?? '');
   const sourceInfo = parseSource(detail.source, text);
+  const authors = splitAuthors(detail.authors);
+  const institutions = splitInstitutions(detail.institutions);
+  const title = stringOrNull(detail.title);
   return {
     provider: 'wanfang',
-    title: stringOrNull(detail.title),
-    authors: splitAuthors(detail.authors),
-    institutions: splitDelimitedValues(detail.institutions),
+    title,
+    authors,
+    institutions,
     source: sourceInfo.source,
     publishedAt: null,
     year: sourceInfo.year,
@@ -71,6 +82,10 @@ export function buildWanfangItemPayload(options) {
     doi: matchValue(text, /DOI[：:]\s*([^\s]+)/i),
     fund: matchValue(text, /基金[：:]\s*(.*?)(?=\s*(?:分类号|DOI)[：:]|$)/),
     classification: matchValue(text, /分类号[：:]\s*([A-Z0-9.]+)/i),
+    citationTitle: title,
+    citationAuthorsText: authors.join(', ') || null,
+    citationSourceText: sourceInfo.source,
+    citationYear: sourceInfo.year,
     sourceUrl: options.sourceUrl
   };
 }
@@ -107,13 +122,21 @@ function splitAuthors(value) {
   const text = cleanText(value).replace(/等$/, '');
   const parts = splitDelimitedValues(text);
   if (parts.length > 1) {
-    return unique(parts);
+    return unique(parts.map(cleanAuthorName).filter(isMeaningfulAuthor));
   }
-  return unique(splitCompactChineseAuthors(text));
+  return unique(splitCompactChineseAuthors(text).map(cleanAuthorName).filter(isMeaningfulAuthor));
 }
 
 function splitDelimitedValues(value) {
-  return unique(cleanText(value).split(/[;；,，、\s]+/).map((item) => item.trim()).filter(Boolean));
+  return unique(cleanText(value).split(/[;；,，、]+/).map((item) => item.trim()).filter(Boolean));
+}
+
+function splitInstitutions(value) {
+  const text = cleanText(value).replace(/(\d{6})(\d+[.．])/g, '$1; $2');
+  if (/\d+[.．]/.test(text)) {
+    return unique(text.split(/[;；]\s*(?=\d+[.．])/).map((item) => item.trim()).filter(Boolean));
+  }
+  return splitDelimitedValues(text);
 }
 
 function unique(items) {
@@ -123,6 +146,14 @@ function unique(items) {
 function cleanAuthorValue(value) {
   const text = cleanText(value);
   return text.startsWith('[') ? '' : text;
+}
+
+function cleanAuthorName(value) {
+  return cleanText(value).replace(/\s+\d+$/g, '').trim();
+}
+
+function isMeaningfulAuthor(value) {
+  return Boolean(value && !/^\d+$/.test(value));
 }
 
 function cleanLabeledValue(value, label) {

@@ -1,3 +1,5 @@
+import { formatAcademicSearchExports } from './academic-format.js';
+
 const CNKI_BASE_URL = 'https://kns.cnki.net/';
 
 export function parseCnkiSearchMeta(text) {
@@ -37,6 +39,7 @@ export function buildCnkiSearchPayload(options) {
   const meta = parseCnkiSearchMeta(options.text ?? '');
   const items = parseCnkiSearchRows(options.rows ?? []);
   const limit = options.limit ?? items.length;
+  const limitedItems = items.slice(0, limit);
 
   return {
     keyword: options.keyword,
@@ -44,20 +47,28 @@ export function buildCnkiSearchPayload(options) {
     total: meta.total,
     authorized: meta.authorized,
     institution: meta.institution,
-    items: items.slice(0, limit),
+    items: limitedItems,
+    ...(options.format ? { exports: formatCnkiSearchExports(limitedItems, options.format) } : {}),
     sourceUrl: options.sourceUrl
   };
+}
+
+export function formatCnkiSearchExports(items, format) {
+  return formatAcademicSearchExports(items, format, 'cnki');
 }
 
 export function buildCnkiItemPayload(options) {
   const detail = options.detail ?? {};
   const text = cleanText(options.text ?? '');
   const sourceInfo = parseSource(detail.source, text);
+  const authors = splitAuthors(detail.authors).map(cleanAuthorName).filter(Boolean);
+  const institutions = splitAuthors(detail.institutions).map(cleanInstitutionName).filter(Boolean);
+  const title = stringOrNull(detail.title);
   return {
     provider: 'cnki',
-    title: stringOrNull(detail.title),
-    authors: splitAuthors(detail.authors).map(cleanAuthorName).filter(Boolean),
-    institutions: splitAuthors(detail.institutions).map(cleanInstitutionName).filter(Boolean),
+    title,
+    authors,
+    institutions,
     source: sourceInfo.source,
     publishedAt: sourceInfo.publishedAt,
     year: sourceInfo.year,
@@ -67,6 +78,10 @@ export function buildCnkiItemPayload(options) {
     doi: matchValue(text, /DOI[：:]\s*([^\s]+)/i),
     fund: matchValue(text, /基金[：:]\s*(.*?)(?=\s*(?:分类号|DOI)[：:]|$)/),
     classification: matchValue(text, /分类号[：:]\s*([A-Z0-9.]+)/i),
+    citationTitle: title,
+    citationAuthorsText: authors.join(', ') || null,
+    citationSourceText: sourceInfo.source,
+    citationYear: sourceInfo.year,
     sourceUrl: options.sourceUrl
   };
 }

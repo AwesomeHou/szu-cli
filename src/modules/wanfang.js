@@ -1,5 +1,5 @@
 import { getLaunchOptions } from './browser-options.js';
-import { buildWanfangItemPayload, buildWanfangSearchPayload, parseWanfangSearchMeta } from './wanfang-parser.js';
+import { buildWanfangItemPayload, buildWanfangSearchPayload, formatWanfangSearchExports, parseWanfangSearchMeta } from './wanfang-parser.js';
 import { getProfilePath } from './paths.js';
 
 const WANFANG_ACCESS_URL = 'https://www.lib.szu.edu.cn/er/access/16075';
@@ -43,6 +43,7 @@ export async function searchWanfang(options = {}) {
       ...mockData().search,
       keyword,
       ...(options.advanced ? { advanced: options.advanced } : {}),
+      ...(options.format ? { exports: formatWanfangSearchExports((mockData().search?.items ?? []).slice(0, options.limit), options.format) } : {}),
       items: (mockData().search?.items ?? []).slice(0, options.limit)
     };
   }
@@ -71,6 +72,7 @@ export async function searchWanfang(options = {}) {
       text: state.text,
       rows,
       limit: options.limit,
+      format: options.format,
       sourceUrl: page.url()
     });
   } finally {
