@@ -9,7 +9,7 @@ import { getElectricityBuildings, getElectricityStatus, queryElectricity } from 
 import { getGradeList, getGradeStatus } from './modules/grade.js';
 import { getLibraryItem, getLibraryStatus, searchLibrary } from './modules/library.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
-import { getProgramList, getProgramStatus } from './modules/program.js';
+import { getProgramItem, getProgramList, getProgramStatus } from './modules/program.js';
 import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
 import { setupCodex } from './modules/setup.js';
 import { getSkillPath, installSkill } from './modules/skill.js';
@@ -87,12 +87,14 @@ export async function run(argv) {
     return;
   }
 
-  if (domain === 'program' && (action === 'status' || action === 'list')) {
+  if (domain === 'program' && (action === 'status' || action === 'list' || action === 'item')) {
     try {
-      const options = parseProgramOptions(argv.slice(2));
+      const options = parseProgramOptions(action, argv.slice(2));
       const data = action === 'status'
         ? await getProgramStatus(options)
-        : await getProgramList(options);
+        : action === 'item'
+          ? await getProgramItem(options.target, options)
+          : await getProgramList(options);
       writeJson(successEnvelope(data, {
         command: `program ${action}`,
         gateway: 'direct',
@@ -266,10 +268,12 @@ export async function run(argv) {
   process.exitCode = 2;
 }
 
-function parseProgramOptions(argv) {
+function parseProgramOptions(action, argv) {
+  const args = [...argv];
   const options = {
     headless: true,
     url: null,
+    target: null,
     keyword: null,
     grade: null,
     department: null,
@@ -278,43 +282,51 @@ function parseProgramOptions(argv) {
     limit: 10
   };
 
-  for (let i = 0; i < argv.length; i += 1) {
-    const arg = argv[i];
+  if (action === 'item') {
+    const target = args.shift();
+    if (!target || target.startsWith('--')) {
+      throw new Error('program item requires an id or planCode.');
+    }
+    options.target = target;
+  }
+
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
     if (arg === '--json') {
       continue;
     }
     if (arg === '--url') {
-      options.url = requireValue(argv, i, arg);
+      options.url = requireValue(args, i, arg);
       i += 1;
       continue;
     }
-    if (arg === '--keyword') {
-      options.keyword = requireValue(argv, i, arg);
+    if (arg === '--keyword' && action !== 'item') {
+      options.keyword = requireValue(args, i, arg);
       i += 1;
       continue;
     }
-    if (arg === '--grade') {
-      options.grade = requireValue(argv, i, arg);
+    if (arg === '--grade' && action !== 'item') {
+      options.grade = requireValue(args, i, arg);
       i += 1;
       continue;
     }
-    if (arg === '--department') {
-      options.department = requireValue(argv, i, arg);
+    if (arg === '--department' && action !== 'item') {
+      options.department = requireValue(args, i, arg);
       i += 1;
       continue;
     }
-    if (arg === '--major') {
-      options.major = requireValue(argv, i, arg);
+    if (arg === '--major' && action !== 'item') {
+      options.major = requireValue(args, i, arg);
       i += 1;
       continue;
     }
-    if (arg === '--page') {
-      options.page = Number.parseInt(requireValue(argv, i, arg), 10);
+    if (arg === '--page' && action !== 'item') {
+      options.page = Number.parseInt(requireValue(args, i, arg), 10);
       i += 1;
       continue;
     }
-    if (arg === '--limit') {
-      options.limit = Number.parseInt(requireValue(argv, i, arg), 10);
+    if (arg === '--limit' && action !== 'item') {
+      options.limit = Number.parseInt(requireValue(args, i, arg), 10);
       i += 1;
       continue;
     }
@@ -1086,6 +1098,7 @@ function handleKnownError(error, command) {
     PAGE_CHANGED: 20,
     SKILL_NOT_FOUND: 21,
     CLASS_NOT_FOUND: 22,
+    PROGRAM_NOT_FOUND: 23,
     RATE_LIMITED: 30,
     DOWNLOAD_UNAVAILABLE: 31,
     HEADED_REQUIRED: 2

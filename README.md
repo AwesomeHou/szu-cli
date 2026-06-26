@@ -78,6 +78,7 @@ szu-cli course list --json
 szu-cli course today --json
 szu-cli program status --json
 szu-cli program list --json --limit 5
+szu-cli program item <id-or-planCode> --json
 szu-cli timetable status --json
 szu-cli timetable classes --json --limit 5
 szu-cli timetable view 20250101100101 --json
@@ -124,6 +125,7 @@ npm run szu-cli -- course list --json
 npm run szu-cli -- course today --json
 npm run szu-cli -- program status --json
 npm run szu-cli -- program list --limit 5 --json
+npm run szu-cli -- program item <id-or-planCode> --json
 npm run szu-cli -- timetable status --json
 npm run szu-cli -- timetable classes --limit 5 --json
 npm run szu-cli -- timetable view 20250101100101 --json
@@ -167,7 +169,7 @@ Notice commands read the current board pages with the persistent browser profile
 
 Course commands read the current undergraduate timetable from eHall. They reuse the same persistent browser profile, initialize eHall through the service hall homepage, then open the stable timetable entry automatically. You do not need to pass the full eHall URL for normal use.
 
-Program commands read the eHall all-school training program query. `program list` returns published program summaries such as grade, college, major, degree, duration, and minimum credits. The MVP does not fetch program detail pages.
+Program commands read the eHall all-school training program query. `program list` returns published program summaries such as grade, college, major, degree, duration, and minimum credits. `program item <id-or-planCode>` returns the selected program summary, training objectives, graduation requirements, module or course-group requirements, and course rows.
 
 Timetable commands read the eHall all-school timetable query in class-timetable mode. Use `timetable classes` to discover `classCode`, then `timetable view <classCode>` to return that class's weekly schedule. This is separate from `course`, which means the current user's own timetable.
 

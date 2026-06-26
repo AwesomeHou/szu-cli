@@ -2,7 +2,13 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { buildProgramListForm, buildProgramPayload, parseProgramItems } from '../src/modules/program-parser.js';
+import {
+  buildProgramItemLookupForm,
+  buildProgramItemPayload,
+  buildProgramListForm,
+  buildProgramPayload,
+  parseProgramItems
+} from '../src/modules/program-parser.js';
 
 const fixture = JSON.parse(readFileSync(new URL('./fixtures/program-api.json', import.meta.url), 'utf8'));
 
@@ -57,4 +63,54 @@ test('builds program list form with default published filter and search fields',
   assert.equal(form.pageSize, '5');
   assert.deepEqual(conditions.map((item) => item.name), ['FAZTDM', 'PYFAMC', 'NJDM', 'DWDM_DISPLAY', 'ZYDM_DISPLAY']);
   assert.equal(conditions[0].value, '99');
+});
+
+test('builds program item lookup form by plan code', () => {
+  const form = buildProgramItemLookupForm('2025-050101-01');
+
+  assert.equal(form.PYFADM, '2025-050101-01');
+  assert.equal(form.pageSize, '999');
+});
+
+test('builds program item payload with modules and courses', () => {
+  const payload = buildProgramItemPayload(fixture.programItem, { sourceUrl: 'mock' });
+
+  assert.equal(payload.summary.id, 'program-001');
+  assert.equal(payload.summary.planCode, '2025-050101-01');
+  assert.equal(payload.detail.trainingObjectives, '培养具备扎实中文基础和创新能力的人才。');
+  assert.deepEqual(payload.detail.mainSubjects, ['中国语言文学']);
+  assert.deepEqual(payload.detail.coreCourses, ['现代汉语', '中国古代文学']);
+  assert.equal(payload.modules.length, 2);
+  assert.deepEqual(payload.modules[1], {
+    id: 'module-002',
+    groupCode: 'group-basic',
+    parentGroupCode: 'module-general',
+    name: '基本通识课',
+    type: '课组',
+    category: '基本通识课',
+    courseNature: '必修',
+    requiredCredits: 20,
+    totalCredits: 20,
+    totalHours: 360,
+    courseCount: 6,
+    order: 1
+  });
+  assert.equal(payload.courses.length, 2);
+  assert.deepEqual(payload.courses[0], {
+    id: 'course-001',
+    groupCode: 'group-basic',
+    courseCode: '0501010001',
+    courseName: '现代汉语',
+    credits: 3,
+    hours: 54,
+    termId: '2025-2026-1',
+    termName: '2025-2026学年第一学期',
+    recommendedSemester: 1,
+    courseNature: '必修',
+    examType: '考试',
+    required: true,
+    order: 1
+  });
+  assert.equal(JSON.stringify(payload).includes('2023000000'), false);
+  assert.equal(JSON.stringify(payload).includes('测试用户'), false);
 });

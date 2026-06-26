@@ -40,6 +40,7 @@ szu-cli course list --json
 szu-cli course today --json
 szu-cli program status --json
 szu-cli program list --limit 5 --json
+szu-cli program item <id-or-planCode> --json
 szu-cli timetable status --json
 szu-cli timetable classes --limit 5 --json
 szu-cli timetable view <classCode> --json
@@ -69,7 +70,7 @@ Use `notice list --page <n> --limit <n>` for paged full-list queries. `notice se
 
 Use `course status` to check eHall timetable access, `course list` for the current term timetable, and `course today` for today's courses. Course commands do not require the user to provide the eHall URL in normal use.
 
-Use `program status` to check all-school training program query access and `program list` to search published program summaries. The MVP does not fetch training program detail pages.
+Use `program status` to check all-school training program query access, `program list` to search published program summaries, and `program item <id-or-planCode>` to read one program's objectives, requirements, modules, and courses.
 
 Use `timetable status` to check all-school class timetable access, `timetable classes` to find a `classCode`, and `timetable view <classCode>` to read that class's weekly schedule. Keep `timetable` separate from `course`: `course` is the current user's own timetable.
 

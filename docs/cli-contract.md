@@ -27,6 +27,7 @@ szu-cli course list --json
 szu-cli course today --json
 szu-cli program status --json
 szu-cli program list --json --limit 5
+szu-cli program item <id-or-planCode> --json
 szu-cli timetable status --json
 szu-cli timetable classes --json --limit 5
 szu-cli timetable view 20250101100101 --json
@@ -317,7 +318,7 @@ Failure:
 
 `szu-cli course today --json` returns the same item shape filtered to the current local date and current teaching week. `szu-cli course status --json` only checks access and returns `loggedIn`, `reason`, `term`, and `sourceUrl`.
 
-## Program List Schema
+## Program Schema
 
 `szu-cli program list --json` returns published all-school training program summaries. Use `--keyword`, `--grade`, `--department`, `--major`, `--page`, and `--limit` to narrow the result.
 
@@ -360,6 +361,72 @@ Failure:
 ```
 
 `szu-cli program status --json` only checks access and returns `loggedIn`, `reason`, `total`, and `sourceUrl`.
+
+`szu-cli program item <id-or-planCode> --json` returns one published training program detail. Use an `id` or `planCode` from `program list`.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "summary": {
+      "id": "program-001",
+      "planCode": "2025-050101-01",
+      "title": "2025级汉语言文学（卓越班）主修培养方案",
+      "grade": "2025",
+      "department": "人文学院",
+      "major": "汉语言文学（卓越班）",
+      "minimumCredits": 160
+    },
+    "detail": {
+      "trainingObjectives": "培养具备扎实中文基础和创新能力的人才。",
+      "graduationRequirements": "学生应完成通识、专业和实践模块要求。",
+      "mainSubjects": ["中国语言文学"],
+      "coreCourses": ["现代汉语", "中国古代文学"],
+      "notes": ["毕业总学分160学分。"],
+      "features": "卓越班培养。"
+    },
+    "modules": [
+      {
+        "id": "module-002",
+        "groupCode": "group-basic",
+        "parentGroupCode": "module-general",
+        "name": "基本通识课",
+        "type": "课组",
+        "category": "基本通识课",
+        "courseNature": "必修",
+        "requiredCredits": 20,
+        "totalCredits": 20,
+        "totalHours": 360,
+        "courseCount": 6,
+        "order": 1
+      }
+    ],
+    "courses": [
+      {
+        "id": "course-001",
+        "groupCode": "group-basic",
+        "courseCode": "0501010001",
+        "courseName": "现代汉语",
+        "credits": 3,
+        "hours": 54,
+        "termId": "2025-2026-1",
+        "termName": "2025-2026学年第一学期",
+        "recommendedSemester": 1,
+        "courseNature": "必修",
+        "examType": "考试",
+        "required": true,
+        "order": 1
+      }
+    ],
+    "sourceUrl": "https://ehall.szu.edu.cn/jwapp/sys/qxfacx/*default/index.do?EMAP_LANG=zh&THEME=cherry#/pyfacx"
+  },
+  "meta": {
+    "command": "program item",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
 
 ## Timetable Schema
 

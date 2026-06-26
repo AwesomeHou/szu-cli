@@ -47,5 +47,138 @@
       }
     },
     "code": "0"
+  },
+  "programItem": {
+    "qxpyfacx": {
+      "datas": {
+        "qxpyfacx": {
+          "totalSize": 1,
+          "pageNumber": 1,
+          "pageSize": 999,
+          "rows": [
+            {
+              "WID": "program-001",
+              "PYFADM": "2025-050101-01",
+              "PYFAMC": "2025级汉语言文学（卓越班）主修培养方案",
+              "NJDM": "2025",
+              "NJDM_DISPLAY": "2025级",
+              "DWDM_DISPLAY": "人文学院",
+              "ZYDM_DISPLAY": "汉语言文学（卓越班）",
+              "ZYFXDM_DISPLAY": "卓越班",
+              "ZSYQXF": "160",
+              "XZNX": "4",
+              "XWDM_DISPLAY": "文学学士",
+              "KSXNDM_DISPLAY": "2025-2026学年",
+              "KSXQDM_DISPLAY": "第一学期",
+              "FAZTDM": "99",
+              "SFFB": "1",
+              "PYMB": "培养具备扎实中文基础和创新能力的人才。",
+              "XDYQ": "学生应完成通识、专业和实践模块要求。",
+              "ZGXK": "中国语言文学",
+              "ZGKC": "现代汉语, 中国古代文学",
+              "KZZD1": "毕业总学分160学分。",
+              "KZZD2": "允许跨专业选修。",
+              "FATS": "卓越班培养。"
+            }
+          ]
+        }
+      },
+      "code": "0"
+    },
+    "kzcx": {
+      "datas": {
+        "kzcx": {
+          "totalSize": 2,
+          "pageSize": 999,
+          "rows": [
+            {
+              "WID": "module-001",
+              "PYFADM": "2025-050101-01",
+              "KZH": "module-general",
+              "FKZH": "-1",
+              "KZM": "通识模块",
+              "KZLXDM": "02",
+              "KZLXDM_DISPLAY": "平台",
+              "KCLBDM": "12",
+              "KCLBDM_DISPLAY": "公共必修课",
+              "KCXZDM_DISPLAY": "",
+              "KCZXF": "40",
+              "ZSXDXF": "40",
+              "KCZXS": "720",
+              "KCZMS": "12",
+              "PX": "1"
+            },
+            {
+              "WID": "module-002",
+              "PYFADM": "2025-050101-01",
+              "KZH": "group-basic",
+              "FKZH": "module-general",
+              "KZM": "基本通识课",
+              "KZLXDM": "01",
+              "KZLXDM_DISPLAY": "课组",
+              "KCLBDM": "01",
+              "KCLBDM_DISPLAY": "基本通识课",
+              "KCXZDM": "01",
+              "KCXZDM_DISPLAY": "必修",
+              "KCZXF": "20",
+              "ZSXDXF": "20",
+              "KCZXS": "360",
+              "KCZMS": "6",
+              "PX": "1"
+            }
+          ]
+        }
+      },
+      "code": "0"
+    },
+    "kzkccx": {
+      "datas": {
+        "kzkccx": {
+          "totalSize": 2,
+          "pageSize": 999,
+          "rows": [
+            {
+              "WID": "course-001",
+              "PYFADM": "2025-050101-01",
+              "KZH": "group-basic",
+              "KCH": "0501010001",
+              "KCM": "现代汉语",
+              "XF": "3.0",
+              "XS": "54.0",
+              "XNXQ": "2025-2026-1",
+              "XNXQ_DISPLAY": "2025-2026学年第一学期",
+              "XDXQ": "1",
+              "KCXZDM": "01",
+              "KCXZDM_DISPLAY": "必修",
+              "KSLXDM": "1",
+              "KSLXDM_DISPLAY": "考试",
+              "SFZGKC": "1",
+              "SFZGKC_DISPLAY": "是",
+              "PX": "1",
+              "XH": "2023000000",
+              "XM": "测试用户"
+            },
+            {
+              "WID": "course-002",
+              "PYFADM": "2025-050101-01",
+              "KZH": "group-basic",
+              "KCH": "0501010002",
+              "KCM": "中国古代文学",
+              "XF": "4.0",
+              "XS": "72.0",
+              "XNXQ": "2025-2026-2",
+              "XNXQ_DISPLAY": "2025-2026学年第二学期",
+              "XDXQ": "2",
+              "KCXZDM_DISPLAY": "必修",
+              "KSLXDM_DISPLAY": "考试",
+              "SFZGKC": "1",
+              "SFZGKC_DISPLAY": "是",
+              "PX": "2"
+            }
+          ]
+        }
+      },
+      "code": "0"
+    }
   }
 }

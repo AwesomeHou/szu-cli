@@ -80,6 +80,7 @@ Deliverables:
 - `szu-cli course today --json`.
 - `szu-cli program status --json`.
 - `szu-cli program list --json`.
+- `szu-cli program item <id-or-planCode> --json`.
 - `szu-cli timetable status --json`.
 - `szu-cli timetable classes --json`.
 - `szu-cli timetable view <classCode> --json`.
