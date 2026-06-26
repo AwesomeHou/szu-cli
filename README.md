@@ -76,6 +76,11 @@ szu-cli notice download 577444 --dir downloads --json
 szu-cli course status --json
 szu-cli course list --json
 szu-cli course today --json
+szu-cli program status --json
+szu-cli program list --json --limit 5
+szu-cli timetable status --json
+szu-cli timetable classes --json --limit 5
+szu-cli timetable view 20250101100101 --json
 szu-cli grade status --json
 szu-cli grade list --json
 szu-cli grade list --term 2025-2026-1 --json
@@ -117,6 +122,11 @@ npm run szu-cli -- notice download 577444 --dir downloads --json
 npm run szu-cli -- course status --json
 npm run szu-cli -- course list --json
 npm run szu-cli -- course today --json
+npm run szu-cli -- program status --json
+npm run szu-cli -- program list --limit 5 --json
+npm run szu-cli -- timetable status --json
+npm run szu-cli -- timetable classes --limit 5 --json
+npm run szu-cli -- timetable view 20250101100101 --json
 npm run szu-cli -- grade status --json
 npm run szu-cli -- grade list --json
 npm run szu-cli -- grade list --term 2025-2026-1 --json
@@ -157,6 +167,10 @@ Notice commands read the current board pages with the persistent browser profile
 
 Course commands read the current undergraduate timetable from eHall. They reuse the same persistent browser profile, initialize eHall through the service hall homepage, then open the stable timetable entry automatically. You do not need to pass the full eHall URL for normal use.
 
+Program commands read the eHall all-school training program query. `program list` returns published program summaries such as grade, college, major, degree, duration, and minimum credits. The MVP does not fetch program detail pages.
+
+Timetable commands read the eHall all-school timetable query in class-timetable mode. Use `timetable classes` to discover `classCode`, then `timetable view <classCode>` to return that class's weekly schedule. This is separate from `course`, which means the current user's own timetable.
+
 Grade commands read the current eHall grade query page. They reuse the same persistent browser profile and automatically open the stable grade entry. Normal output includes course, term, credit, grade, and GPA fields, but does not include student name or student ID.
 
 Electricity commands read the campus intranet SIMS electricity query system. They do not require login, do not use the persistent browser profile, and currently support direct campus-network access only. Use `electricity buildings --json` to list available campuses and buildings before querying a room. `electricity query` defaults to the last 7 days of usage records and reports the latest remaining kWh found in that range.
@@ -185,4 +199,4 @@ szu-cli gym reserve --date 2026-06-23 --slot 19:00 --dry-run --json
 
 ## Status
 
-This repository currently contains the project structure, design documents, persistent-profile login foundation, and read-only adapters for notices, course timetable, grades, electricity usage, library catalog search, and headed academic metadata search for CNKI and Wanfang.
+This repository currently contains the project structure, design documents, persistent-profile login foundation, and read-only adapters for notices, personal course timetable, all-school program/timetable queries, grades, electricity usage, library catalog search, and headed academic metadata search for CNKI and Wanfang.

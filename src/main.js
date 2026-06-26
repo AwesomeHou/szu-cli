@@ -9,9 +9,11 @@ import { getElectricityBuildings, getElectricityStatus, queryElectricity } from 
 import { getGradeList, getGradeStatus } from './modules/grade.js';
 import { getLibraryItem, getLibraryStatus, searchLibrary } from './modules/library.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
+import { getProgramList, getProgramStatus } from './modules/program.js';
 import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
 import { setupCodex } from './modules/setup.js';
 import { getSkillPath, installSkill } from './modules/skill.js';
+import { getTimetableClasses, getTimetableStatus, getTimetableView } from './modules/timetable.js';
 import { downloadWanfangPdf, getWanfangItem, getWanfangStatus, searchWanfang } from './modules/wanfang.js';
 
 export async function run(argv) {
@@ -81,6 +83,42 @@ export async function run(argv) {
       }));
     } catch (error) {
       handleKnownError(error, `course ${action}`);
+    }
+    return;
+  }
+
+  if (domain === 'program' && (action === 'status' || action === 'list')) {
+    try {
+      const options = parseProgramOptions(argv.slice(2));
+      const data = action === 'status'
+        ? await getProgramStatus(options)
+        : await getProgramList(options);
+      writeJson(successEnvelope(data, {
+        command: `program ${action}`,
+        gateway: 'direct',
+        sourceUrl: data.sourceUrl
+      }));
+    } catch (error) {
+      handleKnownError(error, `program ${action}`);
+    }
+    return;
+  }
+
+  if (domain === 'timetable' && (action === 'status' || action === 'classes' || action === 'view')) {
+    try {
+      const options = parseTimetableOptions(action, argv.slice(2));
+      const data = action === 'status'
+        ? await getTimetableStatus(options)
+        : action === 'classes'
+          ? await getTimetableClasses(options)
+          : await getTimetableView(options.classCode, options);
+      writeJson(successEnvelope(data, {
+        command: `timetable ${action}`,
+        gateway: 'direct',
+        sourceUrl: data.sourceUrl
+      }));
+    } catch (error) {
+      handleKnownError(error, `timetable ${action}`);
     }
     return;
   }
@@ -226,6 +264,150 @@ export async function run(argv) {
     process.stderr.write(`${error.message}\n${error.hint}\n`);
   }
   process.exitCode = 2;
+}
+
+function parseProgramOptions(argv) {
+  const options = {
+    headless: true,
+    url: null,
+    keyword: null,
+    grade: null,
+    department: null,
+    major: null,
+    page: 1,
+    limit: 10
+  };
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--url') {
+      options.url = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--keyword') {
+      options.keyword = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--grade') {
+      options.grade = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--department') {
+      options.department = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--major') {
+      options.major = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--page') {
+      options.page = Number.parseInt(requireValue(argv, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--limit') {
+      options.limit = Number.parseInt(requireValue(argv, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  assertPositiveInteger(options.page, '--page');
+  assertPositiveInteger(options.limit, '--limit');
+  return options;
+}
+
+function parseTimetableOptions(action, argv) {
+  const args = [...argv];
+  const options = {
+    headless: true,
+    url: null,
+    keyword: null,
+    grade: null,
+    department: null,
+    major: null,
+    term: null,
+    page: 1,
+    limit: 10,
+    classCode: null
+  };
+
+  if (action === 'view') {
+    const classCode = args.shift();
+    if (!classCode || classCode.startsWith('--')) {
+      throw new Error('timetable view requires a classCode.');
+    }
+    options.classCode = classCode;
+  }
+
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--url') {
+      options.url = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--keyword') {
+      options.keyword = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--grade') {
+      options.grade = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--department') {
+      options.department = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--major') {
+      options.major = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--term' && action === 'view') {
+      options.term = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--page' && action !== 'view') {
+      options.page = Number.parseInt(requireValue(args, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--limit' && action !== 'view') {
+      options.limit = Number.parseInt(requireValue(args, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  assertPositiveInteger(options.page, '--page');
+  assertPositiveInteger(options.limit, '--limit');
+  return options;
 }
 
 function parseCourseOptions(argv) {
@@ -888,6 +1070,12 @@ function parseNoticeOptions(action, argv) {
   return options;
 }
 
+function assertPositiveInteger(value, option) {
+  if (!Number.isInteger(value) || value < 1) {
+    throw new Error(`${option} must be a positive integer.`);
+  }
+}
+
 function handleKnownError(error, command) {
   const code = error.code ?? 'UNKNOWN_ERROR';
   const exitCodes = {
@@ -897,6 +1085,7 @@ function handleKnownError(error, command) {
     PERMISSION_DENIED: 13,
     PAGE_CHANGED: 20,
     SKILL_NOT_FOUND: 21,
+    CLASS_NOT_FOUND: 22,
     RATE_LIMITED: 30,
     DOWNLOAD_UNAVAILABLE: 31,
     HEADED_REQUIRED: 2

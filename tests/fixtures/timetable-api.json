@@ -1,0 +1,137 @@
+{
+  "xtcscx": {
+    "datas": {
+      "xtcscx": {
+        "rows": [
+          {
+            "ZCSDM": "KBXNXQ",
+            "CSZA": "2025-2026-2",
+            "CSSM": "当前课表学年学期"
+          }
+        ]
+      }
+    },
+    "code": "0"
+  },
+  "dqzc": {
+    "datas": {
+      "dqzc": {
+        "rows": [
+          {
+            "XN": "2025-2026",
+            "XQ": "2",
+            "ZC": 16
+          }
+        ]
+      }
+    },
+    "code": "0"
+  },
+  "bjcx": {
+    "datas": {
+      "bjcx": {
+        "totalSize": 2,
+        "pageNumber": 1,
+        "pageSize": 12,
+        "rows": [
+          {
+            "BJDM": "20250101100101",
+            "BJMC": "2025汉语言文学（卓越班）01",
+            "NJ": "2025",
+            "NJ_DISPLAY": "2025级",
+            "YXDM": "01",
+            "YXDM_DISPLAY": "人文学院",
+            "YXMC": "人文学院",
+            "ZYDM": "050101",
+            "ZYDM_DISPLAY": "汉语言文学（卓越班）",
+            "SJRS": "30",
+            "CSRS": "30",
+            "SFYPK": "1",
+            "SFYPK_DISPLAY": "是",
+            "XH": "2023000000",
+            "XM": "测试用户"
+          },
+          {
+            "BJDM": "20240222000101",
+            "BJMC": "2024计算机科学与技术01",
+            "NJ": "2024",
+            "YXDM_DISPLAY": "计算机与软件学院",
+            "ZYDM_DISPLAY": "计算机科学与技术",
+            "SJRS": "45",
+            "SFYPK": "0",
+            "SFYPK_DISPLAY": "否"
+          }
+        ]
+      }
+    },
+    "code": "0"
+  },
+  "bjkcb": {
+    "datas": {
+      "bjkcb": {
+        "rows": [
+          {
+            "KCH": "5201890014",
+            "KCM": "新编英语报刊选读",
+            "KXH": "08",
+            "SKJS": "李老师",
+            "ZCMC": "1-17周",
+            "SKXQ": "1",
+            "KSJC": "1",
+            "JSJC": "2",
+            "JASMC": "汇文楼H3-303",
+            "XXXQDM": "01",
+            "JXBID": "202520262520189001408"
+          }
+        ]
+      }
+    },
+    "code": "0"
+  },
+  "bjdkkc": {
+    "datas": {
+      "bjdkkc": {
+        "rows": [
+          {
+            "KCH": "5201890011",
+            "KCM": "大学英语（2）",
+            "KXH": "50",
+            "SKJS": "陈晶",
+            "ZCMC": "1-17周",
+            "SKXQ": "3",
+            "KSJC": "3",
+            "JSJC": "4",
+            "JASMC": "汇文楼H2-101",
+            "XXXQDM": "01",
+            "JXBID": "202520262520189001150",
+            "XH": "2023000000"
+          }
+        ]
+      }
+    },
+    "code": "0"
+  },
+  "bjsjkcb": {
+    "datas": {
+      "bjsjkcb": {
+        "rows": []
+      }
+    },
+    "code": "0"
+  },
+  "bjwpkc": {
+    "datas": {
+      "bjwpkc": {
+        "rows": [
+          {
+            "KCH": "5201890011",
+            "KCM": "大学英语（2）",
+            "SKJS": "陈晶",
+            "ZCMC": "1-17周"
+          }
+        ]
+      }
+    },
+    "code": "0"
+  }
+}

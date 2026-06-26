@@ -25,6 +25,11 @@ szu-cli notice download 577444 --dir downloads --json
 szu-cli course status --json
 szu-cli course list --json
 szu-cli course today --json
+szu-cli program status --json
+szu-cli program list --json --limit 5
+szu-cli timetable status --json
+szu-cli timetable classes --json --limit 5
+szu-cli timetable view 20250101100101 --json
 szu-cli grade status --json
 szu-cli grade list --json
 szu-cli grade list --term 2025-2026-1 --json
@@ -311,6 +316,91 @@ Failure:
 ```
 
 `szu-cli course today --json` returns the same item shape filtered to the current local date and current teaching week. `szu-cli course status --json` only checks access and returns `loggedIn`, `reason`, `term`, and `sourceUrl`.
+
+## Program List Schema
+
+`szu-cli program list --json` returns published all-school training program summaries. Use `--keyword`, `--grade`, `--department`, `--major`, `--page`, and `--limit` to narrow the result.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "total": 2,
+    "page": 1,
+    "pageSize": 10,
+    "filters": {
+      "grade": "2025"
+    },
+    "items": [
+      {
+        "id": "program-001",
+        "planCode": "2025-050101-01",
+        "title": "2025级汉语言文学（卓越班）主修培养方案",
+        "grade": "2025",
+        "department": "人文学院",
+        "major": "汉语言文学（卓越班）",
+        "direction": "卓越班",
+        "minimumCredits": 160,
+        "durationYears": 4,
+        "degree": "文学学士",
+        "startYear": "2025-2026学年",
+        "startSemester": "第一学期",
+        "status": "99",
+        "published": true
+      }
+    ],
+    "sourceUrl": "https://ehall.szu.edu.cn/jwapp/sys/qxfacx/*default/index.do?EMAP_LANG=zh&THEME=cherry#/pyfacx"
+  },
+  "meta": {
+    "command": "program list",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+`szu-cli program status --json` only checks access and returns `loggedIn`, `reason`, `total`, and `sourceUrl`.
+
+## Timetable Schema
+
+`szu-cli timetable classes --json` returns class rows from the all-school class timetable query. Use `--keyword`, `--grade`, `--department`, `--major`, `--page`, and `--limit` to discover a `classCode`.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "term": {
+      "id": "2025-2026-2",
+      "name": "2025-2026学年第二学期",
+      "year": "2025-2026",
+      "semester": "2",
+      "currentWeek": null
+    },
+    "total": 2,
+    "items": [
+      {
+        "classCode": "20250101100101",
+        "className": "2025汉语言文学（卓越班）01",
+        "grade": "2025",
+        "department": "人文学院",
+        "major": "汉语言文学（卓越班）",
+        "studentCount": 30,
+        "scheduled": true
+      }
+    ],
+    "sourceUrl": "https://ehall.szu.edu.cn/jwapp/sys/kcbcx/*default/index.do?EMAP_LANG=zh&THEME=cherry#/bjkcb"
+  },
+  "meta": {
+    "command": "timetable classes",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+`szu-cli timetable view <classCode> --json` returns that class's weekly timetable. It uses the same course item shape as `course list`, plus a `class` object and class-specific `extraItems`.
+
+`szu-cli timetable status --json` only checks access and returns `loggedIn`, `reason`, `term`, `total`, and `sourceUrl`.
 
 ## Grade List Schema
 

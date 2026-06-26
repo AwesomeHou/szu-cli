@@ -38,6 +38,11 @@ szu-cli notice download 577444 --dir downloads --json
 szu-cli course status --json
 szu-cli course list --json
 szu-cli course today --json
+szu-cli program status --json
+szu-cli program list --limit 5 --json
+szu-cli timetable status --json
+szu-cli timetable classes --limit 5 --json
+szu-cli timetable view <classCode> --json
 szu-cli grade status --json
 szu-cli grade list --json
 szu-cli grade list --term 2025-2026-1 --json
@@ -63,6 +68,10 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 Use `notice list --page <n> --limit <n>` for paged full-list queries. `notice search` submits the website search form; default search is full text over the last 6 months. Use `--type title` when the user expects the keyword to appear in titles. Use `notice view <id|url>` to fetch the title, publisher, publish time, plain-text body, and indexed attachment links. Do not ask users to open attachment URLs directly; use `notice download <id|url> --index <n> --dir <path>` so the CLI downloads through the logged-in detail page.
 
 Use `course status` to check eHall timetable access, `course list` for the current term timetable, and `course today` for today's courses. Course commands do not require the user to provide the eHall URL in normal use.
+
+Use `program status` to check all-school training program query access and `program list` to search published program summaries. The MVP does not fetch training program detail pages.
+
+Use `timetable status` to check all-school class timetable access, `timetable classes` to find a `classCode`, and `timetable view <classCode>` to read that class's weekly schedule. Keep `timetable` separate from `course`: `course` is the current user's own timetable.
 
 Use `grade status` to check eHall grade-query access and `grade list` for read-only grade records. Use `grade list --term <termId>` when the user asks for one term. Grade output must not be treated as public data; avoid echoing full grade records unless the user explicitly needs them.
 

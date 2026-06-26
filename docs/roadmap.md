@@ -78,6 +78,11 @@ Deliverables:
 - `szu-cli course status --json`.
 - `szu-cli course list --json`.
 - `szu-cli course today --json`.
+- `szu-cli program status --json`.
+- `szu-cli program list --json`.
+- `szu-cli timetable status --json`.
+- `szu-cli timetable classes --json`.
+- `szu-cli timetable view <classCode> --json`.
 - Grades.
 - Electricity balance.
 - WebVPN gateway support.

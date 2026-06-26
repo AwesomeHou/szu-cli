@@ -79,6 +79,8 @@ Then call read-only commands:
 ```bash
 szu-cli notice search 奖学金 --json
 szu-cli course today --json
+szu-cli program list --limit 5 --json
+szu-cli timetable classes --limit 5 --json
 ```
 
 Agents must not loop aggressively or submit state-changing commands without confirmation.
