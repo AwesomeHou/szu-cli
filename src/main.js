@@ -10,6 +10,8 @@ import { getGradeList, getGradeStatus } from './modules/grade.js';
 import { getLibraryItem, getLibraryStatus, searchLibrary } from './modules/library.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
 import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
+import { setupCodex } from './modules/setup.js';
+import { getSkillPath, installSkill } from './modules/skill.js';
 import { downloadWanfangPdf, getWanfangItem, getWanfangStatus, searchWanfang } from './modules/wanfang.js';
 
 export async function run(argv) {
@@ -26,6 +28,29 @@ export async function run(argv) {
   if (domain === 'doctor') {
     const data = await getDoctorReport({ packageInfo });
     writeJson(successEnvelope(data, { command: 'doctor' }));
+    return;
+  }
+
+  if (domain === 'skill' && (action === 'path' || action === 'install')) {
+    try {
+      const options = parseSkillOptions(action, argv.slice(2));
+      const data = action === 'path'
+        ? await getSkillPath(options)
+        : await installSkill(options);
+      writeJson(successEnvelope(data, { command: `skill ${action}` }));
+    } catch (error) {
+      handleKnownError(error, `skill ${action}`);
+    }
+    return;
+  }
+
+  if (domain === 'setup' && action === 'codex') {
+    try {
+      const data = await setupCodex(parseSetupOptions(argv.slice(2)));
+      writeJson(successEnvelope(data, { command: 'setup codex' }));
+    } catch (error) {
+      handleKnownError(error, 'setup codex');
+    }
     return;
   }
 
@@ -222,6 +247,54 @@ function parseCourseOptions(argv) {
     }
     if (arg === '--headed') {
       options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  return options;
+}
+
+function parseSkillOptions(action, argv) {
+  const options = {
+    target: 'codex',
+    dir: null
+  };
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--target' && action === 'install') {
+      options.target = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--dir' && action === 'install') {
+      options.dir = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  return options;
+}
+
+function parseSetupOptions(argv) {
+  const options = {
+    skillDir: null
+  };
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--skill-dir') {
+      options.skillDir = requireValue(argv, i, arg);
+      i += 1;
       continue;
     }
     throw new Error(`Unknown option: ${arg}`);
@@ -823,6 +896,7 @@ function handleKnownError(error, command) {
     NETWORK_REQUIRED: 12,
     PERMISSION_DENIED: 13,
     PAGE_CHANGED: 20,
+    SKILL_NOT_FOUND: 21,
     RATE_LIMITED: 30,
     DOWNLOAD_UNAVAILABLE: 31,
     HEADED_REQUIRED: 2

@@ -13,6 +13,9 @@ Examples:
 ```bash
 szu doctor --json
 szu auth status --json
+szu skill path --json
+szu skill install --target codex --json
+szu setup codex --json
 szu notice list --limit 10 --json
 szu notice list --page 2 --pages 1 --limit 10 --json
 szu notice search 奖学金 --json
@@ -95,6 +98,7 @@ Failure:
 - `PAGE_CHANGED`: expected page structure changed.
 - `RATE_LIMITED`: remote service appears to limit requests.
 - `DOWNLOAD_UNAVAILABLE`: visible provider download button was missing or did not produce a downloadable file.
+- `SKILL_NOT_FOUND`: bundled agent skill is missing from the installed package.
 - `HEADED_REQUIRED`: command requires a visible browser session.
 - `UNSUPPORTED_ACTION`: command is known but not implemented.
 - `UNKNOWN_ERROR`: unexpected failure.
@@ -109,8 +113,82 @@ Failure:
 - `12`: network or WebVPN required.
 - `13`: permission denied.
 - `20`: page structure changed.
+- `21`: bundled skill missing.
 - `30`: rate-limited or anti-abuse signal detected.
 - `31`: download unavailable.
+
+## Skill And Setup Schema
+
+`szu skill path --json` returns the bundled skill path without installing it:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "name": "szu-campus",
+    "sourcePath": "C:/Users/name/AppData/Roaming/npm/node_modules/szu-cli/skills/szu-campus"
+  },
+  "meta": {
+    "command": "skill path",
+    "gateway": "auto",
+    "backend": "playwright"
+  }
+}
+```
+
+`szu skill install --target codex --json` copies the bundled skill to the Codex-visible personal skill directory. Use `--dir <path>` to override the target root.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "target": "codex",
+    "name": "szu-campus",
+    "installed": true,
+    "sourcePath": ".../skills/szu-campus",
+    "installedPath": "C:/Users/name/.agents/skills/szu-campus"
+  },
+  "meta": {
+    "command": "skill install",
+    "gateway": "auto",
+    "backend": "playwright"
+  }
+}
+```
+
+`szu setup codex --json` installs the bundled Codex skill and returns first-use next steps. Use `--skill-dir <path>` to override the skill root.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "cli": {
+      "available": true,
+      "version": "0.1.0-alpha.1"
+    },
+    "browser": {
+      "channel": "chrome",
+      "available": true
+    },
+    "skill": {
+      "target": "codex",
+      "name": "szu-campus",
+      "installed": true,
+      "sourcePath": ".../skills/szu-campus",
+      "installedPath": "C:/Users/name/.agents/skills/szu-campus"
+    },
+    "nextSteps": [
+      "Run `szu auth login` and complete login in the browser.",
+      "Run `szu auth status --json`."
+    ]
+  },
+  "meta": {
+    "command": "setup codex",
+    "gateway": "auto",
+    "backend": "playwright"
+  }
+}
+```
 
 ## Output Rules
 

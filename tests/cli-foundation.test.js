@@ -26,7 +26,7 @@ test('prints package version', () => {
   const result = runCli(['--version']);
 
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout.trim(), /^\d+\.\d+\.\d+$/);
+  assert.match(result.stdout.trim(), /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/);
 });
 
 test('doctor prints JSON readiness envelope', () => {

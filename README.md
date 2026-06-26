@@ -4,6 +4,29 @@
 
 The goal is to turn common campus web workflows into stable CLI commands with structured JSON output, while preserving user privacy and using normal browser login flows.
 
+## Quick Start
+
+Install the alpha package:
+
+```bash
+npm install -g szu-cli@alpha
+```
+
+Install the bundled Codex skill explicitly:
+
+```bash
+szu setup codex
+```
+
+Then initialize the browser login profile:
+
+```bash
+szu auth login
+szu auth status --json
+```
+
+The npm package includes the CLI and `skills/szu-campus`, but `npm install` does not automatically write agent directories. `szu setup codex` copies the skill to `~/.agents/skills/szu-campus`.
+
 ## Direction
 
 This project does not require OpenCLI as a default dependency. The planned backend is:
@@ -41,6 +64,9 @@ An optional agent skill can be installed alongside the CLI, but the CLI remains 
 szu doctor --json
 szu auth status --json
 szu auth login
+szu skill path --json
+szu skill install --target codex --json
+szu setup codex
 szu notice list --limit 10 --json
 szu notice list --page 2 --limit 10 --json
 szu notice search 奖学金 --json
@@ -79,6 +105,9 @@ npm run szu -- --version
 npm run szu -- doctor --json
 npm run szu -- auth status --json
 npm run szu -- auth login --url https://www1.szu.edu.cn/board/
+npm run szu -- skill path --json
+npm run szu -- skill install --target codex --json
+npm run szu -- setup codex
 npm run szu -- notice list --limit 10 --json
 npm run szu -- notice list --page 2 --limit 10 --json
 npm run szu -- notice search 奖学金 --limit 10 --json
@@ -147,7 +176,9 @@ szu gym reserve --date 2026-06-23 --slot 19:00 --dry-run --json
 
 - [Architecture](docs/architecture.md)
 - [CLI Contract](docs/cli-contract.md)
+- [Installation](docs/installation.md)
 - [Login State](docs/login-state.md)
+- [Release Checklist](docs/release.md)
 - [Security and Compliance](docs/security-and-compliance.md)
 - [Skill Integration](docs/skill-integration.md)
 - [Roadmap](docs/roadmap.md)

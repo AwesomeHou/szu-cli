@@ -1,6 +1,6 @@
 # Skill Integration
 
-The CLI and skill should be separate but complementary.
+The CLI and skill are shipped in the same npm package, but they remain separate at runtime.
 
 ## Division of Responsibility
 
@@ -23,15 +23,17 @@ The skill should not duplicate browser automation logic. Agents should call `szu
 Recommended:
 
 ```bash
-npm install -g szu-cli
+npm install -g szu-cli@alpha
+szu setup codex
 ```
 
-Then install the skill into the agent's skill directory.
+`npm install` makes the `szu` command available. `szu setup codex` explicitly copies the bundled `skills/szu-campus` folder into the Codex-visible skill directory.
 
-This keeps the CLI independently updateable:
+This keeps installation explicit while still giving users a one-command setup step after the CLI is installed:
 
 ```bash
 npm update -g szu-cli
+szu setup codex
 ```
 
 The skill can declare a minimum CLI version:
@@ -47,7 +49,7 @@ A skill can include installation instructions or a helper script, but it should 
 Good:
 
 ```text
-If `szu` is missing, ask the user to install it with `npm install -g szu-cli`.
+If `szu` is missing, ask the user to install it with `npm install -g szu-cli@alpha`, then run `szu setup codex`.
 ```
 
 Avoid:
@@ -62,6 +64,7 @@ Agents should start with:
 
 ```bash
 szu doctor --json
+szu skill path --json
 szu auth status --json
 ```
 

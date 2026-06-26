@@ -111,10 +111,13 @@ Exit criteria:
 Deliverables:
 
 - npm package.
-- Skill package.
+- Bundled `szu-campus` skill.
+- `szu skill path --json`.
+- `szu skill install --target codex --json`.
+- `szu setup codex --json`.
 - Installation docs.
-- CI tests.
+- Release checklist.
 
 Exit criteria:
 
-- CLI and skill can update independently.
+- A user can install the npm package, run `szu setup codex`, and verify package contents with `npm pack --dry-run`.
