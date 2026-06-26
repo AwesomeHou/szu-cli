@@ -196,6 +196,32 @@ test('cnki item returns detail metadata', () => {
   assert.equal(body.data.doi, '10.1234/cnki.glkj.2026.05.002');
 });
 
+test('cnki download saves one visible PDF download', () => {
+  const home = mkdtempSync(join(tmpdir(), 'szu-cli-test-'));
+  const downloadDir = join(home, 'downloads');
+  const result = runAcademic([
+    'cnki',
+    'download',
+    'https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&filename=GLJK202605002',
+    '--headed',
+    '--dir',
+    downloadDir,
+    '--json'
+  ], {
+    SZU_CLI_HOME: home,
+    SZU_MOCK_CNKI_JSON: cnkiMockData
+  }, { cleanup: false });
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, true);
+  assert.equal(body.meta.command, 'cnki download');
+  assert.equal(body.data.provider, 'cnki');
+  assert.equal(body.data.downloadedBy, 'visible-button-click');
+  assert.match(body.data.savedPath, /GLJK202605002\.pdf$/);
+  rmSync(home, { recursive: true, force: true });
+});
+
 test('wanfang status reports headed metadata-search readiness', () => {
   const result = runAcademic(['wanfang', 'status', '--headed', '--json'], {
     SZU_MOCK_WANFANG_JSON: wanfangMockData
@@ -288,6 +314,32 @@ test('wanfang item returns detail metadata', () => {
   assert.equal(body.data.doi, '10.5678/wanfang.gcjs.2026.04.001');
 });
 
+test('wanfang download saves one visible full-text download', () => {
+  const home = mkdtempSync(join(tmpdir(), 'szu-cli-test-'));
+  const downloadDir = join(home, 'downloads');
+  const result = runAcademic([
+    'wanfang',
+    'download',
+    'https://d.wanfangdata.com.cn/periodical/gcjs202604001',
+    '--headed',
+    '--dir',
+    downloadDir,
+    '--json'
+  ], {
+    SZU_CLI_HOME: home,
+    SZU_MOCK_WANFANG_JSON: wanfangMockData
+  }, { cleanup: false });
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, true);
+  assert.equal(body.meta.command, 'wanfang download');
+  assert.equal(body.data.provider, 'wanfang');
+  assert.equal(body.data.downloadedBy, 'visible-button-click');
+  assert.match(body.data.savedPath, /gcjs202604001\.pdf$/);
+  rmSync(home, { recursive: true, force: true });
+});
+
 test('academic item requires a URL', () => {
   const result = runAcademic(['cnki', 'item', '--headed', '--json'], {
     SZU_MOCK_CNKI_JSON: cnkiMockData
@@ -319,8 +371,8 @@ test('academic commands require headed mode outside mock backend', () => {
   assert.equal(body.error.code, 'HEADED_REQUIRED');
 });
 
-function runAcademic(args, env = {}) {
-  const home = mkdtempSync(join(tmpdir(), 'szu-cli-test-'));
+function runAcademic(args, env = {}, options = {}) {
+  const home = env.SZU_CLI_HOME ?? mkdtempSync(join(tmpdir(), 'szu-cli-test-'));
   const result = spawnSync(process.execPath, [cliPath, ...args], {
     encoding: 'utf8',
     env: {
@@ -330,6 +382,8 @@ function runAcademic(args, env = {}) {
       ...env
     }
   });
-  rmSync(home, { recursive: true, force: true });
+  if (options.cleanup !== false) {
+    rmSync(home, { recursive: true, force: true });
+  }
   return result;
 }

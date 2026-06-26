@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 import { normalizeAcademicFormat } from './modules/academic-format.js';
 import { loginWithBrowserProfile, getAuthStatus } from './modules/auth.js';
-import { getCnkiItem, getCnkiStatus, searchCnki } from './modules/cnki.js';
+import { downloadCnkiPdf, getCnkiItem, getCnkiStatus, searchCnki } from './modules/cnki.js';
 import { getCourseList, getCourseStatus, getTodayCourses } from './modules/course.js';
 import { getDoctorReport } from './modules/doctor.js';
 import { getElectricityBuildings, getElectricityStatus, queryElectricity } from './modules/electricity.js';
@@ -10,7 +10,7 @@ import { getGradeList, getGradeStatus } from './modules/grade.js';
 import { getLibraryItem, getLibraryStatus, searchLibrary } from './modules/library.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
 import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
-import { getWanfangItem, getWanfangStatus, searchWanfang } from './modules/wanfang.js';
+import { downloadWanfangPdf, getWanfangItem, getWanfangStatus, searchWanfang } from './modules/wanfang.js';
 
 export async function run(argv) {
   const packageInfo = await readPackageInfo();
@@ -115,7 +115,7 @@ export async function run(argv) {
     return;
   }
 
-  if ((domain === 'cnki' || domain === 'wanfang') && (action === 'status' || action === 'search' || action === 'item')) {
+  if ((domain === 'cnki' || domain === 'wanfang') && (action === 'status' || action === 'search' || action === 'item' || action === 'download')) {
     try {
       const options = parseAcademicOptions(domain, action, argv.slice(2));
       const data = domain === 'cnki'
@@ -123,12 +123,16 @@ export async function run(argv) {
           ? await getCnkiStatus(options)
           : action === 'item'
             ? await getCnkiItem(options.target, options)
-            : await searchCnki(options)
+            : action === 'download'
+              ? await downloadCnkiPdf(options.target, options)
+              : await searchCnki(options)
         : action === 'status'
           ? await getWanfangStatus(options)
           : action === 'item'
             ? await getWanfangItem(options.target, options)
-            : await searchWanfang(options);
+            : action === 'download'
+              ? await downloadWanfangPdf(options.target, options)
+              : await searchWanfang(options);
       writeJson(successEnvelope(data, {
         command: `${domain} ${action}`,
         gateway: 'direct',
@@ -462,6 +466,16 @@ function parseAcademicOptions(domain, action, argv) {
     options.target = target;
   }
 
+  if (action === 'download') {
+    const target = args.shift();
+    if (!target || target.startsWith('--')) {
+      throw new Error(`${domain} download requires a URL.`);
+    }
+    options.target = target;
+    options.dir = process.cwd();
+    options.output = null;
+  }
+
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i];
     if (arg === '--json') {
@@ -479,6 +493,16 @@ function parseAcademicOptions(domain, action, argv) {
     }
     if (arg === '--format') {
       options.format = normalizeAcademicFormat(requireValue(args, i, arg));
+      i += 1;
+      continue;
+    }
+    if (arg === '--dir' && action === 'download') {
+      options.dir = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--output' && action === 'download') {
+      options.output = requireValue(args, i, arg);
       i += 1;
       continue;
     }
@@ -800,6 +824,7 @@ function handleKnownError(error, command) {
     PERMISSION_DENIED: 13,
     PAGE_CHANGED: 20,
     RATE_LIMITED: 30,
+    DOWNLOAD_UNAVAILABLE: 31,
     HEADED_REQUIRED: 2
   };
 

@@ -1,3 +1,6 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+
 import { getLaunchOptions } from './browser-options.js';
 import { buildWanfangItemPayload, buildWanfangSearchPayload, formatWanfangSearchExports, parseWanfangSearchMeta } from './wanfang-parser.js';
 import { getProfilePath } from './paths.js';
@@ -92,6 +95,7 @@ export async function getWanfangItem(target, options = {}) {
   const context = await launchContext(options);
   try {
     const page = context.pages()[0] ?? await context.newPage();
+    await openWanfangAccess(page, options);
     await gotoPage(page, target);
     await waitForAcademicPage(page);
     const state = await extractState(page);
@@ -103,6 +107,73 @@ export async function getWanfangItem(target, options = {}) {
       detail,
       sourceUrl: page.url()
     });
+  } finally {
+    await context.close();
+  }
+}
+
+export async function downloadWanfangPdf(target, options = {}) {
+  if (!target) {
+    throw new Error('wanfang download requires a URL.');
+  }
+  if (process.env.SZU_BROWSER_BACKEND === 'mock') {
+    const item = mockData().item ?? {};
+    const savedPath = resolveDownloadPath(target, {
+      ...options,
+      suggestedFilename: `${extractWanfangId(target) ?? 'wanfang-paper'}.pdf`
+    });
+    await mkdir(dirname(savedPath), { recursive: true });
+    await writeFile(savedPath, process.env.SZU_MOCK_WANFANG_PDF_TEXT ?? '%PDF-1.4 mock wanfang pdf\n');
+    return {
+      provider: 'wanfang',
+      title: item.title ?? null,
+      fileName: savedPath.split(/[\\/]/).at(-1),
+      savedPath,
+      sourceUrl: item.sourceUrl ?? target,
+      downloadedBy: 'visible-button-click'
+    };
+  }
+  assertHeaded(options);
+
+  const context = await launchContext(options, { acceptDownloads: true });
+  try {
+    const page = context.pages()[0] ?? await context.newPage();
+    await openWanfangAccess(page, options);
+    await gotoPage(page, target);
+    await waitForAcademicPage(page);
+    const state = await extractState(page);
+    assertAccessible(state, 'Wanfang');
+    const detail = await extractWanfangDetail(page);
+    const downloadButton = await findWanfangDownloadButton(page);
+
+    if (!downloadButton) {
+      throwDownloadUnavailable('No visible Wanfang PDF/full-text download button was found.');
+    }
+
+    const downloadResult = await clickWanfangDownloadFlow(page, downloadButton);
+    if (!downloadResult) {
+      throwDownloadUnavailable('The visible Wanfang download button did not start a browser download.');
+    }
+
+    const savedPath = resolveDownloadPath(target, {
+      ...options,
+      suggestedFilename: downloadResult.fileName
+    });
+    await mkdir(dirname(savedPath), { recursive: true });
+    if (downloadResult.download) {
+      await downloadResult.download.saveAs(savedPath);
+    } else {
+      await writeFile(savedPath, downloadResult.body);
+    }
+
+    return {
+      provider: 'wanfang',
+      title: detail.title || null,
+      fileName: savedPath.split(/[\\/]/).at(-1),
+      savedPath,
+      sourceUrl: page.url(),
+      downloadedBy: 'visible-button-click'
+    };
   } finally {
     await context.close();
   }
@@ -168,6 +239,154 @@ async function extractWanfangDetail(page) {
       return null;
     }
   });
+}
+
+async function findWanfangDownloadButton(page) {
+  const candidates = [
+    page.locator('a.download.buttonItem').filter({ hasText: /^下载$/ }),
+    page.locator('a[href*="/file/download/"]').filter({ hasText: /下载|PDF|全文/ }),
+    page.locator('a, button, [role="button"]').filter({ hasText: /PDF下载|下载全文|全文下载|^下载$/ })
+  ];
+
+  for (const locator of candidates) {
+    const count = await locator.count().catch(() => 0);
+    for (let index = 0; index < count; index += 1) {
+      const item = locator.nth(index);
+      if (await item.isVisible().catch(() => false)) {
+        return item;
+      }
+    }
+  }
+  return null;
+}
+
+async function clickWanfangDownloadFlow(page, downloadButton) {
+  const firstDownloadPromise = page.waitForEvent('download', { timeout: 25000 })
+    .then((download) => ({ type: 'download', download }))
+    .catch(() => null);
+  const popupPromise = page.waitForEvent('popup', { timeout: 15000 })
+    .then((popup) => ({ type: 'popup', popup }))
+    .catch(() => null);
+  await downloadButton.click({ timeout: 10000 });
+
+  const firstResult = await firstNonNull([firstDownloadPromise, popupPromise]);
+  if (firstResult?.type === 'download') {
+    return await downloadResultFromDownload(firstResult.download);
+  }
+
+  const popup = firstResult?.popup;
+  if (!popup) {
+    return null;
+  }
+
+  let popupDownloadResult = null;
+  let pdfResponseResult = null;
+  const popupDownloadPromise = popup.waitForEvent('download', { timeout: 30000 })
+    .then((download) => {
+      popupDownloadResult = { type: 'download', download };
+      return popupDownloadResult;
+    })
+    .catch(() => null);
+  const pdfResponsePromise = popup.waitForResponse((response) => isDownloadResponse(response), { timeout: 30000 })
+    .then((response) => {
+      pdfResponseResult = { type: 'response', response };
+      return pdfResponseResult;
+    })
+    .catch(() => null);
+
+  await popup.waitForLoadState('domcontentloaded', { timeout: 15000 }).catch(() => {});
+  await waitForAcademicPage(popup);
+  if (popupDownloadResult) {
+    return await downloadResultFromDownload(popupDownloadResult.download);
+  }
+  if (pdfResponseResult) {
+    return await downloadResultFromResponse(pdfResponseResult.response, page.url());
+  }
+
+  const manualLink = await findWanfangManualDownloadLink(popup);
+  if (!manualLink) {
+    const earlyResult = await firstNonNull([popupDownloadPromise, pdfResponsePromise]);
+    return await normalizeDownloadResult(earlyResult, page.url());
+  }
+
+  await manualLink.click({ timeout: 10000 });
+
+  const secondResult = await firstNonNull([popupDownloadPromise, pdfResponsePromise]);
+  return await normalizeDownloadResult(secondResult, page.url());
+}
+
+async function firstNonNull(promises) {
+  const pending = new Map(promises.map((promise, index) => [
+    index,
+    promise.then((value) => ({ index, value }))
+  ]));
+  while (pending.size) {
+    const { index, value } = await Promise.race(pending.values());
+    pending.delete(index);
+    if (value) {
+      return value;
+    }
+  }
+  return null;
+}
+
+async function normalizeDownloadResult(result, sourceUrl) {
+  if (result?.type === 'download') {
+    return await downloadResultFromDownload(result.download);
+  }
+  if (result?.type === 'response') {
+    return await downloadResultFromResponse(result.response, sourceUrl);
+  }
+  return null;
+}
+
+async function downloadResultFromDownload(download) {
+  const failure = await download.failure().catch(() => null);
+  if (failure) {
+    throwDownloadUnavailable(`Wanfang download failed: ${failure}`);
+  }
+  return {
+    download,
+    fileName: download.suggestedFilename()
+  };
+}
+
+async function downloadResultFromResponse(response, sourceUrl) {
+  return {
+    body: await response.body(),
+    fileName: filenameFromHeaders(response.headers()) ?? `${extractWanfangId(sourceUrl) ?? 'wanfang-paper'}.pdf`
+  };
+}
+
+async function findWanfangManualDownloadLink(page) {
+  const candidates = [
+    page.getByText(/点击此处/, { exact: false }),
+    page.locator('a, button, [role="button"]').filter({ hasText: /点击此处|直接下载|下载/ })
+  ];
+
+  for (const locator of candidates) {
+    const count = await locator.count().catch(() => 0);
+    for (let index = 0; index < count; index += 1) {
+      const item = locator.nth(index);
+      if (await item.isVisible().catch(() => false)) {
+        return item;
+      }
+    }
+  }
+  return null;
+}
+
+function isDownloadResponse(response) {
+  const headers = response.headers();
+  return /application\/pdf/i.test(headers['content-type'] ?? '')
+    || /attachment/i.test(headers['content-disposition'] ?? '');
+}
+
+async function openWanfangAccess(page, options = {}) {
+  await gotoPage(page, options.url ?? WANFANG_ACCESS_URL);
+  await waitForAcademicPage(page);
+  const state = await extractState(page);
+  assertAccessible(state, 'Wanfang');
 }
 
 async function extractWanfangRows(page) {
@@ -243,11 +462,14 @@ function mockData() {
   return JSON.parse(process.env.SZU_MOCK_WANFANG_JSON ?? '{}');
 }
 
-async function launchContext(options) {
+async function launchContext(options, launchOverrides = {}) {
   const { chromium } = await importPlaywright();
   return chromium.launchPersistentContext(
     getProfilePath(),
-    getLaunchOptions({ headless: options.headless ?? true })
+    {
+      ...getLaunchOptions({ headless: options.headless ?? true }),
+      ...launchOverrides
+    }
   );
 }
 
@@ -314,4 +536,41 @@ function assertAccessible(state, provider) {
     error.hint = 'Complete verification manually; the CLI will not bypass CAPTCHA or sliders.';
     throw error;
   }
+}
+
+function resolveDownloadPath(target, options = {}) {
+  if (options.output) {
+    return options.output;
+  }
+  const name = sanitizeFileName(options.suggestedFilename || `${extractWanfangId(target) ?? 'wanfang-paper'}.pdf`);
+  return join(options.dir ?? process.cwd(), name);
+}
+
+function extractWanfangId(target) {
+  return String(target ?? '').match(/\/([^/?#]+)(?:[?#].*)?$/)?.[1] ?? null;
+}
+
+function sanitizeFileName(name) {
+  return String(name).replace(/^[·\s]+/, '').replace(/[<>:"/\\|?*\x00-\x1F]/g, '_');
+}
+
+function filenameFromHeaders(headers) {
+  const disposition = headers['content-disposition'] ?? '';
+  const utf8Match = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+  const rawName = utf8Match?.[1] ?? disposition.match(/filename="?([^";]+)"?/i)?.[1];
+  if (!rawName) {
+    return null;
+  }
+  try {
+    return sanitizeFileName(decodeURIComponent(rawName));
+  } catch {
+    return sanitizeFileName(rawName);
+  }
+}
+
+function throwDownloadUnavailable(message) {
+  const error = new Error(message);
+  error.code = 'DOWNLOAD_UNAVAILABLE';
+  error.hint = 'Open the item page manually, confirm full-text access, and retry one item at a time.';
+  throw error;
 }

@@ -27,7 +27,8 @@ SZU CLI should act like a careful local assistant using the user's own account.
 - High-frequency polling.
 - Hidden form submission.
 - Actions outside what the logged-in user can do manually.
-- Automated PDF, CAJ, original-text, or attachment downloading from academic databases.
+- Batch PDF, CAJ, original-text, or attachment downloading from academic databases.
+- Hidden academic full-text URL construction, provider-control bypass, or download automation outside a visible user-accessible button.
 
 ## State-Changing Commands
 
@@ -45,6 +46,6 @@ Public docs can describe architecture and redacted examples. They should not pub
 
 ## Academic Database Boundaries
 
-CNKI and Wanfang support is metadata-search only. Commands may return titles, authors, sources, years, snippets or raw row text, download counts, and detail URLs for manual inspection.
+CNKI and Wanfang support includes metadata search plus single-item `cnki download <url>` and `wanfang download <url>` commands that open one user-provided detail page and click a visible PDF/full-text download button in the headed browser.
 
-The CLI must not bypass CAPTCHA, slider verification, second-factor authentication, paywalls, or provider access controls. It must not implement batch downloading of PDFs, CAJ files, original full text, or attachments.
+The CLI must not bypass CAPTCHA, slider verification, second-factor authentication, paywalls, or provider access controls. It must not implement batch downloading of PDFs, CAJ files, original full text, or attachments, and must not construct hidden download URLs to avoid normal browser controls.

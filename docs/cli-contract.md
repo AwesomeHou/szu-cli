@@ -36,10 +36,12 @@ szu cnki search 交通设计 --headed --json
 szu cnki search 交通设计 --headed --format gbt7714 --json
 szu cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
 szu cnki item <url> --headed --json
+szu cnki download <url> --headed --dir downloads --json
 szu wanfang search 交通设计 --headed --json
 szu wanfang search 交通设计 --headed --format markdown --json
 szu wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
 szu wanfang item <url> --headed --json
+szu wanfang download <url> --headed --dir downloads --json
 ```
 
 ## Global Flags
@@ -92,6 +94,7 @@ Failure:
 - `PERMISSION_DENIED`: account lacks access.
 - `PAGE_CHANGED`: expected page structure changed.
 - `RATE_LIMITED`: remote service appears to limit requests.
+- `DOWNLOAD_UNAVAILABLE`: visible provider download button was missing or did not produce a downloadable file.
 - `HEADED_REQUIRED`: command requires a visible browser session.
 - `UNSUPPORTED_ACTION`: command is known but not implemented.
 - `UNKNOWN_ERROR`: unexpected failure.
@@ -107,6 +110,7 @@ Failure:
 - `13`: permission denied.
 - `20`: page structure changed.
 - `30`: rate-limited or anti-abuse signal detected.
+- `31`: download unavailable.
 
 ## Output Rules
 
@@ -460,7 +464,7 @@ Advanced search output keeps the same item shape and adds an `advanced` object:
 
 `szu cnki search <keyword> --headed --json` and `szu wanfang search <keyword> --headed --json` perform read-only metadata search through the SZU library campus channels.
 
-These MVP commands require `--headed`. They do not download PDFs, CAJ files, original full text, or attachments. Use `--limit <n>` to limit returned rows; default is `10`.
+These MVP commands require `--headed`. CNKI and Wanfang also support single-item user-initiated PDF/full-text download commands that click visible download buttons. Use `--limit <n>` to limit returned search rows; default is `10`.
 
 Search commands support citation exports through `--format <markdown|gbt7714|bibtex>`. Exported citation strings are derived only from visible metadata and are returned under `data.exports`; missing metadata is not invented.
 
@@ -570,6 +574,27 @@ For Wanfang the same section becomes:
   },
   "meta": {
     "command": "cnki item",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+`szu cnki download <url> --headed --dir <path> --json` and `szu wanfang download <url> --headed --dir <path> --json` open one detail page and click a visible PDF/full-text download button in the browser. They do not support batch downloading, hidden download URL construction, CAPTCHA bypass, CAJ conversion, or non-PDF CNKI downloading.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "provider": "cnki",
+    "title": "Paper title",
+    "fileName": "example.pdf",
+    "savedPath": "downloads/example.pdf",
+    "sourceUrl": "https://kns.cnki.net/kcms2/article/abstract?...",
+    "downloadedBy": "visible-button-click"
+  },
+  "meta": {
+    "command": "cnki download",
     "gateway": "direct",
     "backend": "playwright"
   }

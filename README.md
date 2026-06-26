@@ -64,10 +64,12 @@ szu cnki search 交通设计 --headed --json
 szu cnki search 交通设计 --headed --format gbt7714 --json
 szu cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
 szu cnki item <url> --headed --json
+szu cnki download <url> --headed --dir downloads --json
 szu wanfang search 交通设计 --headed --json
 szu wanfang search 交通设计 --headed --format markdown --json
 szu wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
 szu wanfang item <url> --headed --json
+szu wanfang download <url> --headed --dir downloads --json
 ```
 
 Current implemented foundation:
@@ -101,11 +103,13 @@ npm run szu -- cnki search 交通设计 --headed --limit 10 --json
 npm run szu -- cnki search 交通设计 --headed --format gbt7714 --limit 10 --json
 npm run szu -- cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --limit 10 --json
 npm run szu -- cnki item "<search返回的url>" --headed --json
+npm run szu -- cnki download "<详情页url>" --headed --dir downloads --json
 npm run szu -- wanfang status --headed --json
 npm run szu -- wanfang search 交通设计 --headed --limit 10 --json
 npm run szu -- wanfang search 交通设计 --headed --format markdown --limit 10 --json
 npm run szu -- wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --limit 10 --json
 npm run szu -- wanfang item "<详情页url>" --headed --json
+npm run szu -- wanfang download "<详情页url>" --headed --dir downloads --json
 ```
 
 `auth login` opens a persistent browser profile. Complete login in the browser, then close the browser window. Later commands reuse the saved profile under `~/.szu-cli/browser-profile/`.
@@ -130,7 +134,7 @@ Electricity commands read the campus intranet SIMS electricity query system. The
 
 Library commands read the SZU OPAC catalog. They use the same persistent browser profile by default so the OPAC can record search history when the profile is logged in. Search still works when OPAC is not logged in, but `historyRecorded` will be `false`. `library search <keyword>` uses quick search; `library search --title ... --author ...` uses OPAC advanced search.
 
-CNKI and Wanfang commands are headed-browser, read-only metadata MVPs. They use SZU library campus access channels and return search result metadata such as title, authors, source, year, download count, and detail URL. CNKI supports basic fielded advanced search with `--title` and repeatable `--abstract`, for example `cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json`; this advanced-search MVP defaults to the 学术期刊 database scope. Wanfang supports fielded advanced metadata search with `--title`, `--author`, `--keyword`, and `--abstract`, for example `wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json`. Search commands support citation export metadata with `--format markdown`, `--format gbt7714`, or `--format bibtex`; the generated citations are included under `data.exports`. `cnki item <url>` and `wanfang item <url>` open one detail page and return metadata such as abstract, keywords, DOI, fund, classification, and citation helper fields. They intentionally do not download PDFs, CAJ files, or original full text. Use `--headed`; headless mode is not reliable for these providers.
+CNKI and Wanfang commands are headed-browser academic MVPs. They use SZU library campus access channels and return search result metadata such as title, authors, source, year, download count, and detail URL. CNKI supports basic fielded advanced search with `--title` and repeatable `--abstract`, for example `cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json`; this advanced-search MVP defaults to the 学术期刊 database scope. Wanfang supports fielded advanced metadata search with `--title`, `--author`, `--keyword`, and `--abstract`, for example `wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json`. Search commands support citation export metadata with `--format markdown`, `--format gbt7714`, or `--format bibtex`; the generated citations are included under `data.exports`. `cnki item <url>` and `wanfang item <url>` open one detail page and return metadata such as abstract, keywords, DOI, fund, classification, and citation helper fields. `cnki download <url>` and `wanfang download <url>` are limited to one user-provided detail page at a time and only click a visible PDF/full-text download button in the headed browser; they do not support batch downloading, hidden direct-link construction, CAJ conversion, CAPTCHA bypass, or non-PDF CNKI downloading. Use `--headed`; headless mode is not reliable for these providers.
 
 State-changing commands, such as reservations, must begin with dry-run behavior:
 

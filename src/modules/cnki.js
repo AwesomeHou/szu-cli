@@ -1,3 +1,6 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+
 import { getLaunchOptions } from './browser-options.js';
 import { buildCnkiItemPayload, buildCnkiSearchPayload, formatCnkiSearchExports, parseCnkiSearchMeta } from './cnki-parser.js';
 import { getProfilePath } from './paths.js';
@@ -98,6 +101,73 @@ export async function getCnkiItem(target, options = {}) {
       detail,
       sourceUrl: page.url()
     });
+  } finally {
+    await context.close();
+  }
+}
+
+export async function downloadCnkiPdf(target, options = {}) {
+  if (!target) {
+    throw new Error('cnki download requires a URL.');
+  }
+  if (process.env.SZU_BROWSER_BACKEND === 'mock') {
+    const item = mockData().item ?? {};
+    const savedPath = resolveDownloadPath(target, {
+      ...options,
+      suggestedFilename: `${extractCnkiId(target) ?? 'cnki-paper'}.pdf`
+    });
+    await mkdir(dirname(savedPath), { recursive: true });
+    await writeFile(savedPath, process.env.SZU_MOCK_CNKI_PDF_TEXT ?? '%PDF-1.4 mock cnki pdf\n');
+    return {
+      provider: 'cnki',
+      title: item.title ?? null,
+      fileName: savedPath.split(/[\\/]/).at(-1),
+      savedPath,
+      sourceUrl: item.sourceUrl ?? target,
+      downloadedBy: 'visible-button-click'
+    };
+  }
+  assertHeaded(options);
+
+  const context = await launchContext(options, { acceptDownloads: true });
+  try {
+    const page = context.pages()[0] ?? await context.newPage();
+    await openCnkiAccess(page, options);
+    await gotoPage(page, target);
+    await waitForAcademicPage(page);
+    const state = await extractState(page);
+    assertAccessible(state, 'CNKI');
+    const detail = await extractCnkiDetail(page);
+    const pdfButton = await findCnkiPdfDownloadButton(page);
+    if (!pdfButton) {
+      throwDownloadUnavailable('No visible CNKI PDF download button was found.');
+    }
+
+    const download = await clickCnkiPdfDownload(pdfButton, context);
+    if (!download) {
+      throwDownloadUnavailable('The visible CNKI PDF download button did not start a browser download.');
+    }
+
+    const failure = await download.failure().catch(() => null);
+    if (failure) {
+      throwDownloadUnavailable(`CNKI download failed: ${failure}`);
+    }
+
+    const savedPath = resolveDownloadPath(target, {
+      ...options,
+      suggestedFilename: download.suggestedFilename()
+    });
+    await mkdir(dirname(savedPath), { recursive: true });
+    await download.saveAs(savedPath);
+
+    return {
+      provider: 'cnki',
+      title: detail.title || null,
+      fileName: download.suggestedFilename(),
+      savedPath,
+      sourceUrl: page.url(),
+      downloadedBy: 'visible-button-click'
+    };
   } finally {
     await context.close();
   }
@@ -281,15 +351,89 @@ async function extractCnkiRows(page) {
   });
 }
 
+async function findCnkiPdfDownloadButton(page) {
+  const candidates = [
+    page.locator('a').filter({ hasText: /^PDF下载$/ }),
+    page.locator('li.btn-dlpdf a').filter({ hasText: /PDF下载/ }),
+    page.locator('a, button, [role="button"]').filter({ hasText: /^PDF下载$/ })
+  ];
+
+  for (const locator of candidates) {
+    const count = await locator.count().catch(() => 0);
+    for (let index = 0; index < count; index += 1) {
+      const item = locator.nth(index);
+      if (await item.isVisible().catch(() => false)) {
+        return item;
+      }
+    }
+  }
+  return null;
+}
+
+async function clickCnkiPdfDownload(pdfButton, context) {
+  const downloadPromise = waitForDownloadInContext(context, 45000);
+  await pdfButton.click({ timeout: 10000 });
+  return downloadPromise;
+}
+
+async function waitForDownloadInContext(context, timeoutMs) {
+  return new Promise((resolve) => {
+    let settled = false;
+    const timer = setTimeout(() => done(null), timeoutMs);
+    const pageListeners = new Map();
+
+    function done(download) {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      clearTimeout(timer);
+      context.off('page', onPage);
+      for (const [page, listener] of pageListeners) {
+        page.off('download', listener);
+      }
+      resolve(download);
+    }
+
+    function watchPage(page) {
+      if (pageListeners.has(page)) {
+        return;
+      }
+      const listener = (download) => done(download);
+      pageListeners.set(page, listener);
+      page.on('download', listener);
+    }
+
+    function onPage(page) {
+      watchPage(page);
+    }
+
+    for (const page of context.pages()) {
+      watchPage(page);
+    }
+    context.on('page', onPage);
+  });
+}
+
+async function openCnkiAccess(page, options = {}) {
+  await gotoPage(page, options.url ?? CNKI_ACCESS_URL);
+  await waitForAcademicPage(page);
+  const state = await extractState(page);
+  assertAccessible(state, 'CNKI');
+}
+
 function mockData() {
   return JSON.parse(process.env.SZU_MOCK_CNKI_JSON ?? '{}');
 }
 
-async function launchContext(options) {
+async function launchContext(options, launchOverrides = {}) {
   const { chromium } = await importPlaywright();
   return chromium.launchPersistentContext(
     getProfilePath(),
-    getLaunchOptions({ headless: options.headless ?? true })
+    {
+      ...getLaunchOptions({ headless: options.headless ?? true }),
+      ...launchOverrides
+    }
   );
 }
 
@@ -350,4 +494,32 @@ function assertAccessible(state, provider) {
     error.hint = 'Complete verification manually; the CLI will not bypass CAPTCHA or sliders.';
     throw error;
   }
+}
+
+function resolveDownloadPath(target, options = {}) {
+  if (options.output) {
+    return options.output;
+  }
+  const name = sanitizeFileName(options.suggestedFilename || `${extractCnkiId(target) ?? 'cnki-paper'}.pdf`);
+  return join(options.dir ?? process.cwd(), name);
+}
+
+function extractCnkiId(target) {
+  const url = String(target ?? '');
+  const filename = url.match(/[?&]filename=([^&#]+)/i)?.[1];
+  if (filename) {
+    return filename;
+  }
+  return url.match(/\/([^/?#]+)(?:[?#].*)?$/)?.[1] ?? null;
+}
+
+function sanitizeFileName(name) {
+  return String(name).replace(/^[·\s]+/, '').replace(/[<>:"/\\|?*\x00-\x1F]/g, '_');
+}
+
+function throwDownloadUnavailable(message) {
+  const error = new Error(message);
+  error.code = 'DOWNLOAD_UNAVAILABLE';
+  error.hint = 'Open the CNKI item page manually, confirm PDF access, and retry one item at a time.';
+  throw error;
 }
