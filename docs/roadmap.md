@@ -18,7 +18,7 @@ Exit criteria:
 
 Deliverables:
 
-- `szu doctor --json`.
+- `szu-cli doctor --json`.
 - Version output.
 - JSON envelope helpers.
 - Structured error helpers.
@@ -38,8 +38,8 @@ Deliverables:
 
 - Playwright dependency.
 - Persistent profile path.
-- `szu auth login`.
-- `szu auth status --json`.
+- `szu-cli auth login`.
+- `szu-cli auth status --json`.
 
 Exit criteria:
 
@@ -54,12 +54,12 @@ Status:
 
 Deliverables:
 
-- `szu notice list --limit <n> --json`.
-- `szu notice list --page <n> --pages <n> --json`.
-- `szu notice search <keyword> --json`.
+- `szu-cli notice list --limit <n> --json`.
+- `szu-cli notice list --page <n> --pages <n> --json`.
+- `szu-cli notice search <keyword> --json`.
 - Site search through the board search form.
-- `szu notice view <id|url> --json`.
-- `szu notice download <id|url> --dir <path> --json`.
+- `szu-cli notice view <id|url> --json`.
+- `szu-cli notice download <id|url> --dir <path> --json`.
 - Redacted fixtures.
 - Parser tests.
 
@@ -75,9 +75,9 @@ Status:
 
 Deliverables:
 
-- `szu course status --json`.
-- `szu course list --json`.
-- `szu course today --json`.
+- `szu-cli course status --json`.
+- `szu-cli course list --json`.
+- `szu-cli course today --json`.
 - Grades.
 - Electricity balance.
 - WebVPN gateway support.
@@ -112,12 +112,12 @@ Deliverables:
 
 - npm package.
 - Bundled `szu-campus` skill.
-- `szu skill path --json`.
-- `szu skill install --target codex --json`.
-- `szu setup codex --json`.
+- `szu-cli skill path --json`.
+- `szu-cli skill install --target codex --json`.
+- `szu-cli setup codex --json`.
 - Installation docs.
 - Release checklist.
 
 Exit criteria:
 
-- A user can install the npm package, run `szu setup codex`, and verify package contents with `npm pack --dry-run`.
+- A user can install the npm package, run `szu-cli setup codex`, and verify package contents with `npm pack --dry-run`.

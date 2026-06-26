@@ -22,8 +22,8 @@ export async function setupCodex(options = {}) {
     },
     skill,
     nextSteps: [
-      'Run `szu auth login` and complete login in the browser.',
-      'Run `szu auth status --json`.'
+      'Run `szu-cli auth login` and complete login in the browser.',
+      'Run `szu-cli auth status --json`.'
     ]
   };
 }

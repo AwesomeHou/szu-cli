@@ -1,6 +1,6 @@
 # Release Checklist
 
-The package publishes the CLI and the bundled `szu-campus` skill together. Skill installation is explicit through `szu setup codex`; the npm install step does not write agent configuration directories.
+The package publishes the CLI and the bundled `szu-campus` skill together. Skill installation is explicit through `szu-cli setup codex`; the npm install step does not write agent configuration directories.
 
 ## Pre-Release Checks
 
@@ -35,17 +35,17 @@ npm install -g ./szu-cli-0.1.0-alpha.1.tgz
 Verify:
 
 ```bash
-szu --version
-szu doctor --json
-szu skill path --json
-szu setup codex --json
+szu-cli --version
+szu-cli doctor --json
+szu-cli skill path --json
+szu-cli setup codex --json
 ```
 
 Then initialize login manually:
 
 ```bash
-szu auth login
-szu auth status --json
+szu-cli auth login
+szu-cli auth status --json
 ```
 
 ## Publish Alpha
@@ -60,7 +60,7 @@ Users install with:
 
 ```bash
 npm install -g szu-cli@alpha
-szu setup codex
+szu-cli setup codex
 ```
 
 ## Publish Stable
@@ -76,7 +76,7 @@ Users install with:
 
 ```bash
 npm install -g szu-cli
-szu setup codex
+szu-cli setup codex
 ```
 
 ## Safety Boundary

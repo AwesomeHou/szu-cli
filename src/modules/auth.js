@@ -34,7 +34,7 @@ export async function loginWithBrowserProfile(options = {}) {
     url: page.url(),
     profilePath,
     backend: 'playwright',
-    message: 'Complete login in the opened browser window, then rerun `szu auth status --json`.'
+    message: 'Complete login in the opened browser window, then rerun `szu-cli auth status --json`.'
   };
 }
 

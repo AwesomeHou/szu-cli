@@ -63,8 +63,8 @@ test('setup codex installs skill and returns next steps', () => {
   assert.equal(body.data.skill.installedPath, join(targetRoot, 'szu-campus'));
   assert.equal(existsSync(join(targetRoot, 'szu-campus', 'SKILL.md')), true);
   assert.deepEqual(body.data.nextSteps, [
-    'Run `szu auth login` and complete login in the browser.',
-    'Run `szu auth status --json`.'
+    'Run `szu-cli auth login` and complete login in the browser.',
+    'Run `szu-cli auth status --json`.'
   ]);
   rmSync(targetRoot, { recursive: true, force: true });
 });

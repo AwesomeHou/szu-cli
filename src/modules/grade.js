@@ -77,7 +77,7 @@ function assertGradeAccess(authState, pageState) {
   if (authState.reason === 'cas-login-page') {
     const error = new Error('Browser profile is not logged in to SZU eHall.');
     error.code = 'LOGIN_REQUIRED';
-    error.hint = 'Run `szu auth login --url https://ehall.szu.edu.cn/new/index.html` and complete login.';
+    error.hint = 'Run `szu-cli auth login --url https://ehall.szu.edu.cn/new/index.html` and complete login.';
     throw error;
   }
 
@@ -111,7 +111,7 @@ async function loadGradeApi(options = {}) {
   if (!existsSync(profilePath)) {
     const error = new Error('Browser profile does not exist.');
     error.code = 'LOGIN_REQUIRED';
-    error.hint = 'Run `szu auth login --url https://ehall.szu.edu.cn/new/index.html` first.';
+    error.hint = 'Run `szu-cli auth login --url https://ehall.szu.edu.cn/new/index.html` first.';
     throw error;
   }
 

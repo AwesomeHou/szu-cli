@@ -1,25 +1,25 @@
 ---
 name: szu-campus
-description: Use when an agent needs to operate Shenzhen University web services through the local `szu` CLI. Covers login checks, read-only campus queries, safety boundaries, and JSON error handling.
+description: Use when an agent needs to operate Shenzhen University web services through the local `szu-cli` CLI. Covers login checks, read-only campus queries, safety boundaries, and JSON error handling.
 ---
 
 # SZU Campus CLI Skill
 
-Use the `szu` CLI as the source of truth. Do not implement campus scraping or browser automation inside this skill.
+Use the `szu-cli` CLI as the source of truth. Do not implement campus scraping or browser automation inside this skill.
 
 ## First Steps
 
 Check local readiness:
 
 ```bash
-szu doctor --json
-szu auth status --json
+szu-cli doctor --json
+szu-cli auth status --json
 ```
 
 If login is required, ask the user to run:
 
 ```bash
-szu auth login
+szu-cli auth login
 ```
 
 The user should complete login in the browser window opened by the CLI.
@@ -29,35 +29,35 @@ The user should complete login in the browser window opened by the CLI.
 Use JSON output for agent workflows:
 
 ```bash
-szu notice list --limit 10 --json
-szu notice list --page 2 --limit 10 --json
-szu notice search 奖学金 --json
-szu notice search 奖学金 --type title --range 6m --json
-szu notice view 577444 --json
-szu notice download 577444 --dir downloads --json
-szu course status --json
-szu course list --json
-szu course today --json
-szu grade status --json
-szu grade list --json
-szu grade list --term 2025-2026-1 --json
-szu electricity status --json
-szu electricity buildings --json
-szu electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
-szu library status --json
-szu library search 交通设计 --json
-szu library search --title 交通设计 --author 刘立新 --json
-szu library item 3706432 --json
-szu cnki search 交通设计 --headed --json
-szu cnki search 交通设计 --headed --format gbt7714 --json
-szu cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
-szu cnki item <url> --headed --json
-szu cnki download <url> --headed --dir downloads --json
-szu wanfang search 交通设计 --headed --json
-szu wanfang search 交通设计 --headed --format markdown --json
-szu wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
-szu wanfang item <url> --headed --json
-szu wanfang download <url> --headed --dir downloads --json
+szu-cli notice list --limit 10 --json
+szu-cli notice list --page 2 --limit 10 --json
+szu-cli notice search 奖学金 --json
+szu-cli notice search 奖学金 --type title --range 6m --json
+szu-cli notice view 577444 --json
+szu-cli notice download 577444 --dir downloads --json
+szu-cli course status --json
+szu-cli course list --json
+szu-cli course today --json
+szu-cli grade status --json
+szu-cli grade list --json
+szu-cli grade list --term 2025-2026-1 --json
+szu-cli electricity status --json
+szu-cli electricity buildings --json
+szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
+szu-cli library status --json
+szu-cli library search 交通设计 --json
+szu-cli library search --title 交通设计 --author 刘立新 --json
+szu-cli library item 3706432 --json
+szu-cli cnki search 交通设计 --headed --json
+szu-cli cnki search 交通设计 --headed --format gbt7714 --json
+szu-cli cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
+szu-cli cnki item <url> --headed --json
+szu-cli cnki download <url> --headed --dir downloads --json
+szu-cli wanfang search 交通设计 --headed --json
+szu-cli wanfang search 交通设计 --headed --format markdown --json
+szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
+szu-cli wanfang item <url> --headed --json
+szu-cli wanfang download <url> --headed --dir downloads --json
 ```
 
 Use `notice list --page <n> --limit <n>` for paged full-list queries. `notice search` submits the website search form; default search is full text over the last 6 months. Use `--type title` when the user expects the keyword to appear in titles. Use `notice view <id|url>` to fetch the title, publisher, publish time, plain-text body, and indexed attachment links. Do not ask users to open attachment URLs directly; use `notice download <id|url> --index <n> --dir <path>` so the CLI downloads through the logged-in detail page.

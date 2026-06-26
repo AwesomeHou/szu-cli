@@ -16,7 +16,7 @@ Skill
   -> explains error handling
 ```
 
-The skill should not duplicate browser automation logic. Agents should call `szu`.
+The skill should not duplicate browser automation logic. Agents should call `szu-cli`.
 
 ## Installation Model
 
@@ -24,16 +24,16 @@ Recommended:
 
 ```bash
 npm install -g szu-cli@alpha
-szu setup codex
+szu-cli setup codex
 ```
 
-`npm install` makes the `szu` command available. `szu setup codex` explicitly copies the bundled `skills/szu-campus` folder into the Codex-visible skill directory.
+`npm install` makes the `szu-cli` command available. `szu-cli setup codex` explicitly copies the bundled `skills/szu-campus` folder into the Codex-visible skill directory.
 
 This keeps installation explicit while still giving users a one-command setup step after the CLI is installed:
 
 ```bash
 npm update -g szu-cli
-szu setup codex
+szu-cli setup codex
 ```
 
 The skill can declare a minimum CLI version:
@@ -49,7 +49,7 @@ A skill can include installation instructions or a helper script, but it should 
 Good:
 
 ```text
-If `szu` is missing, ask the user to install it with `npm install -g szu-cli@alpha`, then run `szu setup codex`.
+If `szu-cli` is missing, ask the user to install it with `npm install -g szu-cli@alpha`, then run `szu-cli setup codex`.
 ```
 
 Avoid:
@@ -63,22 +63,22 @@ Automatically install a global CLI when the skill is loaded.
 Agents should start with:
 
 ```bash
-szu doctor --json
-szu skill path --json
-szu auth status --json
+szu-cli doctor --json
+szu-cli skill path --json
+szu-cli auth status --json
 ```
 
 If login is required:
 
 ```bash
-szu auth login
+szu-cli auth login
 ```
 
 Then call read-only commands:
 
 ```bash
-szu notice search 奖学金 --json
-szu course today --json
+szu-cli notice search 奖学金 --json
+szu-cli course today --json
 ```
 
 Agents must not loop aggressively or submit state-changing commands without confirmation.

@@ -217,7 +217,7 @@ export async function run(argv) {
   const error = {
     code: 'UNSUPPORTED_ACTION',
     message: `Unsupported command: ${argv.join(' ') || '(empty)'}`,
-    hint: 'Try `szu doctor --json`.'
+    hint: 'Try `szu-cli doctor --json`.'
   };
 
   if (json) {

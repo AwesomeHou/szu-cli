@@ -1,6 +1,6 @@
-# SZU CLI
+# szu-cli CLI
 
-`szu` is an early-stage, agent-friendly CLI for Shenzhen University web services.
+`szu-cli` is an early-stage, agent-friendly CLI for Shenzhen University web services.
 
 The goal is to turn common campus web workflows into stable CLI commands with structured JSON output, while preserving user privacy and using normal browser login flows.
 
@@ -15,24 +15,24 @@ npm install -g szu-cli@alpha
 Install the bundled Codex skill explicitly:
 
 ```bash
-szu setup codex
+szu-cli setup codex
 ```
 
 Then initialize the browser login profile:
 
 ```bash
-szu auth login
-szu auth status --json
+szu-cli auth login
+szu-cli auth status --json
 ```
 
-The npm package includes the CLI and `skills/szu-campus`, but `npm install` does not automatically write agent directories. `szu setup codex` copies the skill to `~/.agents/skills/szu-campus`.
+The npm package includes the CLI and `skills/szu-campus`, but `npm install` does not automatically write agent directories. `szu-cli setup codex` copies the skill to `~/.agents/skills/szu-campus`.
 
 ## Direction
 
 This project does not require OpenCLI as a default dependency. The planned backend is:
 
 ```text
-szu CLI
+szu-cli CLI
   -> Playwright persistent browser profile
   -> user logs in through normal web pages
   -> campus page adapters parse visible pages or stable responses
@@ -61,84 +61,84 @@ An optional agent skill can be installed alongside the CLI, but the CLI remains 
 ## Planned Commands
 
 ```bash
-szu doctor --json
-szu auth status --json
-szu auth login
-szu skill path --json
-szu skill install --target codex --json
-szu setup codex
-szu notice list --limit 10 --json
-szu notice list --page 2 --limit 10 --json
-szu notice search 奖学金 --json
-szu notice search 奖学金 --type title --range 6m --json
-szu notice view 577444 --json
-szu notice download 577444 --dir downloads --json
-szu course status --json
-szu course list --json
-szu course today --json
-szu grade status --json
-szu grade list --json
-szu grade list --term 2025-2026-1 --json
-szu electricity status --json
-szu electricity buildings --json
-szu electricity query --json
-szu library status --json
-szu library search 交通设计 --json
-szu library search --title 交通设计 --author 刘立新 --json
-szu library item 3706432 --json
-szu cnki search 交通设计 --headed --json
-szu cnki search 交通设计 --headed --format gbt7714 --json
-szu cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
-szu cnki item <url> --headed --json
-szu cnki download <url> --headed --dir downloads --json
-szu wanfang search 交通设计 --headed --json
-szu wanfang search 交通设计 --headed --format markdown --json
-szu wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
-szu wanfang item <url> --headed --json
-szu wanfang download <url> --headed --dir downloads --json
+szu-cli doctor --json
+szu-cli auth status --json
+szu-cli auth login
+szu-cli skill path --json
+szu-cli skill install --target codex --json
+szu-cli setup codex
+szu-cli notice list --limit 10 --json
+szu-cli notice list --page 2 --limit 10 --json
+szu-cli notice search 奖学金 --json
+szu-cli notice search 奖学金 --type title --range 6m --json
+szu-cli notice view 577444 --json
+szu-cli notice download 577444 --dir downloads --json
+szu-cli course status --json
+szu-cli course list --json
+szu-cli course today --json
+szu-cli grade status --json
+szu-cli grade list --json
+szu-cli grade list --term 2025-2026-1 --json
+szu-cli electricity status --json
+szu-cli electricity buildings --json
+szu-cli electricity query --json
+szu-cli library status --json
+szu-cli library search 交通设计 --json
+szu-cli library search --title 交通设计 --author 刘立新 --json
+szu-cli library item 3706432 --json
+szu-cli cnki search 交通设计 --headed --json
+szu-cli cnki search 交通设计 --headed --format gbt7714 --json
+szu-cli cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
+szu-cli cnki item <url> --headed --json
+szu-cli cnki download <url> --headed --dir downloads --json
+szu-cli wanfang search 交通设计 --headed --json
+szu-cli wanfang search 交通设计 --headed --format markdown --json
+szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
+szu-cli wanfang item <url> --headed --json
+szu-cli wanfang download <url> --headed --dir downloads --json
 ```
 
 Current implemented foundation:
 
 ```bash
-npm run szu -- --version
-npm run szu -- doctor --json
-npm run szu -- auth status --json
-npm run szu -- auth login --url https://www1.szu.edu.cn/board/
-npm run szu -- skill path --json
-npm run szu -- skill install --target codex --json
-npm run szu -- setup codex
-npm run szu -- notice list --limit 10 --json
-npm run szu -- notice list --page 2 --limit 10 --json
-npm run szu -- notice search 奖学金 --limit 10 --json
-npm run szu -- notice search 奖学金 --type title --range 6m --limit 10 --json
-npm run szu -- notice view 577444 --json
-npm run szu -- notice download 577444 --dir downloads --json
-npm run szu -- course status --json
-npm run szu -- course list --json
-npm run szu -- course today --json
-npm run szu -- grade status --json
-npm run szu -- grade list --json
-npm run szu -- grade list --term 2025-2026-1 --json
-npm run szu -- electricity status --json
-npm run szu -- electricity buildings --json
-npm run szu -- electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
-npm run szu -- library status --json
-npm run szu -- library search 交通设计 --limit 10 --json
-npm run szu -- library search --title 交通设计 --author 刘立新 --doc-type 普通图书 --location 南馆 --json
-npm run szu -- library item 3706432 --json
-npm run szu -- cnki status --headed --json
-npm run szu -- cnki search 交通设计 --headed --limit 10 --json
-npm run szu -- cnki search 交通设计 --headed --format gbt7714 --limit 10 --json
-npm run szu -- cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --limit 10 --json
-npm run szu -- cnki item "<search返回的url>" --headed --json
-npm run szu -- cnki download "<详情页url>" --headed --dir downloads --json
-npm run szu -- wanfang status --headed --json
-npm run szu -- wanfang search 交通设计 --headed --limit 10 --json
-npm run szu -- wanfang search 交通设计 --headed --format markdown --limit 10 --json
-npm run szu -- wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --limit 10 --json
-npm run szu -- wanfang item "<详情页url>" --headed --json
-npm run szu -- wanfang download "<详情页url>" --headed --dir downloads --json
+npm run szu-cli -- --version
+npm run szu-cli -- doctor --json
+npm run szu-cli -- auth status --json
+npm run szu-cli -- auth login --url https://www1.szu.edu.cn/board/
+npm run szu-cli -- skill path --json
+npm run szu-cli -- skill install --target codex --json
+npm run szu-cli -- setup codex
+npm run szu-cli -- notice list --limit 10 --json
+npm run szu-cli -- notice list --page 2 --limit 10 --json
+npm run szu-cli -- notice search 奖学金 --limit 10 --json
+npm run szu-cli -- notice search 奖学金 --type title --range 6m --limit 10 --json
+npm run szu-cli -- notice view 577444 --json
+npm run szu-cli -- notice download 577444 --dir downloads --json
+npm run szu-cli -- course status --json
+npm run szu-cli -- course list --json
+npm run szu-cli -- course today --json
+npm run szu-cli -- grade status --json
+npm run szu-cli -- grade list --json
+npm run szu-cli -- grade list --term 2025-2026-1 --json
+npm run szu-cli -- electricity status --json
+npm run szu-cli -- electricity buildings --json
+npm run szu-cli -- electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
+npm run szu-cli -- library status --json
+npm run szu-cli -- library search 交通设计 --limit 10 --json
+npm run szu-cli -- library search --title 交通设计 --author 刘立新 --doc-type 普通图书 --location 南馆 --json
+npm run szu-cli -- library item 3706432 --json
+npm run szu-cli -- cnki status --headed --json
+npm run szu-cli -- cnki search 交通设计 --headed --limit 10 --json
+npm run szu-cli -- cnki search 交通设计 --headed --format gbt7714 --limit 10 --json
+npm run szu-cli -- cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --limit 10 --json
+npm run szu-cli -- cnki item "<search返回的url>" --headed --json
+npm run szu-cli -- cnki download "<详情页url>" --headed --dir downloads --json
+npm run szu-cli -- wanfang status --headed --json
+npm run szu-cli -- wanfang search 交通设计 --headed --limit 10 --json
+npm run szu-cli -- wanfang search 交通设计 --headed --format markdown --limit 10 --json
+npm run szu-cli -- wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --limit 10 --json
+npm run szu-cli -- wanfang item "<详情页url>" --headed --json
+npm run szu-cli -- wanfang download "<详情页url>" --headed --dir downloads --json
 ```
 
 `auth login` opens a persistent browser profile. Complete login in the browser, then close the browser window. Later commands reuse the saved profile under `~/.szu-cli/browser-profile/`.
@@ -149,8 +149,8 @@ On Windows, the browser backend uses the system Chrome channel by default, so it
 
 ```powershell
 $env:SZU_BROWSER_CHANNEL='msedge'
-npm run szu -- auth login --url https://www1.szu.edu.cn/board/
-npm run szu -- auth status --json
+npm run szu-cli -- auth login --url https://www1.szu.edu.cn/board/
+npm run szu-cli -- auth status --json
 ```
 
 Notice commands read the current board pages with the persistent browser profile. `notice list` reads the homepage by default and switches to the full `infolist.asp` source when `--page` or `--pages` is used. `notice search` submits the site's search form; default search is `--type full --range 6m`. `notice view` accepts either a numeric notice id or an absolute notice detail URL and includes attachment indexes. Attachment links may reject direct browser opening, so use `notice download --index <n>` to download through the logged-in detail page.
@@ -168,8 +168,8 @@ CNKI and Wanfang commands are headed-browser academic MVPs. They use SZU library
 State-changing commands, such as reservations, must begin with dry-run behavior:
 
 ```bash
-szu gym availability --date 2026-06-23 --json
-szu gym reserve --date 2026-06-23 --slot 19:00 --dry-run --json
+szu-cli gym availability --date 2026-06-23 --json
+szu-cli gym reserve --date 2026-06-23 --slot 19:00 --dry-run --json
 ```
 
 ## Documentation

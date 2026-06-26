@@ -27,7 +27,7 @@ export async function getNoticeItems(options = {}) {
   if (!authState.loggedIn) {
     const error = new Error('Browser profile is not logged in to SZU board.');
     error.code = 'LOGIN_REQUIRED';
-    error.hint = 'Run `szu auth login --url https://www1.szu.edu.cn/board/` and complete login.';
+    error.hint = 'Run `szu-cli auth login --url https://www1.szu.edu.cn/board/` and complete login.';
     throw error;
   }
 
@@ -74,7 +74,7 @@ export async function getNoticeDetail(target, options = {}) {
   if (!authState.loggedIn) {
     const error = new Error('Browser profile is not logged in to SZU board.');
     error.code = 'LOGIN_REQUIRED';
-    error.hint = 'Run `szu auth login --url https://www1.szu.edu.cn/board/` and complete login.';
+    error.hint = 'Run `szu-cli auth login --url https://www1.szu.edu.cn/board/` and complete login.';
     throw error;
   }
 
@@ -104,7 +104,7 @@ export async function downloadNoticeAttachment(target, options = {}) {
 
   const profilePath = getProfilePath();
   if (!existsSync(profilePath)) {
-    throwLoginRequired('Browser profile does not exist.', 'Run `szu auth login --url https://www1.szu.edu.cn/board/` first.');
+    throwLoginRequired('Browser profile does not exist.', 'Run `szu-cli auth login --url https://www1.szu.edu.cn/board/` first.');
   }
 
   const { chromium } = await importPlaywright();
@@ -191,7 +191,7 @@ function selectAttachment(attachments, index = 1) {
   if (!attachment) {
     const error = new Error(`Attachment #${index} was not found.`);
     error.code = 'PAGE_CHANGED';
-    error.hint = 'Run `szu notice view <id> --json` to inspect available attachments.';
+    error.hint = 'Run `szu-cli notice view <id> --json` to inspect available attachments.';
     throw error;
   }
   return attachment;
@@ -208,7 +208,7 @@ function sanitizeFileName(name) {
   return name.replace(/^[·\s]+/, '').replace(/[<>:"/\\|?*\x00-\x1F]/g, '_');
 }
 
-function throwLoginRequired(message = 'Browser profile is not logged in to SZU board.', hint = 'Run `szu auth login --url https://www1.szu.edu.cn/board/` and complete login.') {
+function throwLoginRequired(message = 'Browser profile is not logged in to SZU board.', hint = 'Run `szu-cli auth login --url https://www1.szu.edu.cn/board/` and complete login.') {
   const error = new Error(message);
   error.code = 'LOGIN_REQUIRED';
   error.hint = hint;
@@ -226,7 +226,7 @@ async function loadNoticeSearchHtml(options) {
 
   const profilePath = getProfilePath();
   if (!existsSync(profilePath)) {
-    throwLoginRequired('Browser profile does not exist.', 'Run `szu auth login --url https://www1.szu.edu.cn/board/` first.');
+    throwLoginRequired('Browser profile does not exist.', 'Run `szu-cli auth login --url https://www1.szu.edu.cn/board/` first.');
   }
 
   const { chromium } = await importPlaywright();
@@ -266,7 +266,7 @@ async function loadPageHtml(url, options) {
   if (!existsSync(profilePath)) {
     const error = new Error('Browser profile does not exist.');
     error.code = 'LOGIN_REQUIRED';
-    error.hint = 'Run `szu auth login --url https://www1.szu.edu.cn/board/` first.';
+    error.hint = 'Run `szu-cli auth login --url https://www1.szu.edu.cn/board/` first.';
     throw error;
   }
 

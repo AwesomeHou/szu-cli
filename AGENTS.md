@@ -1,6 +1,6 @@
-# SZU CLI Agent Guide
+# szu-cli CLI Agent Guide
 
-This repository builds `szu`, an agent-friendly CLI for Shenzhen University web services.
+This repository builds `szu-cli`, an agent-friendly CLI for Shenzhen University web services.
 
 The project direction is independent by default: do not assume OpenCLI is required. The preferred backend is a local browser automation layer with a persistent browser profile, so the user can log in through the normal web UI and the CLI can reuse that authenticated state.
 
@@ -17,7 +17,7 @@ The project direction is independent by default: do not assume OpenCLI is requir
 
 ```text
 Agent or human
-  -> szu CLI contract
+  -> szu-cli CLI contract
   -> command modules
   -> gateway resolver: direct campus URL or WebVPN URL
   -> browser backend: Playwright persistent profile
@@ -27,7 +27,7 @@ Agent or human
 The skill layer is documentation and operating guidance. It should not contain core scraping, browser automation, or campus business logic.
 
 ```text
-Skill: when and how to call szu
+Skill: when and how to call szu-cli
 CLI: performs the operation
 Browser profile: preserves login state
 Adapters: understand each campus web page
@@ -51,7 +51,7 @@ Adapters: understand each campus web page
 
 ## Engineering Rules
 
-- Keep the public `szu` command stable even if internals change.
+- Keep the public `szu-cli` command stable even if internals change.
 - Prefer small modules with explicit inputs and outputs.
 - Every agent-facing command must support `--json`.
 - Use structured errors and exit codes. Do not require agents to parse human prose.

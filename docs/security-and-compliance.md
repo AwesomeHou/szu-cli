@@ -1,6 +1,6 @@
 # Security and Compliance
 
-SZU CLI should act like a careful local assistant using the user's own account.
+szu-cli CLI should act like a careful local assistant using the user's own account.
 
 ## Privacy Rules
 

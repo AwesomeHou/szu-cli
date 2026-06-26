@@ -15,7 +15,7 @@ On Windows, the CLI uses the system Chrome channel by default through Playwright
 Flow:
 
 ```text
-szu auth login
+szu-cli auth login
   -> launch browser with persistent profile
   -> user completes SZU or WebVPN login manually
   -> user closes the browser window after login
@@ -25,7 +25,7 @@ szu auth login
 Future commands reuse the same profile:
 
 ```text
-szu notice list --json
+szu-cli notice list --json
   -> open page with persistent profile
   -> if logged in, parse data
   -> if redirected to login, return LOGIN_REQUIRED
@@ -34,7 +34,7 @@ szu notice list --json
 Current login check:
 
 ```text
-szu auth status --json
+szu-cli auth status --json
   -> open https://www1.szu.edu.cn/board/ with the persistent profile
   -> logged in if the page shows the SZU user menu, including 个人中心 and 注销
   -> logged out if the browser reaches the CAS login page

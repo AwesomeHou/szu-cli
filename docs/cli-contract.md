@@ -5,46 +5,46 @@ The CLI contract is the stable interface for humans and agents.
 ## Command Shape
 
 ```bash
-szu <domain> <action> [flags]
+szu-cli <domain> <action> [flags]
 ```
 
 Examples:
 
 ```bash
-szu doctor --json
-szu auth status --json
-szu skill path --json
-szu skill install --target codex --json
-szu setup codex --json
-szu notice list --limit 10 --json
-szu notice list --page 2 --pages 1 --limit 10 --json
-szu notice search 奖学金 --json
-szu notice search 奖学金 --type title --range 6m --json
-szu notice view 577444 --json
-szu notice download 577444 --dir downloads --json
-szu course status --json
-szu course list --json
-szu course today --json
-szu grade status --json
-szu grade list --json
-szu grade list --term 2025-2026-1 --json
-szu electricity status --json
-szu electricity buildings --json
-szu electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
-szu library status --json
-szu library search 交通设计 --json
-szu library search --title 交通设计 --author 刘立新 --json
-szu library item 3706432 --json
-szu cnki search 交通设计 --headed --json
-szu cnki search 交通设计 --headed --format gbt7714 --json
-szu cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
-szu cnki item <url> --headed --json
-szu cnki download <url> --headed --dir downloads --json
-szu wanfang search 交通设计 --headed --json
-szu wanfang search 交通设计 --headed --format markdown --json
-szu wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
-szu wanfang item <url> --headed --json
-szu wanfang download <url> --headed --dir downloads --json
+szu-cli doctor --json
+szu-cli auth status --json
+szu-cli skill path --json
+szu-cli skill install --target codex --json
+szu-cli setup codex --json
+szu-cli notice list --limit 10 --json
+szu-cli notice list --page 2 --pages 1 --limit 10 --json
+szu-cli notice search 奖学金 --json
+szu-cli notice search 奖学金 --type title --range 6m --json
+szu-cli notice view 577444 --json
+szu-cli notice download 577444 --dir downloads --json
+szu-cli course status --json
+szu-cli course list --json
+szu-cli course today --json
+szu-cli grade status --json
+szu-cli grade list --json
+szu-cli grade list --term 2025-2026-1 --json
+szu-cli electricity status --json
+szu-cli electricity buildings --json
+szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
+szu-cli library status --json
+szu-cli library search 交通设计 --json
+szu-cli library search --title 交通设计 --author 刘立新 --json
+szu-cli library item 3706432 --json
+szu-cli cnki search 交通设计 --headed --json
+szu-cli cnki search 交通设计 --headed --format gbt7714 --json
+szu-cli cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
+szu-cli cnki item <url> --headed --json
+szu-cli cnki download <url> --headed --dir downloads --json
+szu-cli wanfang search 交通设计 --headed --json
+szu-cli wanfang search 交通设计 --headed --format markdown --json
+szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
+szu-cli wanfang item <url> --headed --json
+szu-cli wanfang download <url> --headed --dir downloads --json
 ```
 
 ## Global Flags
@@ -78,7 +78,7 @@ Failure:
   "error": {
     "code": "LOGIN_REQUIRED",
     "message": "The browser profile is not logged in.",
-    "hint": "Run `szu auth login` and complete login in the browser."
+    "hint": "Run `szu-cli auth login` and complete login in the browser."
   },
   "meta": {
     "command": "notice list",
@@ -119,7 +119,7 @@ Failure:
 
 ## Skill And Setup Schema
 
-`szu skill path --json` returns the bundled skill path without installing it:
+`szu-cli skill path --json` returns the bundled skill path without installing it:
 
 ```json
 {
@@ -136,7 +136,7 @@ Failure:
 }
 ```
 
-`szu skill install --target codex --json` copies the bundled skill to the Codex-visible personal skill directory. Use `--dir <path>` to override the target root.
+`szu-cli skill install --target codex --json` copies the bundled skill to the Codex-visible personal skill directory. Use `--dir <path>` to override the target root.
 
 ```json
 {
@@ -156,7 +156,7 @@ Failure:
 }
 ```
 
-`szu setup codex --json` installs the bundled Codex skill and returns first-use next steps. Use `--skill-dir <path>` to override the skill root.
+`szu-cli setup codex --json` installs the bundled Codex skill and returns first-use next steps. Use `--skill-dir <path>` to override the skill root.
 
 ```json
 {
@@ -178,8 +178,8 @@ Failure:
       "installedPath": "C:/Users/name/.agents/skills/szu-campus"
     },
     "nextSteps": [
-      "Run `szu auth login` and complete login in the browser.",
-      "Run `szu auth status --json`."
+      "Run `szu-cli auth login` and complete login in the browser.",
+      "Run `szu-cli auth status --json`."
     ]
   },
   "meta": {
@@ -200,7 +200,7 @@ Failure:
 
 ## Notice Detail Schema
 
-`szu notice view <id|url> --json` returns:
+`szu-cli notice view <id|url> --json` returns:
 
 ```json
 {
@@ -243,7 +243,7 @@ Failure:
 
 ## Notice Download Schema
 
-`szu notice download <id|url> --dir <path> --json` downloads an attachment by opening the logged-in notice detail page and clicking the attachment link there. Use `--index <n>` to select an attachment; the default is `1`.
+`szu-cli notice download <id|url> --dir <path> --json` downloads an attachment by opening the logged-in notice detail page and clicking the attachment link there. Use `--index <n>` to select an attachment; the default is `1`.
 
 ```json
 {
@@ -267,7 +267,7 @@ Failure:
 
 ## Course List Schema
 
-`szu course list --json` returns the current eHall timetable. It does not expose student names or IDs.
+`szu-cli course list --json` returns the current eHall timetable. It does not expose student names or IDs.
 
 ```json
 {
@@ -310,11 +310,11 @@ Failure:
 }
 ```
 
-`szu course today --json` returns the same item shape filtered to the current local date and current teaching week. `szu course status --json` only checks access and returns `loggedIn`, `reason`, `term`, and `sourceUrl`.
+`szu-cli course today --json` returns the same item shape filtered to the current local date and current teaching week. `szu-cli course status --json` only checks access and returns `loggedIn`, `reason`, `term`, and `sourceUrl`.
 
 ## Grade List Schema
 
-`szu grade list --json` returns eHall grade-query records. It does not expose student names or IDs.
+`szu-cli grade list --json` returns eHall grade-query records. It does not expose student names or IDs.
 
 Use `--term <termId>` to filter one term, for example `--term 2025-2026-1`.
 
@@ -362,11 +362,11 @@ Use `--term <termId>` to filter one term, for example `--term 2025-2026-1`.
 }
 ```
 
-`szu grade status --json` only checks access and returns `loggedIn`, `reason`, `total`, `terms`, and `sourceUrl`.
+`szu-cli grade status --json` only checks access and returns `loggedIn`, `reason`, `total`, `terms`, and `sourceUrl`.
 
 ## Electricity Schema
 
-`szu electricity buildings --json` returns the available campuses and buildings from the SIMS electricity query page. This command requires campus intranet access.
+`szu-cli electricity buildings --json` returns the available campuses and buildings from the SIMS electricity query page. This command requires campus intranet access.
 
 ```json
 {
@@ -394,7 +394,7 @@ Use `--term <termId>` to filter one term, for example `--term 2025-2026-1`.
 }
 ```
 
-`szu electricity query --campus <name> --building <name> --room <room> --json` queries usage records and reports the latest remaining kWh found in the date range. It defaults to the last 7 days. Use `--from YYYY-MM-DD --to YYYY-MM-DD` to override the range.
+`szu-cli electricity query --campus <name> --building <name> --room <room> --json` queries usage records and reports the latest remaining kWh found in the date range. It defaults to the last 7 days. Use `--from YYYY-MM-DD --to YYYY-MM-DD` to override the range.
 
 ```json
 {
@@ -427,11 +427,11 @@ Use `--term <termId>` to filter one term, for example `--term 2025-2026-1`.
 }
 ```
 
-`szu electricity status --json` only checks whether the intranet system is reachable and returns `available`, `campusCount`, and `sourceUrl`. If the system is unreachable, commands return `NETWORK_REQUIRED`.
+`szu-cli electricity status --json` only checks whether the intranet system is reachable and returns `available`, `campusCount`, and `sourceUrl`. If the system is unreachable, commands return `NETWORK_REQUIRED`.
 
 ## Library Search Schema
 
-`szu library search <keyword> --json` searches the SZU OPAC catalog. It uses the persistent browser profile, so OPAC search history can be recorded when the profile is logged in. Use `--limit <n>` to limit returned rows; default is `10`.
+`szu-cli library search <keyword> --json` searches the SZU OPAC catalog. It uses the persistent browser profile, so OPAC search history can be recorded when the profile is logged in. Use `--limit <n>` to limit returned rows; default is `10`.
 
 ```json
 {
@@ -467,12 +467,12 @@ Use `--term <termId>` to filter one term, for example `--term 2025-2026-1`.
 }
 ```
 
-`szu library status --json` checks OPAC reachability and login state. It returns `available`, `loggedIn`, `historyRecorded`, and `sourceUrl`.
+`szu-cli library status --json` checks OPAC reachability and login state. It returns `available`, `loggedIn`, `historyRecorded`, and `sourceUrl`.
 
 The same `library search` command supports advanced OPAC fields. If a positional keyword is provided, it uses quick search. If field flags are provided, it uses advanced search. Supported field flags include `--title`, `--author`, `--subject`, `--publisher`, `--isbn`, `--issn`, `--call-number`, `--classification`, `--doc-type`, `--language`, `--location`, `--sort`, and `--order`.
 
 ```bash
-szu library search --title 交通设计 --author 刘立新 --doc-type 普通图书 --location 南馆 --json
+szu-cli library search --title 交通设计 --author 刘立新 --doc-type 普通图书 --location 南馆 --json
 ```
 
 Advanced search output keeps the same item shape and adds an `advanced` object:
@@ -499,7 +499,7 @@ Advanced search output keeps the same item shape and adds an `advanced` object:
 }
 ```
 
-`szu library item <id|url> --json` returns one catalog item and its copy-level holdings.
+`szu-cli library item <id|url> --json` returns one catalog item and its copy-level holdings.
 
 ```json
 {
@@ -540,7 +540,7 @@ Advanced search output keeps the same item shape and adds an `advanced` object:
 
 ## Academic Metadata Search Schema
 
-`szu cnki search <keyword> --headed --json` and `szu wanfang search <keyword> --headed --json` perform read-only metadata search through the SZU library campus channels.
+`szu-cli cnki search <keyword> --headed --json` and `szu-cli wanfang search <keyword> --headed --json` perform read-only metadata search through the SZU library campus channels.
 
 These MVP commands require `--headed`. CNKI and Wanfang also support single-item user-initiated PDF/full-text download commands that click visible download buttons. Use `--limit <n>` to limit returned search rows; default is `10`.
 
@@ -549,7 +549,7 @@ Search commands support citation exports through `--format <markdown|gbt7714|bib
 CNKI also supports a small advanced-search MVP through field flags:
 
 ```bash
-szu cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
+szu-cli cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
 ```
 
 This maps to CNKI advanced search conditions: 篇名 = 优化 AND 摘要 = 交通 AND 摘要 = 调度. `--abstract` is repeatable. The MVP defaults to the 学术期刊 database scope (`YSTT4HG0`) for this academic-paper workflow. The output keeps the same item shape and adds an optional `advanced` object:
@@ -603,7 +603,7 @@ This maps to CNKI advanced search conditions: 篇名 = 优化 AND 摘要 = 交�
 Wanfang supports a similar fielded metadata-search MVP:
 
 ```bash
-szu wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
+szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
 ```
 
 This maps to Wanfang periodical search conditions: 题名 = 优化 AND 关键词 = 交通 AND 摘要 = 调度. Supported Wanfang field flags are `--title`, `--author`, `--keyword`, and `--abstract`. The MVP defaults to the 学术期刊 periodical scope. The output uses the same item shape and `advanced` object shape, with Wanfang field labels and codes:
@@ -623,9 +623,9 @@ For Wanfang the same section becomes:
 }
 ```
 
-`szu cnki status --headed --json` and `szu wanfang status --headed --json` check reachability and campus authorization without returning result rows.
+`szu-cli cnki status --headed --json` and `szu-cli wanfang status --headed --json` check reachability and campus authorization without returning result rows.
 
-`szu cnki item <url> --headed --json` and `szu wanfang item <url> --headed --json` open one detail page and return read-only bibliographic metadata. They do not download PDFs, CAJ files, original full text, or attachments.
+`szu-cli cnki item <url> --headed --json` and `szu-cli wanfang item <url> --headed --json` open one detail page and return read-only bibliographic metadata. They do not download PDFs, CAJ files, original full text, or attachments.
 
 ```json
 {
@@ -658,7 +658,7 @@ For Wanfang the same section becomes:
 }
 ```
 
-`szu cnki download <url> --headed --dir <path> --json` and `szu wanfang download <url> --headed --dir <path> --json` open one detail page and click a visible PDF/full-text download button in the browser. They do not support batch downloading, hidden download URL construction, CAPTCHA bypass, CAJ conversion, or non-PDF CNKI downloading.
+`szu-cli cnki download <url> --headed --dir <path> --json` and `szu-cli wanfang download <url> --headed --dir <path> --json` open one detail page and click a visible PDF/full-text download button in the browser. They do not support batch downloading, hidden download URL construction, CAPTCHA bypass, CAJ conversion, or non-PDF CNKI downloading.
 
 ```json
 {

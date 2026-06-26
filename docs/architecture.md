@@ -1,12 +1,12 @@
 # Architecture
 
-SZU CLI should be designed as a stable command surface with replaceable execution internals.
+szu-cli CLI should be designed as a stable command surface with replaceable execution internals.
 
 ## Layers
 
 ```text
 Human or agent
-  -> szu CLI
+  -> szu-cli CLI
   -> command module
   -> gateway resolver
   -> browser backend
@@ -92,6 +92,6 @@ The adapter should parse visible notice sections and links before relying on und
 
 ## Skill Layer
 
-Skills are optional guidance for agents. They should explain how to call `szu`, how to interpret errors, and what not to do.
+Skills are optional guidance for agents. They should explain how to call `szu-cli`, how to interpret errors, and what not to do.
 
 Skills must not duplicate core browser automation logic.
