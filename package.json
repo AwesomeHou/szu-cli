@@ -5,7 +5,7 @@
   "description": "Agent-friendly CLI for Shenzhen University web services.",
   "type": "module",
   "bin": {
-    "szu": "./src/cli.js"
+    "szu": "src/cli.js"
   },
   "files": [
     "src",
