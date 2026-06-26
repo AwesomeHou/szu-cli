@@ -1,0 +1,51 @@
+{
+  "qxpyfacx": {
+    "datas": {
+      "qxpyfacx": {
+        "totalSize": 2,
+        "pageNumber": 1,
+        "pageSize": 12,
+        "rows": [
+          {
+            "WID": "program-001",
+            "PYFADM": "2025-050101-01",
+            "PYFAMC": "2025级汉语言文学（卓越班）主修培养方案",
+            "NJDM": "2025",
+            "NJDM_DISPLAY": "2025级",
+            "DWDM": "01",
+            "DWDM_DISPLAY": "人文学院",
+            "ZYDM": "050101",
+            "ZYDM_DISPLAY": "汉语言文学（卓越班）",
+            "ZYFXDM_DISPLAY": "卓越班",
+            "ZSYQXF": "160",
+            "XZNX": "4",
+            "XWDM_DISPLAY": "文学学士",
+            "KSXNDM_DISPLAY": "2025-2026学年",
+            "KSXQDM_DISPLAY": "第一学期",
+            "FAZTDM": "99",
+            "SFFB": "1",
+            "XH": "2023000000",
+            "XM": "测试用户"
+          },
+          {
+            "WID": "program-002",
+            "PYFADM": "2024-080901-01",
+            "PYFAMC": "2024级计算机科学与技术主修培养方案",
+            "NJDM": "2024",
+            "NJDM_DISPLAY": "2024级",
+            "DWDM_DISPLAY": "计算机与软件学院",
+            "ZYDM_DISPLAY": "计算机科学与技术",
+            "ZSYQXF": "165",
+            "XZNX": "4",
+            "XWDM_DISPLAY": "工学学士",
+            "KSXNDM_DISPLAY": "2024-2025学年",
+            "KSXQDM_DISPLAY": "第一学期",
+            "FAZTDM": "99",
+            "SFFB": "1"
+          }
+        ]
+      }
+    },
+    "code": "0"
+  }
+}

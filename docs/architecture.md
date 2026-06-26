@@ -35,6 +35,8 @@ Planned modules:
 - `auth`: login status and login flow.
 - `notice`: campus notice list and search.
 - `course`: schedule lookup.
+- `program`: all-school training program lookup.
+- `timetable`: all-school class timetable lookup.
 - `grade`: grade lookup.
 - `electricity`: electricity balance lookup.
 - `gym`: availability and reservation flows.
