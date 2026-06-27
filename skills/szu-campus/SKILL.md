@@ -54,6 +54,10 @@ szu-cli growth list --term 2025-2026-2 --json
 szu-cli growth list --year 2025-2026 --json
 szu-cli ideology status --json
 szu-cli ideology summary --json
+szu-cli completion status --json
+szu-cli completion summary --json
+szu-cli completion modules --json
+szu-cli completion courses --module <moduleCode> --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
 szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
@@ -86,6 +90,8 @@ Use `grade status` to check eHall grade-query access and `grade list` for read-o
 Use `growth status` to check Growth Record access, `growth summary` for cumulative GPA and professional ranking, and `growth list` for term or academic-year summaries. Use `--term <termId>` or `--year <academicYear>` when the user requests one period. GPA and ranking data are private; only echo the fields needed for the user's request.
 
 Use `ideology status` to check Ideology and Social Practice access and `ideology summary` to read earned credits and qualification status. Do not expose student name, student number, class code, or internal record IDs.
+
+Use `completion status` to check Academic Completion access and calculation readiness, `completion summary` for plan-level credits, and `completion modules` to discover module codes and remaining credits. Use `completion courses --module <moduleCode>` to return all completed, selected, and not-taken curriculum courses for one module. Treat `not-taken` as a curriculum candidate only; do not claim it is currently offered or that the student can enroll. The calculation can take time; allow the command to wait and increase `--timeout <seconds>` only when needed. Do not retry `CALCULATION_TIMEOUT` aggressively.
 
 Use `electricity status` to check whether the SIMS electricity intranet system is reachable, `electricity buildings` to discover valid campus/building names, and `electricity query --campus <name> --building <name> --room <room>` to read recent usage records and latest remaining kWh. Electricity payment is not supported.
 

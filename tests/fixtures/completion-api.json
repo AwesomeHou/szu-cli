@@ -1,0 +1,162 @@
+{
+  "progress": {
+    "datas": {
+      "byscjd": {
+        "rows": [
+          {
+            "ZXJDKEY": "internal-progress-key",
+            "ZS": "1",
+            "YWCS": "1"
+          }
+        ]
+      }
+    },
+    "code": "0"
+  },
+  "cxscfa": {
+    "datas": {
+      "cxscfa": {
+        "rows": [
+          {
+            "WID": "internal-plan-record",
+            "XH": "2023000000",
+            "XM": "测试用户",
+            "BJDM": "202301",
+            "PYFADM": "plan-001",
+            "PYFAMC": "2023级智慧交通主修培养方案",
+            "BYNJDM": "-",
+            "SCLBDM": "01",
+            "YQXF": "150",
+            "WCXF": "90",
+            "XKXF": "100",
+            "SJWCXF": "88",
+            "FAWXF": "2",
+            "SCQKSM": "计算完成"
+          }
+        ]
+      }
+    },
+    "code": "0"
+  },
+  "cxscfakz": {
+    "datas": {
+      "cxscfakz": {
+        "rows": [
+          {
+            "WID": "internal-module-1",
+            "XH": "2023000000",
+            "PYFADM": "plan-001",
+            "BYNJDM": "-",
+            "SCLBDM": "01",
+            "KZH": "module-01",
+            "FKZH": null,
+            "KZM": "公共基础课程",
+            "KZLXDM": "01",
+            "KCLBDM": "01",
+            "BY1": "context-01",
+            "YQXF": "20",
+            "WCXF": "16",
+            "XKXF": "18",
+            "YQMS": "10",
+            "WCMS": "8",
+            "SFTG": "0"
+          },
+          {
+            "WID": "internal-module-2",
+            "XH": "2023000000",
+            "PYFADM": "plan-001",
+            "BYNJDM": "-",
+            "SCLBDM": "01",
+            "KZH": "module-02",
+            "FKZH": null,
+            "KZM": "专业核心课程",
+            "KZLXDM": "02",
+            "KCLBDM": "02",
+            "BY1": "context-02",
+            "YQXF": "30",
+            "WCXF": "30",
+            "XKXF": "30",
+            "YQMS": "12",
+            "WCMS": "12",
+            "SFTG": "1"
+          }
+        ]
+      }
+    },
+    "code": "0"
+  },
+  "coursesByModule": {
+    "module-01": {
+      "datas": {
+        "cxscfakzkc": {
+          "totalSize": 3,
+          "pageNumber": 1,
+          "pageSize": 999,
+          "rows": [
+            {
+              "WID": "internal-course-1",
+              "XH": "2023000000",
+              "KZH": "module-01",
+              "KCH": "course-001",
+              "KCM": "已完成课程",
+              "XF": "2",
+              "KCLBDM_DISPLAY": "公共选修课",
+              "KCXZDM_DISPLAY": "选修",
+              "KSLXDM_DISPLAY": "考试",
+              "SFTG": "1",
+              "SFTG_DISPLAY": "通过",
+              "SFXK": null,
+              "CJ": "A",
+              "XNXQDM": "2025-2026-1",
+              "XNXQDM_DISPLAY": "2025-2026学年第一学期",
+              "TDKC": null,
+              "TYKCBS": "1",
+              "BZ": null
+            },
+            {
+              "WID": "internal-course-2",
+              "XH": "2023000000",
+              "KZH": "module-01",
+              "KCH": "course-002",
+              "KCM": "已选课程",
+              "XF": "3",
+              "KCLBDM_DISPLAY": "公共选修课",
+              "KCXZDM_DISPLAY": "选修",
+              "KSLXDM_DISPLAY": "考查",
+              "SFTG": "2",
+              "SFTG_DISPLAY": "未修读",
+              "SFXK": "1",
+              "CJ": null,
+              "XNXQDM": "2025-2026-2",
+              "XNXQDM_DISPLAY": "2025-2026学年第二学期",
+              "TDKC": null,
+              "TYKCBS": "1",
+              "BZ": null
+            },
+            {
+              "WID": "internal-course-3",
+              "XH": "2023000000",
+              "KZH": "module-01",
+              "KCH": "course-003",
+              "KCM": "未修课程",
+              "XF": "2",
+              "KCLBDM_DISPLAY": "公共选修课",
+              "KCXZDM_DISPLAY": "选修",
+              "KSLXDM_DISPLAY": "考查",
+              "SFTG": "2",
+              "SFTG_DISPLAY": "未修读",
+              "SFXK": null,
+              "CJ": null,
+              "XNXQDM": null,
+              "XNXQDM_DISPLAY": null,
+              "TDKC": "替代课程说明",
+              "TYKCBS": "2",
+              "BZ": "培养方案候选"
+            }
+          ]
+        }
+      },
+      "code": "0"
+    }
+  }
+}

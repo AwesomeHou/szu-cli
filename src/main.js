@@ -3,6 +3,12 @@ import { readFile } from 'node:fs/promises';
 import { normalizeAcademicFormat } from './modules/academic-format.js';
 import { loginWithBrowserProfile, getAuthStatus } from './modules/auth.js';
 import { downloadCnkiPdf, getCnkiItem, getCnkiStatus, searchCnki } from './modules/cnki.js';
+import {
+  getCompletionCourses,
+  getCompletionModules,
+  getCompletionStatus,
+  getCompletionSummary
+} from './modules/completion.js';
 import { getCourseList, getCourseStatus, getTodayCourses } from './modules/course.js';
 import { getDoctorReport } from './modules/doctor.js';
 import { getElectricityBuildings, getElectricityStatus, queryElectricity } from './modules/electricity.js';
@@ -176,6 +182,27 @@ export async function run(argv) {
       }));
     } catch (error) {
       handleKnownError(error, `ideology ${action}`);
+    }
+    return;
+  }
+
+  if (domain === 'completion' && (action === 'status' || action === 'summary' || action === 'modules' || action === 'courses')) {
+    try {
+      const options = parseCompletionOptions(action, argv.slice(2));
+      const data = action === 'status'
+        ? await getCompletionStatus(options)
+        : action === 'summary'
+          ? await getCompletionSummary(options)
+          : action === 'modules'
+            ? await getCompletionModules(options)
+            : await getCompletionCourses(options.moduleCode, options);
+      writeJson(successEnvelope(data, {
+        command: `completion ${action}`,
+        gateway: 'direct',
+        sourceUrl: data.sourceUrl
+      }));
+    } catch (error) {
+      handleKnownError(error, `completion ${action}`);
     }
     return;
   }
@@ -629,6 +656,48 @@ function parseIdeologyOptions(argv) {
       continue;
     }
     throw new Error(`Unknown option: ${arg}`);
+  }
+  return options;
+}
+
+function parseCompletionOptions(action, argv) {
+  const options = {
+    headless: true,
+    url: null,
+    moduleCode: null,
+    timeoutSeconds: 180
+  };
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--url') {
+      options.url = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--module' && action === 'courses') {
+      options.moduleCode = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--timeout') {
+      options.timeoutSeconds = Number.parseInt(requireValue(argv, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  assertPositiveInteger(options.timeoutSeconds, '--timeout');
+  if (action === 'courses' && !options.moduleCode) {
+    throw new Error('--module is required for completion courses.');
   }
   return options;
 }
@@ -1203,6 +1272,8 @@ function handleKnownError(error, command) {
     SKILL_NOT_FOUND: 21,
     CLASS_NOT_FOUND: 22,
     PROGRAM_NOT_FOUND: 23,
+    CALCULATION_TIMEOUT: 24,
+    MODULE_NOT_FOUND: 25,
     RATE_LIMITED: 30,
     DOWNLOAD_UNAVAILABLE: 31,
     HEADED_REQUIRED: 2
@@ -1211,7 +1282,8 @@ function handleKnownError(error, command) {
   writeJson(errorEnvelope({
     code,
     message: error.message,
-    ...(error.hint ? { hint: error.hint } : {})
+    ...(error.hint ? { hint: error.hint } : {}),
+    ...(error.details ? { details: error.details } : {})
   }, { command }));
   process.exitCode = exitCodes[code] ?? 1;
 }

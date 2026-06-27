@@ -92,6 +92,10 @@ szu-cli growth list --term 2025-2026-2 --json
 szu-cli growth list --year 2025-2026 --json
 szu-cli ideology status --json
 szu-cli ideology summary --json
+szu-cli completion status --json
+szu-cli completion summary --json
+szu-cli completion modules --json
+szu-cli completion courses --module <moduleCode> --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
 szu-cli electricity query --json
@@ -146,6 +150,10 @@ npm run szu-cli -- growth list --term 2025-2026-2 --json
 npm run szu-cli -- growth list --year 2025-2026 --json
 npm run szu-cli -- ideology status --json
 npm run szu-cli -- ideology summary --json
+npm run szu-cli -- completion status --json
+npm run szu-cli -- completion summary --json
+npm run szu-cli -- completion modules --json
+npm run szu-cli -- completion courses --module <moduleCode> --json
 npm run szu-cli -- electricity status --json
 npm run szu-cli -- electricity buildings --json
 npm run szu-cli -- electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
@@ -193,6 +201,8 @@ Growth commands read the eHall Growth Record application. `growth summary` retur
 
 Ideology commands read the eHall Ideology and Social Practice application. `ideology summary` returns the available ideological education/social-practice credit summary and qualification status without exposing student name, student number, class code, or internal record IDs.
 
+Completion commands read the eHall Academic Completion Query application. The page performs a server-side training-plan calculation before results are ready, so the CLI waits for the progress API instead of the sometimes-stale progress dialog. `completion summary` returns plan-level credits, `completion modules` returns each module's required/completed/remaining credits, and `completion courses --module <moduleCode>` returns every curriculum course in one module with its completion state and details. A `not-taken` course is a curriculum candidate only; the CLI does not claim it is currently offered or selectable. Use `--timeout <seconds>` to override the default 180-second calculation timeout.
+
 Electricity commands read the campus intranet SIMS electricity query system. They do not require login, do not use the persistent browser profile, and currently support direct campus-network access only. Use `electricity buildings --json` to list available campuses and buildings before querying a room. `electricity query` defaults to the last 7 days of usage records and reports the latest remaining kWh found in that range.
 
 Library commands read the SZU OPAC catalog. They use the same persistent browser profile by default so the OPAC can record search history when the profile is logged in. Search still works when OPAC is not logged in, but `historyRecorded` will be `false`. `library search <keyword>` uses quick search; `library search --title ... --author ...` uses OPAC advanced search.
@@ -219,4 +229,4 @@ szu-cli gym reserve --date 2026-06-23 --slot 19:00 --dry-run --json
 
 ## Status
 
-This repository currently contains the project structure, design documents, persistent-profile login foundation, and read-only adapters for notices, personal course timetable, all-school program/timetable queries, grades, Growth Record GPA/rankings, ideology/social-practice credits, electricity usage, library catalog search, and headed academic metadata search for CNKI and Wanfang.
+This repository currently contains the project structure, design documents, persistent-profile login foundation, and read-only adapters for notices, personal course timetable, all-school program/timetable queries, grades, Growth Record GPA/rankings, ideology/social-practice credits, academic completion modules/courses, electricity usage, library catalog search, and headed academic metadata search for CNKI and Wanfang.

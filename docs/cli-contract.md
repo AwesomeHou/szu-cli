@@ -41,6 +41,10 @@ szu-cli growth list --term 2025-2026-2 --json
 szu-cli growth list --year 2025-2026 --json
 szu-cli ideology status --json
 szu-cli ideology summary --json
+szu-cli completion status --json
+szu-cli completion summary --json
+szu-cli completion modules --json
+szu-cli completion courses --module <moduleCode> --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
 szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
@@ -598,6 +602,63 @@ Use `--term <termId>` to filter one term, for example `--term 2025-2026-1`.
 ```
 
 An account with no summary row returns `available: false` and nullable summary fields. The command omits student name, student number, class code, and internal record identifiers. `ideology status` returns `loggedIn`, `reason`, `available`, `earnedCredits`, and `sourceUrl`.
+
+## Academic Completion Schema
+
+The Academic Completion application calculates training-plan progress after the page opens. Commands wait until the progress API reports all work complete. The default timeout is 180 seconds and can be changed with `--timeout <seconds>`.
+
+`szu-cli completion summary --json` returns plan-level credit totals. `completion modules --json` adds module rows:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "plan": {
+      "planCode": "plan-code",
+      "planName": "2023级智慧交通主修培养方案",
+      "requiredCredits": 150,
+      "completedCredits": 90,
+      "selectedCredits": 100,
+      "actualCompletedCredits": 88,
+      "outsidePlanCredits": 2,
+      "remainingCredits": 60,
+      "note": null
+    },
+    "calculation": {
+      "state": "completed",
+      "completed": 1,
+      "total": 1,
+      "percent": 100
+    },
+    "items": [
+      {
+        "moduleCode": "module-code",
+        "parentModuleCode": null,
+        "moduleName": "公共基础课程",
+        "moduleTypeCode": "01",
+        "courseCategoryCode": "01",
+        "requiredCredits": 20,
+        "completedCredits": 16,
+        "selectedCredits": 18,
+        "remainingCredits": 4,
+        "requiredCourseCount": 10,
+        "completedCourseCount": 8,
+        "passed": false
+      }
+    ],
+    "sourceUrl": "https://ehall.szu.edu.cn/jwapp/sys/xywccx/*default/index.do#/xywccx"
+  },
+  "meta": {
+    "command": "completion modules",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+Use a returned `moduleCode` with `szu-cli completion courses --module <moduleCode> --json`. The result includes every course under that module with `status` equal to `completed`, `selected`, `not-taken`, or `unknown`, plus credit, category, nature, exam type, score, term, substitution, and notes. `not-taken` means a curriculum candidate; it does not guarantee current offering or enrollment eligibility.
+
+Calculation timeout returns `CALCULATION_TIMEOUT` with `error.details.completed`, `total`, `percent`, and `timeoutSeconds`. Unknown module codes return `MODULE_NOT_FOUND`.
 
 ## Electricity Schema
 
