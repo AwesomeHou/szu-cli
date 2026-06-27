@@ -89,6 +89,7 @@ Deliverables:
 - `szu-cli ideology status/summary --json`.
 - `szu-cli completion status/summary/modules --json`.
 - `szu-cli completion courses --module <moduleCode> --json`.
+- `szu-cli lecture status/list/item/progress --json`.
 - Electricity balance.
 - WebVPN gateway support.
 
@@ -103,6 +104,7 @@ Status:
 - Growth Record status, cumulative summary, and term/academic-year GPA and professional-ranking queries are implemented for direct eHall access.
 - Ideology and Social Practice status and credit summary are implemented for direct eHall access.
 - Academic Completion plan summary, module progress, and module-level course details are implemented with condition-based calculation waiting.
+- Innovation Lecture status, current registration availability, and online/offline learning progress are implemented as read-only commands.
 - Electricity status, campus/building discovery, and room usage query are implemented for direct campus-network access. Payment is intentionally out of scope.
 - Library OPAC status and catalog search are implemented with persistent-profile login reuse for search-history recording.
 - CNKI and Wanfang headed-browser metadata search are implemented for direct campus/library access. CNKI and Wanfang support single-item visible-button PDF/full-text download MVPs; batch download, CAJ download, and hidden direct-link construction remain out of scope.

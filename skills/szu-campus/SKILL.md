@@ -58,6 +58,11 @@ szu-cli completion status --json
 szu-cli completion summary --json
 szu-cli completion modules --json
 szu-cli completion courses --module <moduleCode> --json
+szu-cli lecture status --json
+szu-cli lecture list --json
+szu-cli lecture list --availability open --json
+szu-cli lecture item <id> --json
+szu-cli lecture progress --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
 szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
@@ -92,6 +97,8 @@ Use `growth status` to check Growth Record access, `growth summary` for cumulati
 Use `ideology status` to check Ideology and Social Practice access and `ideology summary` to read earned credits and qualification status. Do not expose student name, student number, class code, or internal record IDs.
 
 Use `completion status` to check Academic Completion access and calculation readiness, `completion summary` for plan-level credits, and `completion modules` to discover module codes and remaining credits. Use `completion courses --module <moduleCode>` to return all completed, selected, and not-taken curriculum courses for one module. Treat `not-taken` as a curriculum candidate only; do not claim it is currently offered or that the student can enroll. The calculation can take time; allow the command to wait and increase `--timeout <seconds>` only when needed. Do not retry `CALCULATION_TIMEOUT` aggressively.
+
+Use `lecture status` to check Innovation Lecture login and availability. `lecture list` defaults to lectures that are both inside the registration window and have remaining classroom capacity; inspect `summary.fullCount` and `summary.unknownCount` when the list is empty. Use `--availability open` to include full/unknown open lectures, `--availability all` for history, and `lecture item <id>` for classroom locations and remaining seats. Use `lecture progress` for completed and required online/offline study counts. These commands are read-only; do not attempt registration or expose the raw user profile.
 
 Use `electricity status` to check whether the SIMS electricity intranet system is reachable, `electricity buildings` to discover valid campus/building names, and `electricity query --campus <name> --building <name> --room <room>` to read recent usage records and latest remaining kWh. Electricity payment is not supported.
 

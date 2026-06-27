@@ -41,6 +41,7 @@ Planned modules:
 - `growth`: Growth Record GPA, credit, and ranking lookup.
 - `ideology`: ideological education and social-practice credit lookup.
 - `completion`: training-plan calculation, module completion, and module course lookup.
+- `lecture`: Innovation Lecture availability and learning-progress lookup.
 - `electricity`: electricity balance lookup.
 - `gym`: availability and reservation flows.
 

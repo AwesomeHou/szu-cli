@@ -45,6 +45,11 @@ szu-cli completion status --json
 szu-cli completion summary --json
 szu-cli completion modules --json
 szu-cli completion courses --module <moduleCode> --json
+szu-cli lecture status --json
+szu-cli lecture list --json
+szu-cli lecture list --availability open --json
+szu-cli lecture item <id> --json
+szu-cli lecture progress --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
 szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
@@ -116,6 +121,7 @@ Failure:
 - `RATE_LIMITED`: remote service appears to limit requests.
 - `DOWNLOAD_UNAVAILABLE`: visible provider download button was missing or did not produce a downloadable file.
 - `SKILL_NOT_FOUND`: bundled agent skill is missing from the installed package.
+- `LECTURE_NOT_FOUND`: requested lecture ID is not present in the lecture list.
 - `HEADED_REQUIRED`: command requires a visible browser session.
 - `UNSUPPORTED_ACTION`: command is known but not implemented.
 - `UNKNOWN_ERROR`: unexpected failure.
@@ -131,6 +137,7 @@ Failure:
 - `13`: permission denied.
 - `20`: page structure changed.
 - `21`: bundled skill missing.
+- `26`: lecture not found.
 - `30`: rate-limited or anti-abuse signal detected.
 - `31`: download unavailable.
 
@@ -659,6 +666,68 @@ The Academic Completion application calculates training-plan progress after the 
 Use a returned `moduleCode` with `szu-cli completion courses --module <moduleCode> --json`. The result includes every course under that module with `status` equal to `completed`, `selected`, `not-taken`, or `unknown`, plus credit, category, nature, exam type, score, term, substitution, and notes. `not-taken` means a curriculum candidate; it does not guarantee current offering or enrollment eligibility.
 
 Calculation timeout returns `CALCULATION_TIMEOUT` with `error.details.completed`, `total`, `percent`, and `timeoutSeconds`. Unknown module codes return `MODULE_NOT_FOUND`.
+
+## Lecture Schema
+
+`szu-cli lecture list --json` defaults to lectures whose registration window is
+open and whose classroom detail reports positive remaining capacity:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "total": 1,
+    "summary": {
+      "openCount": 2,
+      "availableCount": 1,
+      "fullCount": 1,
+      "unknownCount": 0,
+      "closedCount": 18
+    },
+    "items": [
+      {
+        "id": "lecture-id",
+        "title": "讲座名称",
+        "type": "线下",
+        "teacher": "主讲人",
+        "department": "学院",
+        "sponsor": "主办单位",
+        "registrationStart": "2026-06-26 08:00:00",
+        "registrationDeadline": "2026-06-28 18:00:00",
+        "lectureStart": "2026-06-29 14:00:00",
+        "lectureEnd": "2026-06-29 16:00:00",
+        "status": "正在报名中",
+        "registrationOpen": true,
+        "registerable": true,
+        "availabilityState": "available",
+        "availableRooms": 1,
+        "totalRemainingSeats": 2,
+        "introduction": "讲座简介",
+        "teacherIntroduction": "主讲人简介"
+      }
+    ],
+    "sourceUrl": "https://lecture.szu.edu.cn/"
+  },
+  "meta": {
+    "command": "lecture list",
+    "gateway": "direct"
+  }
+}
+```
+
+Use `--availability open` to include `full` and `unknown` lectures that remain
+inside the registration window. Use `--availability all` to include closed
+history. `lecture item <id>` returns the same lecture fields plus classroom
+rows containing `campus`, `building`, `roomNumber`, `isSpeaker`, `capacity`,
+`reservedSeats`, `remainingSeats`, and `status`. Missing IDs return
+`LECTURE_NOT_FOUND`.
+
+`lecture progress` returns `offline` and `online` objects with `completed`,
+`required`, `remaining`, and `passed`, plus an overall `percentage`. It never
+returns the raw user record, name, student number, password, salt, or session
+identifier. `lecture status` checks login and reports `registerableCount`.
+Lecture registration is not supported, and the adapter never calls registration
+or cancellation endpoints.
 
 ## Electricity Schema
 

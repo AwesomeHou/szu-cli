@@ -15,6 +15,12 @@ import { getElectricityBuildings, getElectricityStatus, queryElectricity } from 
 import { getGradeList, getGradeStatus } from './modules/grade.js';
 import { getGrowthList, getGrowthStatus, getGrowthSummary } from './modules/growth.js';
 import { getIdeologyStatus, getIdeologySummary } from './modules/ideology.js';
+import {
+  getLectureItem,
+  getLectureList,
+  getLectureProgress,
+  getLectureStatus
+} from './modules/lecture.js';
 import { getLibraryItem, getLibraryStatus, searchLibrary } from './modules/library.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
 import { getProgramItem, getProgramList, getProgramStatus } from './modules/program.js';
@@ -203,6 +209,27 @@ export async function run(argv) {
       }));
     } catch (error) {
       handleKnownError(error, `completion ${action}`);
+    }
+    return;
+  }
+
+  if (domain === 'lecture' && (action === 'status' || action === 'list' || action === 'item' || action === 'progress')) {
+    try {
+      const options = parseLectureOptions(action, argv.slice(2));
+      const data = action === 'status'
+        ? await getLectureStatus(options)
+        : action === 'item'
+          ? await getLectureItem(options.target, options)
+        : action === 'progress'
+          ? await getLectureProgress(options)
+          : await getLectureList(options);
+      writeJson(successEnvelope(data, {
+        command: `lecture ${action}`,
+        gateway: 'direct',
+        sourceUrl: data.sourceUrl
+      }));
+    } catch (error) {
+      handleKnownError(error, `lecture ${action}`);
     }
     return;
   }
@@ -656,6 +683,58 @@ function parseIdeologyOptions(argv) {
       continue;
     }
     throw new Error(`Unknown option: ${arg}`);
+  }
+  return options;
+}
+
+function parseLectureOptions(action, argv) {
+  const args = [...argv];
+  const options = {
+    headless: true,
+    url: null,
+    limit: 20,
+    availability: 'available',
+    target: null
+  };
+
+  if (action === 'item') {
+    const target = args.shift();
+    if (!target || target.startsWith('--')) {
+      throw new Error('lecture item requires an id.');
+    }
+    options.target = target;
+  }
+
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--url') {
+      options.url = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--limit' && action === 'list') {
+      options.limit = Number.parseInt(requireValue(args, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--availability' && action === 'list') {
+      options.availability = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  assertPositiveInteger(options.limit, '--limit');
+  if (!['available', 'open', 'all'].includes(options.availability)) {
+    throw new Error('--availability must be one of: available, open, all.');
   }
   return options;
 }
@@ -1274,6 +1353,7 @@ function handleKnownError(error, command) {
     PROGRAM_NOT_FOUND: 23,
     CALCULATION_TIMEOUT: 24,
     MODULE_NOT_FOUND: 25,
+    LECTURE_NOT_FOUND: 26,
     RATE_LIMITED: 30,
     DOWNLOAD_UNAVAILABLE: 31,
     HEADED_REQUIRED: 2
