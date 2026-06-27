@@ -34,6 +34,13 @@ szu-cli timetable view 20250101100101 --json
 szu-cli grade status --json
 szu-cli grade list --json
 szu-cli grade list --term 2025-2026-1 --json
+szu-cli growth status --json
+szu-cli growth summary --json
+szu-cli growth list --json
+szu-cli growth list --term 2025-2026-2 --json
+szu-cli growth list --year 2025-2026 --json
+szu-cli ideology status --json
+szu-cli ideology summary --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
 szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
@@ -520,6 +527,77 @@ Use `--term <termId>` to filter one term, for example `--term 2025-2026-1`.
 ```
 
 `szu-cli grade status --json` only checks access and returns `loggedIn`, `reason`, `total`, `terms`, and `sourceUrl`.
+
+## Growth Record Schema
+
+`szu-cli growth summary --json` returns cumulative GPA, professional ranking, ranking population, relative rank, and credit totals. `szu-cli growth list --json` returns term and academic-year summaries. Use either `--term <termId>` or `--year <academicYear>`; the two flags are mutually exclusive.
+
+```json
+{
+  "ok": true,
+  "data": {
+    "terms": [
+      {
+        "id": "2025-2026-2",
+        "name": "2025-2026学年第二学期",
+        "academicYear": "2025-2026",
+        "semester": "2"
+      }
+    ],
+    "filters": {},
+    "items": [
+      {
+        "periodType": "term",
+        "periodId": "2025-2026-2",
+        "periodName": "2025-2026学年第二学期",
+        "gpa": 3.75,
+        "majorRank": 8,
+        "rankedStudentCount": 80,
+        "rankPercent": 10,
+        "rankBand": "前10%",
+        "earnedCredits": 24,
+        "selectedCredits": 26
+      }
+    ],
+    "sourceUrl": "https://ehall.szu.edu.cn/jwapp/sys/czjl/..."
+  },
+  "meta": {
+    "command": "growth list",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+`growth` output never includes student name or student number. `growth status` returns `loggedIn`, `reason`, `periodCount`, and `sourceUrl`.
+
+## Ideology Credit Schema
+
+`szu-cli ideology summary --json` reads the Ideology and Social Practice credit summary:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "available": true,
+    "earnedCredits": 2,
+    "qualified": true,
+    "registered": true,
+    "activeStudent": true,
+    "grade": "2023",
+    "major": "交通工程",
+    "department": "交通运输学院",
+    "sourceUrl": "https://ehall.szu.edu.cn/jwapp/sys/szshsjgl/..."
+  },
+  "meta": {
+    "command": "ideology summary",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+An account with no summary row returns `available: false` and nullable summary fields. The command omits student name, student number, class code, and internal record identifiers. `ideology status` returns `loggedIn`, `reason`, `available`, `earnedCredits`, and `sourceUrl`.
 
 ## Electricity Schema
 

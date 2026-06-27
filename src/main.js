@@ -7,6 +7,8 @@ import { getCourseList, getCourseStatus, getTodayCourses } from './modules/cours
 import { getDoctorReport } from './modules/doctor.js';
 import { getElectricityBuildings, getElectricityStatus, queryElectricity } from './modules/electricity.js';
 import { getGradeList, getGradeStatus } from './modules/grade.js';
+import { getGrowthList, getGrowthStatus, getGrowthSummary } from './modules/growth.js';
+import { getIdeologyStatus, getIdeologySummary } from './modules/ideology.js';
 import { getLibraryItem, getLibraryStatus, searchLibrary } from './modules/library.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
 import { getProgramItem, getProgramList, getProgramStatus } from './modules/program.js';
@@ -138,6 +140,42 @@ export async function run(argv) {
       }));
     } catch (error) {
       handleKnownError(error, `grade ${action}`);
+    }
+    return;
+  }
+
+  if (domain === 'growth' && (action === 'status' || action === 'summary' || action === 'list')) {
+    try {
+      const options = parseGrowthOptions(argv.slice(2));
+      const data = action === 'status'
+        ? await getGrowthStatus(options)
+        : action === 'summary'
+          ? await getGrowthSummary(options)
+          : await getGrowthList(options);
+      writeJson(successEnvelope(data, {
+        command: `growth ${action}`,
+        gateway: 'direct',
+        sourceUrl: data.sourceUrl
+      }));
+    } catch (error) {
+      handleKnownError(error, `growth ${action}`);
+    }
+    return;
+  }
+
+  if (domain === 'ideology' && (action === 'status' || action === 'summary')) {
+    try {
+      const options = parseIdeologyOptions(argv.slice(2));
+      const data = action === 'status'
+        ? await getIdeologyStatus(options)
+        : await getIdeologySummary(options);
+      writeJson(successEnvelope(data, {
+        command: `ideology ${action}`,
+        gateway: 'direct',
+        sourceUrl: data.sourceUrl
+      }));
+    } catch (error) {
+      handleKnownError(error, `ideology ${action}`);
     }
     return;
   }
@@ -526,6 +564,72 @@ function parseGradeOptions(argv) {
     throw new Error(`Unknown option: ${arg}`);
   }
 
+  return options;
+}
+
+function parseGrowthOptions(argv) {
+  const options = {
+    headless: true,
+    url: null,
+    term: null,
+    year: null
+  };
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--url') {
+      options.url = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--term') {
+      options.term = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--year') {
+      options.year = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  if (options.term && options.year) {
+    throw new Error('--term and --year cannot be used together.');
+  }
+  return options;
+}
+
+function parseIdeologyOptions(argv) {
+  const options = {
+    headless: true,
+    url: null
+  };
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--url') {
+      options.url = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
   return options;
 }
 

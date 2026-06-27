@@ -85,6 +85,13 @@ szu-cli timetable view 20250101100101 --json
 szu-cli grade status --json
 szu-cli grade list --json
 szu-cli grade list --term 2025-2026-1 --json
+szu-cli growth status --json
+szu-cli growth summary --json
+szu-cli growth list --json
+szu-cli growth list --term 2025-2026-2 --json
+szu-cli growth list --year 2025-2026 --json
+szu-cli ideology status --json
+szu-cli ideology summary --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
 szu-cli electricity query --json
@@ -132,6 +139,13 @@ npm run szu-cli -- timetable view 20250101100101 --json
 npm run szu-cli -- grade status --json
 npm run szu-cli -- grade list --json
 npm run szu-cli -- grade list --term 2025-2026-1 --json
+npm run szu-cli -- growth status --json
+npm run szu-cli -- growth summary --json
+npm run szu-cli -- growth list --json
+npm run szu-cli -- growth list --term 2025-2026-2 --json
+npm run szu-cli -- growth list --year 2025-2026 --json
+npm run szu-cli -- ideology status --json
+npm run szu-cli -- ideology summary --json
 npm run szu-cli -- electricity status --json
 npm run szu-cli -- electricity buildings --json
 npm run szu-cli -- electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
@@ -175,6 +189,10 @@ Timetable commands read the eHall all-school timetable query in class-timetable 
 
 Grade commands read the current eHall grade query page. They reuse the same persistent browser profile and automatically open the stable grade entry. Normal output includes course, term, credit, grade, and GPA fields, but does not include student name or student ID.
 
+Growth commands read the eHall Growth Record application. `growth summary` returns cumulative GPA and professional ranking data. `growth list` returns term and academic-year GPA, ranking, and credit summaries; use `--term` or `--year` to select one period. Identity fields are used only inside the authenticated browser session and are not included in output.
+
+Ideology commands read the eHall Ideology and Social Practice application. `ideology summary` returns the available ideological education/social-practice credit summary and qualification status without exposing student name, student number, class code, or internal record IDs.
+
 Electricity commands read the campus intranet SIMS electricity query system. They do not require login, do not use the persistent browser profile, and currently support direct campus-network access only. Use `electricity buildings --json` to list available campuses and buildings before querying a room. `electricity query` defaults to the last 7 days of usage records and reports the latest remaining kWh found in that range.
 
 Library commands read the SZU OPAC catalog. They use the same persistent browser profile by default so the OPAC can record search history when the profile is logged in. Search still works when OPAC is not logged in, but `historyRecorded` will be `false`. `library search <keyword>` uses quick search; `library search --title ... --author ...` uses OPAC advanced search.
@@ -201,4 +219,4 @@ szu-cli gym reserve --date 2026-06-23 --slot 19:00 --dry-run --json
 
 ## Status
 
-This repository currently contains the project structure, design documents, persistent-profile login foundation, and read-only adapters for notices, personal course timetable, all-school program/timetable queries, grades, electricity usage, library catalog search, and headed academic metadata search for CNKI and Wanfang.
+This repository currently contains the project structure, design documents, persistent-profile login foundation, and read-only adapters for notices, personal course timetable, all-school program/timetable queries, grades, Growth Record GPA/rankings, ideology/social-practice credits, electricity usage, library catalog search, and headed academic metadata search for CNKI and Wanfang.

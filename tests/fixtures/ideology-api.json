@@ -1,0 +1,33 @@
+{
+  "cxxshdtjlb": {
+    "datas": {
+      "cxxshdtjlb": {
+        "totalSize": 1,
+        "pageNumber": 1,
+        "pageSize": 10,
+        "rows": [
+          {
+            "WID": "internal-record",
+            "XH": "2023000000",
+            "XM": "测试用户",
+            "BJDM": "202301",
+            "HDXF": 2,
+            "SFJG": "1",
+            "SFJG_DISPLAY": "是",
+            "SFZC": "1",
+            "SFZC_DISPLAY": "是",
+            "SFZX": "1",
+            "SFZX_DISPLAY": "是",
+            "XZNJ": "2023",
+            "XZNJ_DISPLAY": "2023级",
+            "ZYDM": "081802",
+            "ZYDM_DISPLAY": "交通工程",
+            "YXDM": "01",
+            "YXDM_DISPLAY": "交通运输学院"
+          }
+        ]
+      }
+    },
+    "code": "0"
+  }
+}

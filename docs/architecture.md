@@ -38,6 +38,8 @@ Planned modules:
 - `program`: all-school training program lookup.
 - `timetable`: all-school class timetable lookup.
 - `grade`: grade lookup.
+- `growth`: Growth Record GPA, credit, and ranking lookup.
+- `ideology`: ideological education and social-practice credit lookup.
 - `electricity`: electricity balance lookup.
 - `gym`: availability and reservation flows.
 

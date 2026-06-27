@@ -47,6 +47,13 @@ szu-cli timetable view <classCode> --json
 szu-cli grade status --json
 szu-cli grade list --json
 szu-cli grade list --term 2025-2026-1 --json
+szu-cli growth status --json
+szu-cli growth summary --json
+szu-cli growth list --json
+szu-cli growth list --term 2025-2026-2 --json
+szu-cli growth list --year 2025-2026 --json
+szu-cli ideology status --json
+szu-cli ideology summary --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
 szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
@@ -75,6 +82,10 @@ Use `program status` to check all-school training program query access, `program
 Use `timetable status` to check all-school class timetable access, `timetable classes` to find a `classCode`, and `timetable view <classCode>` to read that class's weekly schedule. Keep `timetable` separate from `course`: `course` is the current user's own timetable.
 
 Use `grade status` to check eHall grade-query access and `grade list` for read-only grade records. Use `grade list --term <termId>` when the user asks for one term. Grade output must not be treated as public data; avoid echoing full grade records unless the user explicitly needs them.
+
+Use `growth status` to check Growth Record access, `growth summary` for cumulative GPA and professional ranking, and `growth list` for term or academic-year summaries. Use `--term <termId>` or `--year <academicYear>` when the user requests one period. GPA and ranking data are private; only echo the fields needed for the user's request.
+
+Use `ideology status` to check Ideology and Social Practice access and `ideology summary` to read earned credits and qualification status. Do not expose student name, student number, class code, or internal record IDs.
 
 Use `electricity status` to check whether the SIMS electricity intranet system is reachable, `electricity buildings` to discover valid campus/building names, and `electricity query --campus <name> --building <name> --room <room>` to read recent usage records and latest remaining kWh. Electricity payment is not supported.
 

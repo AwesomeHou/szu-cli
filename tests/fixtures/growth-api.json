@@ -1,0 +1,140 @@
+{
+  "cxyxkxnxq": {
+    "datas": {
+      "cxyxkxnxq": {
+        "rows": [
+          {
+            "XH": "2023000000",
+            "XNXQDM": "2025-2026-1",
+            "XNXQMC": "2025-2026学年第一学期"
+          },
+          {
+            "XH": "2023000000",
+            "XNXQDM": "2025-2026-2",
+            "XNXQMC": "2025-2026学年第二学期"
+          }
+        ]
+      }
+    },
+    "code": "0"
+  },
+  "cumulativeStats": {
+    "datas": {
+      "cxxscjtj": {
+        "rows": [
+          {
+            "XH": "2023000000",
+            "XM": "测试用户",
+            "XNXQDM": "*",
+            "XNXQMC": "全部成绩",
+            "GPA": "3.75",
+            "PM": "8",
+            "BJGMS": "80",
+            "HDXF": "120",
+            "XKXF": "124",
+            "JDF": "465"
+          }
+        ]
+      }
+    },
+    "code": "0"
+  },
+  "cumulativeRank": {
+    "datas": {
+      "cxxsjdpm": {
+        "rows": [
+          {
+            "XH": "2023000000",
+            "XM": "测试用户",
+            "TJLXDM": "03",
+            "TJXNXQDM": "2025-2026-2",
+            "GPA": "3.75",
+            "PM": "8",
+            "CYPMRS": "80",
+            "PMBFB": "10",
+            "PMQ": "前10%"
+          }
+        ]
+      }
+    },
+    "code": "0"
+  },
+  "periods": [
+    {
+      "periodType": "term",
+      "periodId": "2025-2026-2",
+      "periodName": "2025-2026学年第二学期",
+      "stats": {
+        "datas": {
+          "cxxscjtj": {
+            "rows": [
+              {
+                "XH": "2023000000",
+                "GPA": "3.8",
+                "PM": "6",
+                "HDXF": "24",
+                "XKXF": "26"
+              }
+            ]
+          }
+        }
+      },
+      "rank": {
+        "datas": {
+          "cxxsjdpm": {
+            "rows": [
+              {
+                "XH": "2023000000",
+                "XM": "测试用户",
+                "TJLXDM": "01",
+                "GPA": "3.8",
+                "PM": "6",
+                "CYPMRS": "80",
+                "PMBFB": "7.5",
+                "PMQ": "前10%"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "periodType": "academic-year",
+      "periodId": "2025-2026",
+      "periodName": "2025-2026学年",
+      "stats": {
+        "datas": {
+          "cxxscjtj": {
+            "rows": [
+              {
+                "XH": "2023000000",
+                "GPA": "3.7",
+                "PM": "9",
+                "HDXF": "48",
+                "XKXF": "52"
+              }
+            ]
+          }
+        }
+      },
+      "rank": {
+        "datas": {
+          "cxxsjdpm": {
+            "rows": [
+              {
+                "XH": "2023000000",
+                "XM": "测试用户",
+                "TJLXDM": "02",
+                "GPA": "3.7",
+                "PM": "9",
+                "CYPMRS": "80",
+                "PMBFB": "11.25",
+                "PMQ": "前20%"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

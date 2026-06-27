@@ -84,7 +84,9 @@ Deliverables:
 - `szu-cli timetable status --json`.
 - `szu-cli timetable classes --json`.
 - `szu-cli timetable view <classCode> --json`.
-- Grades.
+- `szu-cli grade status/list --json`.
+- `szu-cli growth status/summary/list --json`.
+- `szu-cli ideology status/summary --json`.
 - Electricity balance.
 - WebVPN gateway support.
 
@@ -96,6 +98,8 @@ Status:
 
 - Course status, current timetable list, and today's timetable are implemented for direct campus/eHall access.
 - Grade status and grade list are implemented for direct campus/eHall access, with `--term` filtering and student identity fields removed from normal output.
+- Growth Record status, cumulative summary, and term/academic-year GPA and professional-ranking queries are implemented for direct eHall access.
+- Ideology and Social Practice status and credit summary are implemented for direct eHall access.
 - Electricity status, campus/building discovery, and room usage query are implemented for direct campus-network access. Payment is intentionally out of scope.
 - Library OPAC status and catalog search are implemented with persistent-profile login reuse for search-history recording.
 - CNKI and Wanfang headed-browser metadata search are implemented for direct campus/library access. CNKI and Wanfang support single-item visible-button PDF/full-text download MVPs; batch download, CAJ download, and hidden direct-link construction remain out of scope.
