@@ -1,10 +1,17 @@
 # szu-cli CLI
 
+[![Docs 中文](https://img.shields.io/badge/docs-%E4%B8%AD%E6%96%87-blue)](README_CN.md)
+[![Docs English](https://img.shields.io/badge/docs-English-blue)](README.md)
+[![Node.js >=20](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](package.json)
+[![License MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 `szu-cli` is an early-stage, agent-friendly CLI for Shenzhen University web services.
 
 The goal is to turn common campus web workflows into stable CLI commands with structured JSON output, while preserving user privacy and using normal browser login flows.
 
 ## Quick Start
+
+Requires Node.js 20 or newer.
 
 Install the alpha package:
 

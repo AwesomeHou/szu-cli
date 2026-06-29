@@ -10,6 +10,7 @@
   "files": [
     "src",
     "README.md",
+    "README_CN.md",
     "LICENSE",
     "AGENTS.md",
     "docs",

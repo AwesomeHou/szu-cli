@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
-const roots = ['README.md', 'AGENTS.md', 'docs', 'skills'];
+const roots = ['README.md', 'README_CN.md', 'AGENTS.md', 'docs', 'skills'];
 const forbidden = [/\bTBD\b/i, /\bTODO\b/i];
 const files = [];
 
