@@ -1,138 +1,126 @@
-# Roadmap
+# 路线图
 
-## Stage 0: Skeleton
+## 阶段 0：骨架
 
-Deliverables:
+交付物：
 
-- Repository docs.
-- Agent guide.
-- CLI contract.
-- Login-state design.
-- Skill integration design.
+- 仓库文档。
+- agent 指南。
+- CLI 契约。
+- 登录态设计。
+- skill 集成设计。
 
-Exit criteria:
+退出标准：
 
-- A new contributor can understand the project direction without relying on prior chat context.
+- 新贡献者无需依赖历史聊天记录，也能理解项目方向。
 
-## Stage 1: CLI Foundation
+## 阶段 1：CLI 基础
 
-Deliverables:
+交付物：
 
-- `szu-cli doctor --json`.
-- Version output.
-- JSON envelope helpers.
-- Structured error helpers.
-- Basic test setup.
+- `szu-cli doctor --json`。
+- 版本输出。
+- JSON 包装结构工具。
+- 结构化错误工具。
+- 基础测试。
 
-Exit criteria:
+退出标准：
 
-- CLI can report environment readiness in a stable schema.
+- CLI 可以用稳定 schema 报告环境是否就绪。
 
-Status:
+状态：
 
-- Minimal `--version`, `doctor --json`, and structured unsupported-command handling are implemented.
+- 已实现最小 `--version`、`doctor --json` 和结构化未知命令处理。
 
-## Stage 2: Browser Login Profile
+## 阶段 2：浏览器登录 Profile
 
-Deliverables:
+交付物：
 
-- Playwright dependency.
-- Persistent profile path.
-- `szu-cli auth login`.
-- `szu-cli auth status --json`.
+- Playwright 依赖。
+- 持久化 profile 路径。
+- `szu-cli auth login`。
+- `szu-cli auth status --json`。
 
-Exit criteria:
+退出标准：
 
-- User can log in manually once and reuse that browser profile.
+- 用户可以手动登录一次，并复用该浏览器 profile。
 
-Status:
+状态：
 
-- `auth status --json` and `auth login` command shape are implemented.
-- `auth login` launches a Playwright persistent profile when Playwright is installed.
+- 已实现 `auth status --json` 和 `auth login` 命令形态。
+- 安装 Playwright 后，`auth login` 会启动持久化 profile。
 
-## Stage 3: Notice MVP
+## 阶段 3：公文通 MVP
 
-Deliverables:
+交付物：
 
-- `szu-cli notice list --limit <n> --json`.
-- `szu-cli notice list --page <n> --pages <n> --json`.
-- `szu-cli notice search <keyword> --json`.
-- Site search through the board search form.
-- `szu-cli notice view <id|url> --json`.
-- `szu-cli notice download <id|url> --dir <path> --json`.
-- Redacted fixtures.
-- Parser tests.
+- `szu-cli notice list --limit <n> --json`。
+- `szu-cli notice list --page <n> --pages <n> --json`。
+- `szu-cli notice search <keyword> --json`。
+- 通过公文通搜索表单做站内搜索。
+- `szu-cli notice view <id|url> --json`。
+- `szu-cli notice download <id|url> --dir <path> --json`。
+- 脱敏 fixture。
+- parser 测试。
 
-Exit criteria:
+退出标准：
 
-- A local agent can query campus notices without knowing browser details.
+- 本地 agent 无需理解浏览器细节，也能查询公文通。
 
-Status:
+状态：
 
-- `notice list --json`, paged list queries, site-backed `notice search <keyword> --json`, `notice view <id|url> --json`, and `notice download <id|url> --json` are implemented.
+- 已实现列表、分页、站内搜索、详情和附件下载。
 
-## Stage 4: More Read-Only Services
+## 阶段 4：更多只读服务
 
-Deliverables:
+交付物：
 
-- `szu-cli course status --json`.
-- `szu-cli course list --json`.
-- `szu-cli course today --json`.
-- `szu-cli program status --json`.
-- `szu-cli program list --json`.
-- `szu-cli program item <id-or-planCode> --json`.
-- `szu-cli timetable status --json`.
-- `szu-cli timetable classes --json`.
-- `szu-cli timetable view <classCode> --json`.
-- `szu-cli grade status/list --json`.
-- `szu-cli growth status/summary/list --json`.
-- `szu-cli ideology status/summary --json`.
-- `szu-cli completion status/summary/modules --json`.
-- `szu-cli completion courses --module <moduleCode> --json`.
-- `szu-cli lecture status/list/item/progress --json`.
-- Electricity balance.
-- WebVPN gateway support.
+- `szu-cli course status/list/today --json`。
+- `szu-cli program status/list/item --json`。
+- `szu-cli timetable status/classes/view --json`。
+- `szu-cli grade status/list --json`。
+- `szu-cli growth status/summary/list --json`。
+- `szu-cli ideology status/summary --json`。
+- `szu-cli completion status/summary/modules --json`。
+- `szu-cli completion courses --module <moduleCode> --json`。
+- `szu-cli lecture status/list/item/progress --json`。
+- 电费余额。
+- WebVPN 网关支持。
 
-Exit criteria:
+退出标准：
 
-- Common read-only campus tasks are available through stable commands.
+- 常见只读校园事务可以通过稳定命令完成。
 
-Status:
+状态：
 
-- Course status, current timetable list, and today's timetable are implemented for direct campus/eHall access.
-- Grade status and grade list are implemented for direct campus/eHall access, with `--term` filtering and student identity fields removed from normal output.
-- Growth Record status, cumulative summary, and term/academic-year GPA and professional-ranking queries are implemented for direct eHall access.
-- Ideology and Social Practice status and credit summary are implemented for direct eHall access.
-- Academic Completion plan summary, module progress, and module-level course details are implemented with condition-based calculation waiting.
-- Innovation Lecture status, current registration availability, and online/offline learning progress are implemented as read-only commands.
-- Electricity status, campus/building discovery, and room usage query are implemented for direct campus-network access. Payment is intentionally out of scope.
-- Library OPAC status and catalog search are implemented with persistent-profile login reuse for search-history recording.
-- CNKI and Wanfang headed-browser metadata search are implemented for direct campus/library access. CNKI and Wanfang support single-item visible-button PDF/full-text download MVPs; batch download, CAJ download, and hidden direct-link construction remain out of scope.
+- 已实现我的课表、全校培养方案、全校班级课表、成绩、成长记录、思政学分、学业完成、创新领航讲座、电费、图书馆馆藏、CNKI 和万方元数据检索。
+- CNKI 和万方支持单条用户可见按钮下载 MVP；批量下载、CAJ 下载和隐藏直链构造仍不在范围内。
+- WebVPN 尚未实现。
 
-## Stage 5: Controlled Actions
+## 阶段 5：受控状态变更
 
-Candidate:
+候选：
 
-- Gym availability.
-- Gym reservation dry-run.
-- Gym reservation confirmed submission.
+- 健身房可预约查询。
+- 健身房预约 dry-run。
+- 健身房预约确认提交。
 
-Exit criteria:
+退出标准：
 
-- State-changing commands have dry-run, confirmation, and audit output.
+- 状态变更命令具备 dry-run、确认和审计输出。
 
-## Stage 6: Packaging
+## 阶段 6：打包发布
 
-Deliverables:
+交付物：
 
-- npm package.
-- Bundled `szu-campus` skill.
-- `szu-cli skill path --json`.
-- `szu-cli skill install --target codex --json`.
-- `szu-cli setup codex --json`.
-- Installation docs.
-- Release checklist.
+- npm 包。
+- 随包 `szu-campus` skill。
+- `szu-cli skill path --json`。
+- `szu-cli skill install --target codex --json`。
+- `szu-cli setup codex --json`。
+- 安装文档。
+- 发布检查清单。
 
-Exit criteria:
+退出标准：
 
-- A user can install the npm package, run `szu-cli setup codex`, and verify package contents with `npm pack --dry-run`.
+- 用户可以安装 npm 包、运行 `szu-cli setup codex`，并通过 `npm pack --dry-run` 验证包内容。

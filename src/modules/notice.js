@@ -5,21 +5,30 @@ import { dirname, join } from 'node:path';
 import { classifyAuthPage } from './auth-detector.js';
 import { getLaunchOptions } from './browser-options.js';
 import { getProfilePath } from './paths.js';
-import { filterNotices, paginateNotices, parseBoardHtml, parseNoticeListHtml } from './notice-parser.js';
+import { filterNotices, paginateNotices, parseNoticeListHtml } from './notice-parser.js';
 import { parseNoticeDetailHtml, resolveNoticeViewUrl } from './notice-detail-parser.js';
 
 const BOARD_URL = 'https://www1.szu.edu.cn/board/';
 const LIST_URL = 'https://www1.szu.edu.cn/board/infolist.asp';
+const CATEGORY_LABELS = {
+  pinned: '置顶',
+  teaching: '教务',
+  research: '科研',
+  admin: '行政',
+  student: '学工',
+  meeting: '会议',
+  lecture: '讲座',
+  life: '生活',
+  all: '全部'
+};
 
 export async function getNoticeItems(options = {}) {
-  const useListPage = options.keyword || options.page > 1 || options.pages > 1;
-  const html = options.keyword
+  const useSearchPage = Boolean(options.keyword || options.publisher || options.year);
+  const html = useSearchPage
     ? await loadNoticeSearchHtml(options)
-    : useListPage
-      ? await loadPageHtml(LIST_URL, options)
-      : await loadBoardHtml(options);
+    : await loadPageHtml(LIST_URL, options);
   const authState = classifyAuthPage({
-    url: options.finalUrl ?? (useListPage ? LIST_URL : BOARD_URL),
+    url: options.finalUrl ?? LIST_URL,
     title: extractTitle(html),
     text: stripTags(html)
   });
@@ -31,19 +40,13 @@ export async function getNoticeItems(options = {}) {
     throw error;
   }
 
-  const notices = useListPage
-    ? parseNoticeListHtml(html, { baseUrl: BOARD_URL })
-    : parseBoardHtml(html, {
-      baseUrl: BOARD_URL,
-      now: options.now ?? new Date()
-    });
+  const notices = parseNoticeListHtml(html, { baseUrl: BOARD_URL });
   assertCompleteNoticeSchema(notices);
-  const filtered = useListPage
-    ? notices
-    : filterNotices(notices, { keyword: options.keyword });
+  const filtered = filterNoticeItems(notices, { ...options, skipKeyword: useSearchPage });
   const page = options.page ?? 1;
   const pages = options.pages ?? 1;
   const limit = options.limit ?? 10;
+  const search = searchMeta(options);
 
   return {
     items: paginateNotices(filtered, { page, pages, limit }),
@@ -51,14 +54,8 @@ export async function getNoticeItems(options = {}) {
     pages,
     limit,
     total: filtered.length,
-    ...(options.keyword ? {
-      search: {
-        keyword: options.keyword,
-        range: options.range,
-        type: options.type
-      }
-    } : {}),
-    sourceUrl: options.finalUrl ?? (useListPage ? LIST_URL : BOARD_URL)
+    ...(search ? { search } : {}),
+    sourceUrl: options.finalUrl ?? LIST_URL
   };
 }
 
@@ -215,8 +212,38 @@ function throwLoginRequired(message = 'Browser profile is not logged in to SZU b
   throw error;
 }
 
-async function loadBoardHtml(options) {
-  return loadPageHtml(BOARD_URL, options);
+function filterNoticeItems(notices, options = {}) {
+  const category = normalizeCategory(options.category);
+  return filterNotices(notices, { keyword: options.skipKeyword ? null : options.keyword })
+    .filter((notice) => {
+      if (category === '全部') {
+        return true;
+      }
+      if (category === '置顶') {
+        return notice.isPinned === true;
+      }
+      return notice.category === category;
+    });
+}
+
+function normalizeCategory(value = 'all') {
+  const text = String(value).trim();
+  return CATEGORY_LABELS[text] ?? text;
+}
+
+function searchMeta(options = {}) {
+  const category = normalizeCategory(options.category);
+  if (!options.keyword && !options.publisher && !options.year && category === '全部') {
+    return null;
+  }
+  return {
+    keyword: options.keyword ?? null,
+    category,
+    range: options.range,
+    type: options.type,
+    ...(options.publisher ? { publisher: options.publisher } : {}),
+    ...(options.year ? { year: options.year } : {})
+  };
 }
 
 async function loadNoticeSearchHtml(options) {
@@ -238,9 +265,15 @@ async function loadNoticeSearchHtml(options) {
   try {
     const page = context.pages()[0] ?? await context.newPage();
     await page.goto(BOARD_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    await page.selectOption('select[name="dayy"]', rangeToSiteValue(options.range));
-    await page.selectOption('select[name="search_type"]', typeToSiteValue(options.type));
-    await page.fill('input[name="keyword"]', options.keyword);
+    await requireSiteOption(page, 'select[name="dayy"]', rangeToSiteValue(options.range), '--range');
+    if (options.year) {
+      await requireSiteOption(page, 'select', `${options.year}年`, '--year');
+    }
+    if (options.publisher) {
+      await requireSiteOption(page, 'select', options.publisher, '--publisher');
+    }
+    await requireSiteOption(page, 'select[name="search_type"]', typeToSiteValue(options.type), '--type');
+    await page.fill('input[name="keyword"]', options.keyword ?? '');
     await Promise.all([
       page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => null),
       page.locator('input[name="searchb1"]').click()
@@ -250,6 +283,36 @@ async function loadNoticeSearchHtml(options) {
   } finally {
     await context.close();
   }
+}
+
+async function requireSiteOption(page, selector, label, option) {
+  if (await selectSiteOption(page, selector, label)) {
+    return;
+  }
+  const error = new Error(`Could not find ${option} option on SZU board search form: ${label}.`);
+  error.code = 'PAGE_CHANGED';
+  error.hint = 'The SZU board search form may have changed, or the requested publisher/year is not available.';
+  throw error;
+}
+
+async function selectSiteOption(page, selector, label) {
+  const selects = await page.locator(selector).elementHandles();
+  for (const select of selects) {
+    const matched = await select.evaluate((element, target) => {
+      const option = [...element.options].find((item) => (
+        item.textContent.trim() === target || item.value === target
+      ));
+      if (!option) {
+        return null;
+      }
+      return option.value;
+    }, label);
+    if (matched !== null) {
+      await select.selectOption(matched);
+      return true;
+    }
+  }
+  return false;
 }
 
 async function loadPageHtml(url, options) {

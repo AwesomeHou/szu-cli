@@ -1,69 +1,69 @@
-# Login State
+# 登录态
 
-The project should preserve login state without collecting passwords.
+项目需要保存登录态，但不能收集密码。
 
-## Recommended Model
+## 推荐模型
 
-Use a persistent browser profile managed by the CLI:
+CLI 管理一个持久化浏览器 profile：
 
 ```text
 ~/.szu-cli/browser-profile/
 ```
 
-On Windows, the CLI uses the system Chrome channel by default through Playwright. This avoids requiring Playwright's bundled Chromium download before the first login. Users can override the channel with `SZU_BROWSER_CHANNEL`, for example `msedge`.
+Windows 上默认通过 Playwright 使用系统 Chrome 通道，避免首次登录前必须下载 Playwright 自带 Chromium。用户可以用 `SZU_BROWSER_CHANNEL` 覆盖通道，例如 `msedge`。
 
-Flow:
+流程：
 
 ```text
 szu-cli auth login
-  -> launch browser with persistent profile
-  -> user completes SZU or WebVPN login manually
-  -> user closes the browser window after login
-  -> profile remains local for future commands
+  -> 用持久化 profile 启动浏览器
+  -> 用户手动完成 SZU 或 WebVPN 登录
+  -> 登录完成后关闭浏览器窗口
+  -> profile 留在本机供后续命令复用
 ```
 
-Future commands reuse the same profile:
+后续命令复用同一个 profile：
 
 ```text
 szu-cli notice list --json
-  -> open page with persistent profile
-  -> if logged in, parse data
-  -> if redirected to login, return LOGIN_REQUIRED
+  -> 用持久化 profile 打开页面
+  -> 如果已登录，解析数据
+  -> 如果跳转到登录页，返回 LOGIN_REQUIRED
 ```
 
-Current login check:
+当前登录检查：
 
 ```text
 szu-cli auth status --json
-  -> open https://www1.szu.edu.cn/board/ with the persistent profile
-  -> logged in if the page shows the SZU user menu, including 个人中心 and 注销
-  -> logged out if the browser reaches the CAS login page
+  -> 用持久化 profile 打开 https://www1.szu.edu.cn/board/
+  -> 页面出现 个人中心、注销 等深大用户菜单时视为已登录
+  -> 进入 CAS 登录页时视为未登录
 ```
 
-## Why Not Store Passwords
+## 为什么不保存密码
 
-Passwords create unnecessary risk and usually do not solve the hard parts:
+保存密码会带来不必要风险，而且通常无法真正简化问题：
 
-- CAS flows may require redirects or multi-factor checks.
-- WebVPN may have its own session rules.
-- Captchas and policy checks must remain user-driven.
+- CAS 流程可能包含重定向或二次校验。
+- WebVPN 有自己的会话规则。
+- 验证码和策略检查必须由用户自己完成。
 
-The CLI should let the user log in through the normal website.
+CLI 应让用户通过正常网站登录。
 
-## Alternatives
+## 备选方案
 
-### HTTP Cookie Jar
+### HTTP Cookie 容器
 
-Possible, but fragile. It requires implementing login flows, CSRF, redirects, cookie refresh, and WebVPN rewriting manually.
+可行但脆弱，需要手动处理登录流程、CSRF、重定向、cookie 刷新和 WebVPN 改写。
 
-### Existing Chrome Profile
+### 复用现有 Chrome Profile
 
-Possible through CDP, but more invasive and harder to support across machines.
+可通过 CDP 实现，但侵入性更强，跨机器支持更麻烦。
 
 ### OpenCLI
 
-Can be an optional backend later, but should not be required for the base architecture.
+未来可以作为可选后端，但不应成为基础架构的必需依赖。
 
-## Expiration
+## 过期处理
 
-Login state is not permanent. The CLI should detect expiration and ask the user to log in again. It must not try to bypass server-side expiration.
+登录态不是永久的。CLI 应检测过期并提示用户重新登录，不应尝试绕过服务端过期策略。

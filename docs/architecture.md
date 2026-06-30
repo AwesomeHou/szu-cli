@@ -1,103 +1,95 @@
-# Architecture
+# 架构
 
-szu-cli CLI should be designed as a stable command surface with replaceable execution internals.
+`szu-cli` 应当提供稳定的命令入口，同时允许内部执行方式替换。
 
-## Layers
+## 分层
 
 ```text
-Human or agent
+用户或 agent
   -> szu-cli CLI
-  -> command module
-  -> gateway resolver
-  -> browser backend
-  -> campus web system
+  -> 命令模块
+  -> 网关解析
+  -> 浏览器后端
+  -> 校园网页系统
 ```
 
-## CLI Layer
+## CLI 层
 
-Responsibilities:
+职责：
 
-- Parse commands and flags.
-- Route to feature modules.
-- Render human-readable output by default.
-- Render stable JSON when `--json` is passed.
-- Map internal failures to stable error codes and exit codes.
+- 解析命令和参数。
+- 路由到具体功能模块。
+- 默认输出适合人阅读的文本。
+- 传入 `--json` 时输出稳定 JSON。
+- 把内部失败映射为稳定错误码和退出码。
 
-Agents should depend only on this layer.
+agent 只应依赖这一层，不应依赖内部网页实现。
 
-## Command Modules
+## 命令模块
 
-Each campus capability should live in its own module.
+每类校园能力放在自己的模块中。当前模块包括：
 
-Planned modules:
+- `doctor`：本地环境检查。
+- `auth`：登录状态和登录流程。
+- `skill` / `setup`：随包 skill 路径、安装和 Codex 一键设置。
+- `notice`：公文通列表、搜索、详情和下载。
+- `course`：我的课表。
+- `program`：全校培养方案查询。
+- `timetable`：全校班级课表查询。
+- `grade`：成绩查询。
+- `growth`：成长记录、绩点、学分和排名查询。
+- `ideology`：思政与社会实践学分查询。
+- `completion`：学业完成、模块完成度和模块课程查询。
+- `lecture`：创新领航讲座可报名状态和学习进度查询。
+- `electricity`：电费余额和用电记录查询。
+- `library`：图书馆馆藏查询。
+- `cnki` / `wanfang`：学术数据库元数据查询。
 
-- `doctor`: local environment checks.
-- `auth`: login status and login flow.
-- `notice`: campus notice list and search.
-- `course`: schedule lookup.
-- `program`: all-school training program lookup.
-- `timetable`: all-school class timetable lookup.
-- `grade`: grade lookup.
-- `growth`: Growth Record GPA, credit, and ranking lookup.
-- `ideology`: ideological education and social-practice credit lookup.
-- `completion`: training-plan calculation, module completion, and module course lookup.
-- `lecture`: Innovation Lecture availability and learning-progress lookup.
-- `electricity`: electricity balance lookup.
-- `gym`: availability and reservation flows.
+模块不应直接打印内容，应返回结构化结果。
 
-Modules should not print directly. They should return structured results.
+## 网关解析
 
-## Gateway Resolver
+部分服务只能在校园网或 WebVPN 下访问。网关解析层负责决定：
 
-Some services are available only on campus network or through WebVPN.
+- 直接校园网 URL；
+- WebVPN URL；
+- 或在两者都不可用时返回结构化错误。
 
-The gateway resolver decides:
+当前优先支持 direct 校园网路径，WebVPN 后续应接入同一个解析层。
 
-- direct campus URL,
-- WebVPN URL,
-- or a structured error if neither path is available.
+## 浏览器后端
 
-Initial implementation can support direct URLs only. WebVPN should be added behind the same resolver interface.
-
-## Browser Backend
-
-The preferred backend is Playwright with a persistent browser profile:
+首选后端是 Playwright 持久化浏览器 profile：
 
 ```text
 ~/.szu-cli/browser-profile/
 ```
 
-The user logs in through the normal browser UI. The CLI reuses that local profile for later commands.
+用户通过正常网页完成登录，CLI 后续复用本地 profile。
 
-Backend responsibilities:
+后端职责：
 
-- Open pages.
-- Detect login pages.
-- Wait for meaningful page state.
-- Extract visible DOM or stable network responses.
-- Avoid high-frequency polling.
+- 打开页面。
+- 识别登录页。
+- 等待页面进入可解析状态。
+- 读取可见 DOM 或稳定网络响应。
+- 避免高频轮询。
 
-## Adapter Strategy
+## 适配器策略
 
-Each campus page should have a small adapter that describes:
+每个校园页面使用小型适配器描述：
 
-- entry URL,
-- login-required signals,
-- selectors or response shapes,
-- parsing rules,
-- normalized output schema,
-- known failure modes.
+- 入口 URL。
+- 需要登录的信号。
+- 选择器或响应结构。
+- 解析规则。
+- 规范化输出结构。
+- 已知失败模式。
 
-For the first notice adapter, the expected source is the rendered board page:
+适配器应优先解析用户能正常看到的页面或稳定响应，不应依赖绕过访问控制的隐藏接口。
 
-```text
-https://www1.szu.edu.cn/board/
-```
+## Skill 层
 
-The adapter should parse visible notice sections and links before relying on undocumented internal endpoints.
+skill 是给 agent 的可选使用指南：说明何时调用 `szu-cli`、如何解释错误、哪些行为不能做。
 
-## Skill Layer
-
-Skills are optional guidance for agents. They should explain how to call `szu-cli`, how to interpret errors, and what not to do.
-
-Skills must not duplicate core browser automation logic.
+skill 不应复制浏览器自动化或校园业务逻辑。

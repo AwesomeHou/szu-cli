@@ -1,66 +1,66 @@
-# Skill Integration
+# Skill 集成
 
-The CLI and skill are shipped in the same npm package, but they remain separate at runtime.
+CLI 和 skill 随同一个 npm 包发布，但运行时职责分离。
 
-## Division of Responsibility
+## 职责边界
 
 ```text
 CLI
-  -> performs campus operations
-  -> owns browser automation
-  -> owns parsing and JSON schemas
+  -> 执行校园事务
+  -> 拥有浏览器自动化
+  -> 拥有解析逻辑和 JSON schema
 
 Skill
-  -> teaches agents when and how to call the CLI
-  -> documents safety boundaries
-  -> explains error handling
+  -> 告诉 agent 何时、如何调用 CLI
+  -> 记录安全边界
+  -> 解释错误处理
 ```
 
-The skill should not duplicate browser automation logic. Agents should call `szu-cli`.
+skill 不应复制浏览器自动化逻辑。agent 应调用 `szu-cli`。
 
-## Installation Model
+## 安装模型
 
-Recommended:
+推荐方式：
 
 ```bash
 npm install -g szu-cli@alpha
 szu-cli setup codex
 ```
 
-`npm install` makes the `szu-cli` command available. `szu-cli setup codex` explicitly copies the bundled `skills/szu-campus` folder into the Codex-visible skill directory.
+`npm install` 让 `szu-cli` 命令可用。`szu-cli setup codex` 显式把随包 `skills/szu-campus` 复制到 Codex 可见的 skill 目录。
 
-This keeps installation explicit while still giving users a one-command setup step after the CLI is installed:
+CLI 更新后可重新安装 skill：
 
 ```bash
 npm update -g szu-cli
 szu-cli setup codex
 ```
 
-The skill can declare a minimum CLI version:
+skill 可以声明最低 CLI 版本：
 
 ```text
 Requires: szu-cli >= 0.1.0
 ```
 
-## Can a Skill Install a CLI?
+## Skill 能否安装 CLI
 
-A skill can include installation instructions or a helper script, but it should not silently install executables. Installing a CLI changes the user's PATH and executes code, so it should be explicit.
+skill 可以包含安装说明或辅助脚本，但不应静默安装可执行文件。安装 CLI 会改变用户 PATH 并执行代码，因此必须显式。
 
-Good:
-
-```text
-If `szu-cli` is missing, ask the user to install it with `npm install -g szu-cli@alpha`, then run `szu-cli setup codex`.
-```
-
-Avoid:
+推荐写法：
 
 ```text
-Automatically install a global CLI when the skill is loaded.
+如果缺少 `szu-cli`，请让用户先运行 `npm install -g szu-cli@alpha`，再运行 `szu-cli setup codex`。
 ```
 
-## Agent Workflow
+避免：
 
-Agents should start with:
+```text
+skill 被加载时自动安装全局 CLI。
+```
+
+## Agent 工作流
+
+agent 应先运行：
 
 ```bash
 szu-cli doctor --json
@@ -68,13 +68,13 @@ szu-cli skill path --json
 szu-cli auth status --json
 ```
 
-If login is required:
+如果需要登录：
 
 ```bash
 szu-cli auth login
 ```
 
-Then call read-only commands:
+然后调用只读命令：
 
 ```bash
 szu-cli notice search 奖学金 --json
@@ -86,4 +86,4 @@ szu-cli lecture item <id> --json
 szu-cli lecture progress --json
 ```
 
-Agents must not loop aggressively or submit state-changing commands without confirmation.
+agent 不得激进循环，也不得在未经确认时提交状态变更命令。

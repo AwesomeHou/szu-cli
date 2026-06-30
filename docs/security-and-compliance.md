@@ -1,51 +1,51 @@
-# Security and Compliance
+# 安全与合规
 
-szu-cli CLI should act like a careful local assistant using the user's own account.
+`szu-cli` 应当像谨慎的本地助手一样使用用户自己的账号。
 
-## Privacy Rules
+## 隐私规则
 
-- Do not store passwords.
-- Do not commit cookies, local storage, session storage, browser profiles, HAR files, traces, or private screenshots.
-- Do not upload browser state to third-party services.
-- Redact personal data in examples and fixtures.
-- Keep cached data local and minimal.
+- 不保存密码。
+- 不提交 cookies、local storage、session storage、浏览器 profile、HAR、trace 或私人截图。
+- 不把浏览器状态上传到第三方服务。
+- 示例和 fixture 必须脱敏。
+- 缓存数据应保持本地、最小化。
 
-## Allowed Automation
+## 允许的自动化
 
-- Low-frequency read-only queries.
-- User-initiated browser sessions.
-- Parsing pages the user can access manually.
-- Local caching to avoid repeated loads.
+- 低频只读查询。
+- 用户主动发起的浏览器会话。
+- 解析用户能手动访问的页面。
+- 为减少重复加载而进行本地缓存。
 
-## Disallowed Automation
+## 禁止的自动化
 
-- CAPTCHA bypass.
-- Authentication bypass.
-- WebVPN bypass.
-- Multi-account automation.
-- Bulk scraping.
-- High-frequency polling.
-- Hidden form submission.
-- Actions outside what the logged-in user can do manually.
-- Batch PDF, CAJ, original-text, or attachment downloading from academic databases.
-- Hidden academic full-text URL construction, provider-control bypass, or download automation outside a visible user-accessible button.
+- 绕过验证码。
+- 绕过身份认证。
+- 绕过 WebVPN。
+- 多账号自动化。
+- 批量抓取。
+- 高频轮询。
+- 隐藏表单提交。
+- 执行登录用户无法手动完成的操作。
+- 批量下载学术数据库中的 PDF、CAJ、原文或附件。
+- 构造隐藏全文 URL、绕过供应商控制，或在用户可见按钮之外进行下载自动化。
 
-## State-Changing Commands
+## 状态变更命令
 
-State-changing features, such as gym reservations, require extra safeguards:
+健身房预约等状态变更功能需要额外保护：
 
-- `--dry-run` support.
-- Explicit confirmation for real submission.
-- Clear JSON audit output.
-- Retry limits.
-- No hidden repeated attempts.
+- 支持 `--dry-run`。
+- 真实提交前需要明确确认。
+- 输出清晰 JSON 审计信息。
+- 限制重试次数。
+- 不做隐藏的重复尝试。
 
-## Open Source Posture
+## 开源姿态
 
-Public docs can describe architecture and redacted examples. They should not publish secrets, private account data, or bypass instructions.
+公开文档可以描述架构和脱敏示例，但不能发布密钥、私人账号数据或绕过说明。
 
-## Academic Database Boundaries
+## 学术数据库边界
 
-CNKI and Wanfang support includes metadata search plus single-item `cnki download <url>` and `wanfang download <url>` commands that open one user-provided detail page and click a visible PDF/full-text download button in the headed browser.
+CNKI 和万方支持元数据检索，以及单条 `cnki download <url>` / `wanfang download <url>`：打开一个用户提供的详情页，并在 headed 浏览器中点击可见 PDF/全文下载按钮。
 
-The CLI must not bypass CAPTCHA, slider verification, second-factor authentication, paywalls, or provider access controls. It must not implement batch downloading of PDFs, CAJ files, original full text, or attachments, and must not construct hidden download URLs to avoid normal browser controls.
+CLI 不得绕过验证码、滑块验证、二次认证、付费墙或供应商访问控制。不得实现 PDF、CAJ、原文或附件的批量下载，也不得构造隐藏下载 URL 来绕开正常浏览器控制。

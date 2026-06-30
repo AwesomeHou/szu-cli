@@ -1270,18 +1270,19 @@ function parseNoticeOptions(action, argv) {
     page: 1,
     pages: 1,
     headless: true,
+    category: 'all',
     keyword: null,
+    publisher: null,
+    year: null,
     range: '6m',
     type: 'full'
   };
   const args = [...argv];
 
   if (action === 'search') {
-    const keyword = args.shift();
-    if (!keyword || keyword.startsWith('--')) {
-      throw new Error('notice search requires a keyword.');
+    if (args[0] && !args[0].startsWith('--')) {
+      options.keyword = args.shift();
     }
-    options.keyword = keyword;
   }
 
   for (let i = 0; i < args.length; i += 1) {
@@ -1309,6 +1310,26 @@ function parseNoticeOptions(action, argv) {
       i += 1;
       continue;
     }
+    if (arg === '--category') {
+      options.category = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--keyword') {
+      options.keyword = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--publisher') {
+      options.publisher = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--year') {
+      options.year = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
     if (arg === '--type') {
       options.type = requireValue(args, i, arg);
       i += 1;
@@ -1329,6 +1350,9 @@ function parseNoticeOptions(action, argv) {
   }
   if (!Number.isInteger(options.pages) || options.pages < 1) {
     throw new Error('--pages must be a positive integer.');
+  }
+  if (action === 'search' && !options.keyword && !options.publisher && !options.year && options.category === 'all') {
+    throw new Error('notice search requires a keyword or filter option.');
   }
 
   return options;

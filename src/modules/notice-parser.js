@@ -84,6 +84,7 @@ export function parseNoticeListHtml(html, options = {}) {
     const url = new URL(href, baseUrl).toString();
     const dateText = cleanText(cells[5]);
     const normalizedDate = normalizeListDateText(dateText);
+    const isPinned = /\|置顶\|/.test(cleanText(cells[3]));
 
     notices.push({
       id: new URL(url).searchParams.get('id'),
@@ -93,6 +94,7 @@ export function parseNoticeListHtml(html, options = {}) {
       dateText,
       date: normalizedDate,
       time: null,
+      isPinned,
       hasAttachment: /attach\.gif/i.test(cells[4]),
       url
     });

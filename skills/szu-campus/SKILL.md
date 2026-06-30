@@ -30,6 +30,9 @@ Use JSON output for agent workflows:
 
 ```bash
 szu-cli notice list --limit 10 --json
+szu-cli notice list --category 科研 --limit 10 --json
+szu-cli notice list --publisher 土木与交通工程学院 --year 2026 --limit 10 --json
+szu-cli notice list --keyword 奖学金 --type title --json
 szu-cli notice list --page 2 --limit 10 --json
 szu-cli notice search 奖学金 --json
 szu-cli notice search 奖学金 --type title --range 6m --json
@@ -82,7 +85,7 @@ szu-cli wanfang item <url> --headed --json
 szu-cli wanfang download <url> --headed --dir downloads --json
 ```
 
-Use `notice list --page <n> --limit <n>` for paged full-list queries. `notice search` submits the website search form; default search is full text over the last 6 months. Use `--type title` when the user expects the keyword to appear in titles. Use `notice view <id|url>` to fetch the title, publisher, publish time, plain-text body, and indexed attachment links. Do not ask users to open attachment URLs directly; use `notice download <id|url> --index <n> --dir <path>` so the CLI downloads through the logged-in detail page.
+Use `notice list` as the preferred notice entry point. It defaults to `--category 全部` and supports `--category <置顶|教务|科研|行政|学工|会议|讲座|生活|全部>`, `--keyword <text>`, `--publisher <发文单位>`, `--year <年份>`, paging, and limits. Use `--publisher` for publishing-unit requests; do not approximate a publishing-unit query with `notice search <unit name>`. `notice search` is kept as a compatibility entry point for website search. Use `--type title` when the user expects the keyword to appear in titles. Use `notice view <id|url>` to fetch the title, publisher, publish time, plain-text body, and indexed attachment links. Do not ask users to open attachment URLs directly; use `notice download <id|url> --index <n> --dir <path>` so the CLI downloads through the logged-in detail page.
 
 Use `course status` to check eHall timetable access, `course list` for the current term timetable, and `course today` for today's courses. Course commands do not require the user to provide the eHall URL in normal use.
 
@@ -116,6 +119,11 @@ Important codes:
 - `WEBVPN_LOGIN_REQUIRED`: ask the user to log in through WebVPN.
 - `NETWORK_REQUIRED`: explain that campus network or WebVPN is needed.
 - `PAGE_CHANGED`: report that the adapter may need updating.
+- `PROGRAM_NOT_FOUND`: ask the user to rerun `program list --json`.
+- `CLASS_NOT_FOUND`: ask the user to rerun `timetable classes --json`.
+- `MODULE_NOT_FOUND`: ask the user to rerun `completion modules --json`.
+- `CALCULATION_TIMEOUT`: do not retry aggressively; increase `--timeout <seconds>` only when useful.
+- `LECTURE_NOT_FOUND`: ask the user to rerun `lecture list --json`.
 - `RATE_LIMITED`: stop retrying.
 - `HEADED_REQUIRED`: rerun with `--headed`.
 

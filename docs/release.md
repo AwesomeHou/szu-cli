@@ -1,10 +1,10 @@
-# Release Checklist
+# 发布检查
 
-The package publishes the CLI and the bundled `szu-campus` skill together. Skill installation is explicit through `szu-cli setup codex`; the npm install step does not write agent configuration directories.
+npm 包同时发布 CLI 和随包 `szu-campus` skill。skill 通过 `szu-cli setup codex` 显式安装；`npm install` 不会写入 agent 配置目录。
 
-## Pre-Release Checks
+## 发布前检查
 
-Run:
+运行：
 
 ```bash
 npm test
@@ -12,7 +12,9 @@ npm run docs:check
 npm pack --dry-run
 ```
 
-Confirm the dry-run package includes:
+对照 `docs/cli-evals.md` 和 `docs/skill-evals.md` 检查新增或变更命令是否已有对应 eval 设计。
+
+确认 dry-run 包含：
 
 - `src/cli.js`
 - `src/main.js`
@@ -20,19 +22,20 @@ Confirm the dry-run package includes:
 - `skills/szu-campus/SKILL.md`
 - `docs/`
 - `README.md`
+- `README_EN.md`
 - `LICENSE`
 - `AGENTS.md`
 
-## Local Tarball Install Test
+## 本地 Tarball 安装测试
 
-Create and install the tarball:
+创建并安装 tarball：
 
 ```bash
 npm pack
-npm install -g ./szu-cli-0.1.0-alpha.1.tgz
+npm install -g ./szu-cli-0.1.0-alpha.2.tgz
 ```
 
-Verify:
+验证：
 
 ```bash
 szu-cli --version
@@ -41,44 +44,44 @@ szu-cli skill path --json
 szu-cli setup codex --json
 ```
 
-Then initialize login manually:
+然后手动初始化登录：
 
 ```bash
 szu-cli auth login
 szu-cli auth status --json
 ```
 
-## Publish Alpha
+## 发布 Alpha
 
-Use npm's alpha dist-tag:
+使用 npm 的 alpha 发布标签：
 
 ```bash
 npm publish --tag alpha
 ```
 
-Users install with:
+用户安装：
 
 ```bash
 npm install -g szu-cli@alpha
 szu-cli setup codex
 ```
 
-## Publish Stable
+## 发布稳定版
 
-After alpha validation:
+alpha 验证完成后：
 
 ```bash
 npm version 0.1.0
 npm publish
 ```
 
-Users install with:
+用户安装：
 
 ```bash
 npm install -g szu-cli
 szu-cli setup codex
 ```
 
-## Safety Boundary
+## 安全边界
 
-Do not publish a release that stores passwords, exports cookies, bypasses CAPTCHA, performs bulk academic downloads, or requires hidden provider URLs. Browser-backed commands must keep using normal user-visible flows.
+不要发布任何会保存密码、导出 cookies、绕过验证码、批量下载学术资源，或依赖隐藏供应商 URL 的版本。浏览器后端命令必须继续使用用户可见的正常网页流程。

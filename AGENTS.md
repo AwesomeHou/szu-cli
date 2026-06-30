@@ -43,8 +43,8 @@ Adapters: understand each campus web page
 - `docs/security-and-compliance.md`: privacy, safety, and anti-abuse rules.
 - `docs/skill-integration.md`: how Codex/agent skills should pair with the CLI.
 - `docs/roadmap.md`: staged implementation plan.
-- `src/`: future CLI implementation.
-- `tests/`: future unit and integration tests.
+- `src/`: CLI implementation.
+- `tests/`: unit and CLI contract tests.
 - `examples/`: redacted examples only.
 - `skills/szu-campus/`: optional agent skill that documents CLI usage.
 - `scratch/`: local investigation notes, ignored by Git.

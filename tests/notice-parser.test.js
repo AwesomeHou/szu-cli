@@ -106,6 +106,7 @@ test('parses infolist table notices with publisher and attachment flag', () => {
     dateText: '2026-6-22',
     date: '2026-06-22',
     time: null,
+    isPinned: false,
     hasAttachment: true,
     url: 'https://www1.szu.edu.cn/board/view.asp?id=577444'
   });
