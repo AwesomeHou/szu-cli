@@ -53,7 +53,8 @@ test('auth status reports missing profile as logged out', () => {
     loggedIn: false,
     reason: 'profile-missing',
     profileExists: false,
-    profilePath: body.data.profilePath
+    profilePath: body.data.profilePath,
+    hint: 'Run `szu-cli auth login` and complete login in the opened browser.'
   });
   assert.equal(body.data.profilePath.includes('szu-cli-test-'), true);
 });
@@ -94,6 +95,7 @@ test('auth login opens configured target with browser profile', () => {
   assert.equal(body.ok, true);
   assert.equal(body.meta.command, 'auth login');
   assert.equal(body.data.opened, true);
+  assert.equal(body.data.closed, true);
   assert.equal(body.data.url, 'https://www1.szu.edu.cn/board/');
   assert.equal(body.data.profilePath.includes('szu-cli-test-'), true);
 });

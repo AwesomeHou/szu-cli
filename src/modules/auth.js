@@ -6,6 +6,7 @@ import { getLaunchOptions } from './browser-options.js';
 import { classifyAuthPage } from './auth-detector.js';
 
 const DEFAULT_AUTH_CHECK_URL = 'https://www1.szu.edu.cn/board/';
+const LOGIN_HINT = 'Run `szu-cli auth login` and complete login in the opened browser.';
 
 export async function loginWithBrowserProfile(options = {}) {
   const profilePath = getProfilePath();
@@ -16,6 +17,7 @@ export async function loginWithBrowserProfile(options = {}) {
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
     return {
       opened: true,
+      closed: options.waitForClose !== false,
       url,
       profilePath,
       backend: 'mock'
@@ -26,16 +28,27 @@ export async function loginWithBrowserProfile(options = {}) {
   const context = await chromium.launchPersistentContext(profilePath, getLaunchOptions({
     headless: options.headless ?? false
   }));
-  const page = context.pages()[0] ?? await context.newPage();
-  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  try {
+    const page = context.pages()[0] ?? await context.newPage();
+    await page.goto(url, { waitUntil: 'domcontentloaded' });
+    const finalUrl = page.url();
+    if (options.waitForClose !== false) {
+      await context.waitForEvent('close');
+    }
 
-  return {
-    opened: true,
-    url: page.url(),
-    profilePath,
-    backend: 'playwright',
-    message: 'Complete login in the opened browser window, then rerun `szu-cli auth status --json`.'
-  };
+    return {
+      opened: true,
+      closed: options.waitForClose !== false,
+      url: finalUrl,
+      profilePath,
+      backend: 'playwright',
+      message: options.waitForClose === false
+        ? 'Complete login in the opened browser window, then close it when finished.'
+        : 'Browser was closed. Rerun `szu-cli auth status --json` to verify login.'
+    };
+  } finally {
+    await context.close().catch(() => {});
+  }
 }
 
 export async function getAuthStatus(options = {}) {
@@ -49,23 +62,23 @@ export async function getAuthStatus(options = {}) {
       text: process.env.SZU_MOCK_AUTH_TEXT ?? ''
     });
 
-    return {
+    return withLoginHint({
       ...checked,
       profileExists,
       profilePath,
       checkedUrl: DEFAULT_AUTH_CHECK_URL,
       finalUrl: process.env.SZU_MOCK_AUTH_URL ?? DEFAULT_AUTH_CHECK_URL,
       backend: 'mock'
-    };
+    });
   }
 
   if (!profileExists) {
-    return {
+    return withLoginHint({
       loggedIn: false,
       reason: 'profile-missing',
       profileExists,
       profilePath
-    };
+    });
   }
 
   const checked = await checkAuthWithBrowser({
@@ -74,13 +87,13 @@ export async function getAuthStatus(options = {}) {
     profilePath
   });
 
-  return {
+  return withLoginHint({
     ...checked,
     profileExists,
     profilePath,
     checkedUrl: options.url ?? DEFAULT_AUTH_CHECK_URL,
     backend: 'playwright'
-  };
+  });
 }
 
 async function checkAuthWithBrowser(options) {
@@ -115,4 +128,11 @@ async function importPlaywright() {
     error.code = 'BACKEND_UNAVAILABLE';
     throw error;
   }
+}
+
+function withLoginHint(status) {
+  return status.loggedIn ? status : {
+    ...status,
+    hint: LOGIN_HINT
+  };
 }

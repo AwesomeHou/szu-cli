@@ -12,6 +12,10 @@ CLI 管理一个持久化浏览器 profile：
 
 Windows 上默认通过 Playwright 使用系统 Chrome 通道，避免首次登录前必须下载 Playwright 自带 Chromium。用户可以用 `SZU_BROWSER_CHANNEL` 覆盖通道，例如 `msedge`。
 
+Chrome 和 Edge 的登录态不通用。CLI 只复用 `~/.szu-cli/browser-profile/` 里的独立 profile，不直接复用你日常浏览器的个人 profile。切换 `SZU_BROWSER_CHANNEL` 后，仍然使用同一个 CLI profile 目录，但不同浏览器内核/通道不保证能读取彼此的 cookies，通常需要重新登录一次。
+
+CLI 不应该挤掉你日常浏览器里的登录态。只有学校系统服务端限制“同一账号只能保留一个会话”时，CLI 新登录才可能让另一个浏览器会话失效；这不是 Chrome/Edge 本地 profile 互相覆盖，而是服务端会话策略。
+
 流程：
 
 ```text
@@ -19,6 +23,7 @@ szu-cli auth login
   -> 用持久化 profile 启动浏览器
   -> 用户手动完成 SZU 或 WebVPN 登录
   -> 登录完成后关闭浏览器窗口
+  -> CLI 等待窗口关闭并清理浏览器进程
   -> profile 留在本机供后续命令复用
 ```
 
@@ -28,7 +33,7 @@ szu-cli auth login
 szu-cli notice list --json
   -> 用持久化 profile 打开页面
   -> 如果已登录，解析数据
-  -> 如果跳转到登录页，返回 LOGIN_REQUIRED
+  -> 如果跳转到登录页，返回 LOGIN_REQUIRED，并提示运行 auth login
 ```
 
 当前登录检查：

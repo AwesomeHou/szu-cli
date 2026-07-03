@@ -65,6 +65,8 @@ szu-cli auth login
 szu-cli auth status --json
 ```
 
+`auth login` 会等你关闭它打开的浏览器窗口后再退出。窗口关闭后，CLI 会清理本次启动的浏览器进程，登录态保留在本机 profile 中。
+
 Windows 默认使用系统 Chrome 通道。如需使用 Edge：
 
 ```powershell

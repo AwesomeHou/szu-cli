@@ -78,6 +78,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 - `--json`：输出机器可读 JSON，所有 agent-facing 命令都支持。
 - `--headed`：浏览器后端命令使用可见浏览器窗口。
 - `--url <entryUrl>`：覆盖默认入口 URL，主要用于调试。
+- `auth login --no-wait`：打开登录浏览器后立即返回；默认会等待窗口关闭并清理本次浏览器进程。
 
 ## JSON 包装结构
 

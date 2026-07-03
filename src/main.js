@@ -1470,7 +1470,8 @@ function handleKnownError(error, command) {
 function parseLoginOptions(argv) {
   const options = {
     url: 'https://www1.szu.edu.cn/board/',
-    headless: false
+    headless: false,
+    waitForClose: true
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -1485,6 +1486,10 @@ function parseLoginOptions(argv) {
     }
     if (arg === '--headless') {
       options.headless = true;
+      continue;
+    }
+    if (arg === '--no-wait') {
+      options.waitForClose = false;
       continue;
     }
     throw new Error(`Unknown option: ${arg}`);
