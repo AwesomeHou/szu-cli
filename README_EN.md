@@ -22,7 +22,13 @@ npm install -g szu-cli@alpha
 Install the bundled Codex skill explicitly:
 
 ```bash
-szu-cli setup codex
+szu-cli skill install --target codex --json
+```
+
+Build a portable AI IDE skill bundle:
+
+```bash
+szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
 ```
 
 Then initialize the browser login profile:
@@ -32,7 +38,7 @@ szu-cli auth login
 szu-cli auth status --json
 ```
 
-The npm package includes the CLI and `skills/szu-campus`, but `npm install` does not automatically write agent directories. `szu-cli setup codex` copies the skill to `~/.agents/skills/szu-campus`.
+The npm package includes the CLI and `skills/szu-campus`, but `npm install` does not automatically write agent directories. `szu-cli skill install --target codex --json` copies the skill to `~/.agents/skills/szu-campus`; `--target ai-ide --dest ./SZU-Campus.skill` builds a portable folder for AI IDEs.
 
 ## Direction
 
@@ -73,7 +79,7 @@ szu-cli auth status --json
 szu-cli auth login
 szu-cli skill path --json
 szu-cli skill install --target codex --json
-szu-cli setup codex
+szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
 szu-cli notice list --limit 10 --json
 szu-cli notice list --page 2 --limit 10 --json
 szu-cli notice search 奖学金 --json
@@ -136,7 +142,7 @@ npm run szu-cli -- auth status --json
 npm run szu-cli -- auth login --url https://www1.szu.edu.cn/board/
 npm run szu-cli -- skill path --json
 npm run szu-cli -- skill install --target codex --json
-npm run szu-cli -- setup codex
+npm run szu-cli -- skill install --target ai-ide --dest ./SZU-Campus.skill --json
 npm run szu-cli -- notice list --limit 10 --json
 npm run szu-cli -- notice list --page 2 --limit 10 --json
 npm run szu-cli -- notice search 奖学金 --limit 10 --json

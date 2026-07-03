@@ -15,7 +15,7 @@ szu-cli doctor --json
 szu-cli auth status --json
 szu-cli skill path --json
 szu-cli skill install --target codex --json
-szu-cli setup codex --json
+szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
 szu-cli notice list --limit 10 --json
 szu-cli notice list --page 2 --pages 1 --limit 10 --json
 szu-cli notice search 奖学金 --json
@@ -153,7 +153,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 - `30`：疑似限流或反滥用信号。
 - `31`：下载不可用。
 
-## Skill 与 Setup 输出 Schema
+## Skill 输出 Schema
 
 `szu-cli skill path --json` 返回随包 skill 路径，不执行安装：
 
@@ -172,7 +172,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`szu-cli skill install --target codex --json` 会把随包 skill 复制到 Codex 可见的个人 skill 目录。使用 `--dir <path>` 可覆盖目标根目录。
+`szu-cli skill install --target codex --json` 会把随包 skill 复制到 Codex 可见的个人 skill 目录。`target` 默认是 `codex`，使用 `--dir <path>` 可覆盖目标根目录，也可以省略 `--target codex`。
 
 ```json
 {
@@ -192,34 +192,20 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`szu-cli setup codex --json` 安装随包 Codex skill，并返回首次使用的后续步骤。使用 `--skill-dir <path>` 可覆盖 skill 根目录。
+`szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json` 会生成 AI IDE 可引用的便携目录。目录内包含 `SKILL.md` 和同内容的 `AGENTS.md`。
 
 ```json
 {
   "ok": true,
   "data": {
-    "cli": {
-      "available": true,
-      "version": "0.1.0-alpha.2"
-    },
-    "browser": {
-      "channel": "chrome",
-      "available": true
-    },
-    "skill": {
-      "target": "codex",
-      "name": "szu-campus",
-      "installed": true,
-      "sourcePath": ".../skills/szu-campus",
-      "installedPath": "C:/Users/name/.agents/skills/szu-campus"
-    },
-    "nextSteps": [
-      "运行 `szu-cli auth login` 并在浏览器中完成登录。",
-      "运行 `szu-cli auth status --json`。"
-    ]
+    "target": "ai-ide",
+    "name": "szu-campus",
+    "installed": true,
+    "sourcePath": ".../skills/szu-campus",
+    "installedPath": "./SZU-Campus.skill"
   },
   "meta": {
-    "command": "setup codex",
+    "command": "skill install",
     "gateway": "auto",
     "backend": "playwright"
   }

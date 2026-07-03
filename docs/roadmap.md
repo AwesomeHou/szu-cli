@@ -117,10 +117,10 @@
 - 随包 `szu-campus` skill。
 - `szu-cli skill path --json`。
 - `szu-cli skill install --target codex --json`。
-- `szu-cli setup codex --json`。
+- `szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json`。
 - 安装文档。
 - 发布检查清单。
 
 退出标准：
 
-- 用户可以安装 npm 包、运行 `szu-cli setup codex`，并通过 `npm pack --dry-run` 验证包内容。
+- 用户可以安装 npm 包、运行 `szu-cli skill install --target codex --json`，并通过 `npm pack --dry-run` 验证包内容。

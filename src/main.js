@@ -25,7 +25,6 @@ import { getLibraryItem, getLibraryStatus, searchLibrary } from './modules/libra
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
 import { getProgramItem, getProgramList, getProgramStatus } from './modules/program.js';
 import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
-import { setupCodex } from './modules/setup.js';
 import { getSkillPath, installSkill } from './modules/skill.js';
 import { getTimetableClasses, getTimetableStatus, getTimetableView } from './modules/timetable.js';
 import { downloadWanfangPdf, getWanfangItem, getWanfangStatus, searchWanfang } from './modules/wanfang.js';
@@ -56,16 +55,6 @@ export async function run(argv) {
       writeJson(successEnvelope(data, { command: `skill ${action}` }));
     } catch (error) {
       handleKnownError(error, `skill ${action}`);
-    }
-    return;
-  }
-
-  if (domain === 'setup' && action === 'codex') {
-    try {
-      const data = await setupCodex(parseSetupOptions(argv.slice(2)));
-      writeJson(successEnvelope(data, { command: 'setup codex' }));
-    } catch (error) {
-      handleKnownError(error, 'setup codex');
     }
     return;
   }
@@ -568,7 +557,8 @@ function parseCourseOptions(argv) {
 function parseSkillOptions(action, argv) {
   const options = {
     target: 'codex',
-    dir: null
+    dir: null,
+    dest: null
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -586,24 +576,8 @@ function parseSkillOptions(action, argv) {
       i += 1;
       continue;
     }
-    throw new Error(`Unknown option: ${arg}`);
-  }
-
-  return options;
-}
-
-function parseSetupOptions(argv) {
-  const options = {
-    skillDir: null
-  };
-
-  for (let i = 0; i < argv.length; i += 1) {
-    const arg = argv[i];
-    if (arg === '--json') {
-      continue;
-    }
-    if (arg === '--skill-dir') {
-      options.skillDir = requireValue(argv, i, arg);
+    if (arg === '--dest' && action === 'install') {
+      options.dest = requireValue(argv, i, arg);
       i += 1;
       continue;
     }

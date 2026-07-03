@@ -179,7 +179,7 @@ npm run eval:cli -- --out tmp/custom-cli-eval-report.json
 
 当前 `scripts/eval-cli.mjs` 已实现 93 个 L0 fixture case，覆盖每个公开 CLI 子命令，并补充关键筛选和鲁棒性场景：
 
-- foundation/doctor/auth/skill/setup：`--version`、unknown JSON error、`doctor`、`auth status/login`、`skill path/install`、`setup codex`
+- foundation/doctor/auth/skill：`--version`、unknown JSON error、`doctor`、`auth status/login`、`skill path/install`
 - notice：`list/search/view/download`，含类别、发文单位和登录页错误
 - course/grade/growth/ideology/completion：各 status/list/summary/modules/courses/today 子命令
 - program/timetable：`status/list/item/classes/view`

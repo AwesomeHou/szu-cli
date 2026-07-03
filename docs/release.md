@@ -1,6 +1,6 @@
 # 发布检查
 
-npm 包同时发布 CLI 和随包 `szu-campus` skill。skill 通过 `szu-cli setup codex` 显式安装；`npm install` 不会写入 agent 配置目录。
+npm 包同时发布 CLI 和随包 `szu-campus` skill。skill 通过 `szu-cli skill install --target codex --json` 显式安装；`npm install` 不会写入 agent 配置目录。
 
 ## 发布前检查
 
@@ -41,7 +41,8 @@ npm install -g ./szu-cli-0.1.0-alpha.2.tgz
 szu-cli --version
 szu-cli doctor --json
 szu-cli skill path --json
-szu-cli setup codex --json
+szu-cli skill install --target codex --json
+szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
 ```
 
 然后手动初始化登录：
@@ -63,7 +64,7 @@ npm publish --tag alpha
 
 ```bash
 npm install -g szu-cli@alpha
-szu-cli setup codex
+szu-cli skill install --target codex --json
 ```
 
 ## 发布稳定版
@@ -79,7 +80,7 @@ npm publish
 
 ```bash
 npm install -g szu-cli
-szu-cli setup codex
+szu-cli skill install --target codex --json
 ```
 
 ## 安全边界

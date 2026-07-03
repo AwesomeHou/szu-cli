@@ -20,13 +20,11 @@ test('skill path prints bundled skill location', () => {
   assert.equal(existsSync(join(body.data.sourcePath, 'SKILL.md')), true);
 });
 
-test('skill install copies bundled skill to explicit codex directory', () => {
+test('skill install copies bundled skill to explicit directory', () => {
   const targetRoot = mkdtempSync(join(tmpdir(), 'szu-skill-install-'));
   const result = runCli([
     'skill',
     'install',
-    '--target',
-    'codex',
     '--dir',
     targetRoot,
     '--json'
@@ -44,28 +42,26 @@ test('skill install copies bundled skill to explicit codex directory', () => {
   rmSync(targetRoot, { recursive: true, force: true });
 });
 
-test('setup codex installs skill and returns next steps', () => {
-  const targetRoot = mkdtempSync(join(tmpdir(), 'szu-setup-codex-'));
+test('skill install creates portable AI IDE bundle', () => {
+  const targetRoot = mkdtempSync(join(tmpdir(), 'szu-ai-ide-'));
+  const targetDir = join(targetRoot, 'SZU-Campus.skill');
   const result = runCli([
-    'setup',
-    'codex',
-    '--skill-dir',
-    targetRoot,
+    'skill',
+    'install',
+    '--target',
+    'ai-ide',
+    '--dest',
+    targetDir,
     '--json'
   ], { cleanup: false });
 
   assert.equal(result.status, 0, result.stderr);
   const body = JSON.parse(result.stdout);
   assert.equal(body.ok, true);
-  assert.equal(body.meta.command, 'setup codex');
-  assert.equal(body.data.cli.available, true);
-  assert.equal(body.data.skill.installed, true);
-  assert.equal(body.data.skill.installedPath, join(targetRoot, 'szu-campus'));
-  assert.equal(existsSync(join(targetRoot, 'szu-campus', 'SKILL.md')), true);
-  assert.deepEqual(body.data.nextSteps, [
-    'Run `szu-cli auth login` and complete login in the browser.',
-    'Run `szu-cli auth status --json`.'
-  ]);
+  assert.equal(body.data.target, 'ai-ide');
+  assert.equal(body.data.installedPath, targetDir);
+  assert.match(readFileSync(join(targetDir, 'SKILL.md'), 'utf8'), /SZU Campus CLI Skill/);
+  assert.match(readFileSync(join(targetDir, 'AGENTS.md'), 'utf8'), /SZU Campus CLI Skill/);
   rmSync(targetRoot, { recursive: true, force: true });
 });
 

@@ -28,7 +28,7 @@ szu-cli doctor --json
 npm 包内包含 `skills/szu-campus`，但 `npm install` 不会自动写入 agent 目录。需要显式安装：
 
 ```bash
-szu-cli setup codex
+szu-cli skill install --target codex --json
 ```
 
 该命令会把随包 skill 复制到 Codex 可见的个人 skill 目录：
@@ -36,6 +36,16 @@ szu-cli setup codex
 ```text
 ~/.agents/skills/szu-campus
 ```
+
+## 生成 AI IDE Skill Bundle
+
+Cursor、Windsurf、Cline、Trae 等 AI IDE 可以使用便携目录：
+
+```bash
+szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
+```
+
+该命令会把随包 skill 复制到 `./SZU-Campus.skill`，并额外生成 `AGENTS.md`，方便支持项目说明文件的 AI IDE 直接读取。
 
 只查看随包 skill 路径：
 
@@ -52,8 +62,7 @@ szu-cli skill install --target codex --json
 测试或自定义 agent 目录时，可以覆盖目标目录：
 
 ```bash
-szu-cli skill install --target codex --dir ./tmp/skills --json
-szu-cli setup codex --skill-dir ./tmp/skills --json
+szu-cli skill install --dir ./tmp/skills --json
 ```
 
 ## 首次登录

@@ -22,7 +22,13 @@ npm install -g szu-cli@alpha
 安装随包附带的 Codex skill：
 
 ```bash
-szu-cli setup codex
+szu-cli skill install --target codex --json
+```
+
+生成 AI IDE 便携 skill 目录：
+
+```bash
+szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
 ```
 
 初始化浏览器登录态：

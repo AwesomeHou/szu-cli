@@ -1,6 +1,6 @@
-import { cp, mkdir, rm, stat } from 'node:fs/promises';
+import { copyFile, cp, mkdir, rm, stat } from 'node:fs/promises';
 import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SKILL_NAME = 'szu-campus';
@@ -18,15 +18,25 @@ export async function installSkill(options = {}) {
   const sourcePath = bundledSkillPath();
   await assertSkillExists(sourcePath);
   const target = options.target ?? 'codex';
-  if (target !== 'codex') {
+  if (target !== 'codex' && target !== 'ai-ide') {
     throw new Error(`Unsupported skill target: ${target}`);
   }
 
-  const root = options.dir ?? defaultCodexSkillRoot();
-  const installedPath = join(root, SKILL_NAME);
-  await mkdir(root, { recursive: true });
+  const codexRoot = options.dir ?? defaultCodexSkillRoot();
+  const installedPath = target === 'ai-ide'
+    ? options.dest ?? options.dir ?? `${SKILL_NAME}.skill`
+    : join(codexRoot, SKILL_NAME);
+
+  if (target === 'codex') {
+    await mkdir(codexRoot, { recursive: true });
+  } else {
+    await mkdir(dirname(installedPath), { recursive: true });
+  }
   await rm(installedPath, { recursive: true, force: true });
   await cp(sourcePath, installedPath, { recursive: true });
+  if (target === 'ai-ide') {
+    await copyFile(join(installedPath, 'SKILL.md'), join(installedPath, 'AGENTS.md'));
+  }
 
   return {
     target,

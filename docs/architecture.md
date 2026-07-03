@@ -31,7 +31,7 @@ agent 只应依赖这一层，不应依赖内部网页实现。
 
 - `doctor`：本地环境检查。
 - `auth`：登录状态和登录流程。
-- `skill` / `setup`：随包 skill 路径、安装和 Codex 一键设置。
+- `skill`：随包 skill 路径和安装。
 - `notice`：公文通列表、搜索、详情和下载。
 - `course`：我的课表。
 - `program`：全校培养方案查询。

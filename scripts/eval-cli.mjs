@@ -178,13 +178,14 @@ const cases = [
     ]
   },
   {
-    id: 'setup.codex',
+    id: 'skill.install-ai-ide',
     layer: 'L0',
-    args: (home) => ['setup', 'codex', '--skill-dir', join(home, 'skills'), '--json'],
+    args: (home) => ['skill', 'install', '--target', 'ai-ide', '--dest', join(home, 'SZU-Campus.skill'), '--json'],
     checks: [
       statusIs(0),
-      jsonPathIs('meta.command', 'setup codex'),
-      jsonPathIs('data.skill.installed', true)
+      jsonPathIs('meta.command', 'skill install'),
+      jsonPathIs('data.target', 'ai-ide'),
+      jsonPathIs('data.installed', true)
     ]
   },
   {
