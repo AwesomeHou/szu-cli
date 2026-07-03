@@ -161,6 +161,23 @@ test('notice list filters by category and keyword', () => {
   assert.deepEqual(JSON.parse(keyword.stdout).data.items.map((item) => item.id), ['577085']);
 });
 
+test('notice list filters by date range', () => {
+  const result = runNotice(['notice', 'list', '--from', '2026-06-18', '--to', '2026-06-22', '--json']);
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.data.search.from, '2026-06-18');
+  assert.equal(body.data.search.to, '2026-06-22');
+  assert.deepEqual(body.data.items.map((item) => item.id), ['577164', '577444']);
+});
+
+test('notice list rejects an inverted date range', () => {
+  const result = runNotice(['notice', 'list', '--from', '2026-06-22', '--to', '2026-06-18', '--json']);
+
+  assert.equal(result.status, 1);
+  assert.match(JSON.parse(result.stdout).error.message, /--from/);
+});
+
 test('notice list filters pinned notices', () => {
   const result = runNotice(['notice', 'list', '--category', '置顶', '--json']);
 

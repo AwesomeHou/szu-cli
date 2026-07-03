@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 
 import {
   buildCoursePayload,
+  filterCoursePayload,
   filterTodayCourses,
   parseCourseItems,
   parseCurrentTerm,
@@ -20,6 +21,14 @@ test('parses current term from dqxnxq response', () => {
     semester: '2',
     currentWeek: null
   });
+});
+
+test('filters course payload by week and weekday', () => {
+  const payload = buildCoursePayload(fixture, { sourceUrl: 'mock' });
+  const filtered = filterCoursePayload(payload, { week: 17, weekday: 2 });
+
+  assert.deepEqual(filtered.filters, { week: 17, weekday: 2 });
+  assert.deepEqual(filtered.items.map((item) => item.courseName), ['交通设计与管控']);
 });
 
 test('parses current week from dqzc response', () => {

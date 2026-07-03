@@ -114,6 +114,14 @@ test('library search supports limit', () => {
   assert.equal(body.data.items.length, 1);
 });
 
+test('library search supports page', () => {
+  const result = runLibrary(['library', 'search', '交通设计', '--page', '2', '--json']);
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.data.page, 2);
+});
+
 test('library search supports advanced fields', () => {
   const result = runLibrary([
     'library',

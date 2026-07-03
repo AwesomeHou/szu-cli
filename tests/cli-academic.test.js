@@ -145,6 +145,17 @@ test('cnki search can include citation exports', () => {
   });
 });
 
+test('cnki search can filter returned metadata by year and type', () => {
+  const result = runAcademic(['cnki', 'search', '交通设计', '--headed', '--year', '2026', '--type', '期刊', '--json'], {
+    SZU_MOCK_CNKI_JSON: cnkiMockData
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.deepEqual(body.data.filters, { year: '2026', type: '期刊' });
+  assert.equal(body.data.items[0].title, '城市道路交通拥堵溯源分析方法：研究进展与展望');
+});
+
 test('cnki search supports advanced title and abstract fields', () => {
   const result = runAcademic([
     'cnki',
@@ -261,6 +272,17 @@ test('wanfang search can include citation exports', () => {
       '- 李帅, 杨沙. 基于BIM技术的市政交通设计及应用[J]. 工程技术研究, 2026. https://d.wanfangdata.com.cn/periodical/gcjs202604001'
     ]
   });
+});
+
+test('wanfang search can filter returned metadata by year and type', () => {
+  const result = runAcademic(['wanfang', 'search', '交通设计', '--headed', '--year', '2026', '--type', '期刊', '--json'], {
+    SZU_MOCK_WANFANG_JSON: wanfangMockData
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.deepEqual(body.data.filters, { year: '2026', type: '期刊' });
+  assert.equal(body.data.items[0].title, '基于BIM技术的市政交通设计及应用');
 });
 
 test('wanfang search supports advanced title keyword and abstract fields', () => {

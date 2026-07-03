@@ -42,12 +42,14 @@ export async function searchWanfang(options = {}) {
     throw new Error('wanfang search requires a keyword.');
   }
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
+    const items = filterAcademicItems(mockData().search?.items ?? [], options).slice(0, options.limit);
     return {
       ...mockData().search,
       keyword,
       ...(options.advanced ? { advanced: options.advanced } : {}),
-      ...(options.format ? { exports: formatWanfangSearchExports((mockData().search?.items ?? []).slice(0, options.limit), options.format) } : {}),
-      items: (mockData().search?.items ?? []).slice(0, options.limit)
+      ...(academicFilters(options) ? { filters: academicFilters(options) } : {}),
+      ...(options.format ? { exports: formatWanfangSearchExports(items, options.format) } : {}),
+      items
     };
   }
   assertHeaded(options);
@@ -69,7 +71,7 @@ export async function searchWanfang(options = {}) {
     assertAccessible(state, 'Wanfang');
     const rows = await extractWanfangRows(page);
 
-    return buildWanfangSearchPayload({
+    return filterAcademicPayload(buildWanfangSearchPayload({
       keyword,
       advanced: options.advanced,
       text: state.text,
@@ -77,7 +79,7 @@ export async function searchWanfang(options = {}) {
       limit: options.limit,
       format: options.format,
       sourceUrl: page.url()
-    });
+    }), options);
   } finally {
     await context.close();
   }
@@ -194,6 +196,37 @@ function buildWanfangSearchUrl(query) {
   const url = new URL(WANFANG_PERIODICAL_SEARCH_URL);
   url.searchParams.set('q', query);
   return url.toString();
+}
+
+function filterAcademicPayload(payload, options) {
+  const filters = academicFilters(options);
+  if (!filters) {
+    return payload;
+  }
+  const items = filterAcademicItems(payload.items, options);
+  return {
+    ...payload,
+    filters,
+    items,
+    ...(payload.exports ? { exports: formatWanfangSearchExports(items, payload.exports.format) } : {})
+  };
+}
+
+function filterAcademicItems(items = [], options = {}) {
+  return items.filter((item) => (
+    (!options.year || item.year === options.year)
+    && (!options.type || item.type === options.type)
+  ));
+}
+
+function academicFilters(options = {}) {
+  if (!options.year && !options.type) {
+    return null;
+  }
+  return {
+    ...(options.year ? { year: options.year } : {}),
+    ...(options.type ? { type: options.type } : {})
+  };
 }
 
 async function extractWanfangDetail(page) {

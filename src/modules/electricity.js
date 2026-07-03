@@ -36,36 +36,36 @@ export async function getElectricityBuildings(options = {}) {
 }
 
 export async function queryElectricity(options = {}) {
-  requireQueryOptions(options);
+  const query = await resolveQueryOptions(options);
 
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
     const data = readMockData();
     return buildElectricityQueryPayload({
-      campus: options.campus,
-      building: options.building,
-      room: options.room,
-      from: options.from,
-      to: options.to,
+      campus: query.campus,
+      building: query.building,
+      room: query.room,
+      from: query.from,
+      to: query.to,
       records: data.query?.records ?? [],
-      sourceUrl: options.url ?? ELECTRICITY_ENTRY_URL
+      sourceUrl: query.url ?? ELECTRICITY_ENTRY_URL
     });
   }
 
   const context = await launchContext(options);
   try {
     const page = await context.newPage();
-    await gotoElectricity(page, options.url ?? ELECTRICITY_ENTRY_URL);
-    await selectCampus(page, options.campus);
-    await selectBuilding(page, options.building);
-    await page.fill('input[name="roomName"]', options.room);
+    await gotoElectricity(page, query.url ?? ELECTRICITY_ENTRY_URL);
+    await selectCampus(page, query.campus);
+    await selectBuilding(page, query.building);
+    await page.fill('input[name="roomName"]', query.room);
     await Promise.all([
       page.waitForLoadState('domcontentloaded').catch(() => {}),
       page.click('input[name="select"]')
     ]);
     await page.waitForTimeout(500);
 
-    await page.fill('input[name="beginTime"]', options.from);
-    await page.fill('input[name="endTime"]', options.to);
+    await page.fill('input[name="beginTime"]', query.from);
+    await page.fill('input[name="endTime"]', query.to);
     await page.selectOption('select[name="type"]', '2');
     await Promise.all([
       page.waitForLoadState('domcontentloaded').catch(() => {}),
@@ -76,11 +76,11 @@ export async function queryElectricity(options = {}) {
     const rows = await tableRows(page, '#oTable');
     const records = parseElectricityTableRows(rows, 'usage');
     return buildElectricityQueryPayload({
-      campus: options.campus,
-      building: options.building,
-      room: options.room,
-      from: options.from,
-      to: options.to,
+      campus: query.campus,
+      building: query.building,
+      room: query.room,
+      from: query.from,
+      to: query.to,
       records,
       sourceUrl: page.url()
     });
@@ -150,11 +150,49 @@ async function gotoElectricity(page, url = ELECTRICITY_ENTRY_URL) {
 }
 
 function requireQueryOptions(options) {
-  for (const key of ['campus', 'building', 'room']) {
+  for (const key of ['building', 'room']) {
     if (!options[key]) {
       throw new Error(`electricity query requires --${key}.`);
     }
   }
+}
+
+async function resolveQueryOptions(options = {}) {
+  requireQueryOptions(options);
+  const buildings = await getElectricityBuildings(options);
+  const campusMatches = options.campus
+    ? buildings.campuses.filter((campus) => textMatches(campus.name, options.campus))
+    : buildings.campuses;
+  const matches = campusMatches.flatMap((campus) => (
+    campus.buildings
+      .filter((building) => textMatches(building.name, options.building))
+      .map((building) => ({ campus: campus.name, building: building.name }))
+  ));
+
+  if (matches.length !== 1) {
+    const error = new Error(matches.length === 0
+      ? `Could not find electricity building: ${options.building}.`
+      : `Electricity building is ambiguous: ${options.building}.`);
+    error.code = 'UNKNOWN_ERROR';
+    error.hint = 'Run `szu-cli electricity buildings --json` and use the exact campus/building names.';
+    throw error;
+  }
+
+  return {
+    ...options,
+    campus: matches[0].campus,
+    building: matches[0].building
+  };
+}
+
+function textMatches(actual, expected) {
+  const left = normalizeText(actual);
+  const right = normalizeText(expected);
+  return left === right || left.includes(right) || right.includes(left);
+}
+
+function normalizeText(value) {
+  return String(value ?? '').replace(/\s+/g, '').toLocaleLowerCase('zh-CN');
 }
 
 async function launchContext(options) {

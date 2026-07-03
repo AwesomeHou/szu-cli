@@ -34,6 +34,28 @@ export function buildCoursePayload(api, options = {}) {
   };
 }
 
+export function filterCoursePayload(payload, options = {}) {
+  const week = options.week ?? payload.term?.currentWeek ?? null;
+  const weekday = options.weekday ?? null;
+  const term = options.term ?? null;
+  const termMatches = !term || term === payload.term?.id;
+
+  return {
+    ...payload,
+    filters: {
+      ...(term ? { term } : {}),
+      ...(options.week ? { week: options.week } : {}),
+      ...(weekday ? { weekday } : {})
+    },
+    items: termMatches
+      ? payload.items.filter((item) => (
+        (!weekday || item.weekday === weekday)
+        && isActiveInWeek(item.weeksText, week)
+      ))
+      : []
+  };
+}
+
 function normalizeAdjustedCourseRow(row) {
   return {
     courseCode: stringOrNull(row.KCH),

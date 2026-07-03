@@ -223,7 +223,8 @@ function filterNoticeItems(notices, options = {}) {
         return notice.isPinned === true;
       }
       return notice.category === category;
-    });
+    })
+    .filter((notice) => inDateRange(notice.date, options.from, options.to));
 }
 
 function normalizeCategory(value = 'all') {
@@ -233,7 +234,7 @@ function normalizeCategory(value = 'all') {
 
 function searchMeta(options = {}) {
   const category = normalizeCategory(options.category);
-  if (!options.keyword && !options.publisher && !options.year && category === '全部') {
+  if (!options.keyword && !options.publisher && !options.year && !options.from && !options.to && category === '全部') {
     return null;
   }
   return {
@@ -242,8 +243,17 @@ function searchMeta(options = {}) {
     range: options.range,
     type: options.type,
     ...(options.publisher ? { publisher: options.publisher } : {}),
-    ...(options.year ? { year: options.year } : {})
+    ...(options.year ? { year: options.year } : {}),
+    ...(options.from ? { from: options.from } : {}),
+    ...(options.to ? { to: options.to } : {})
   };
+}
+
+function inDateRange(date, from, to) {
+  if (!date) {
+    return true;
+  }
+  return (!from || date >= from) && (!to || date <= to);
 }
 
 async function loadNoticeSearchHtml(options) {

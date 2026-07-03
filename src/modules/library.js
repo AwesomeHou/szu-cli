@@ -51,6 +51,7 @@ export async function searchLibrary(options = {}) {
     await warmLibraryLogin(page);
     await gotoLibrary(page, buildLibrarySearchUrl({
       keyword: options.keyword,
+      page: options.page,
       ...options.advanced
     }).toString());
     await page.waitForTimeout(800);
@@ -62,6 +63,7 @@ export async function searchLibrary(options = {}) {
       text: snapshot.text,
       rows: snapshot.rows,
       limit: options.limit,
+      page: options.page,
       sourceUrl: page.url()
     });
   } finally {
@@ -113,6 +115,7 @@ function mockSearch(options) {
     ...data.search,
     keyword: options.keyword ?? options.advanced?.title ?? options.advanced?.author ?? null,
     ...(hasAdvancedFields(options.advanced) ? { advanced: options.advanced } : {}),
+    page: options.page,
     items: (data.search?.items ?? []).slice(0, options.limit)
   };
 }

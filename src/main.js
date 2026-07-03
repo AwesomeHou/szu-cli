@@ -518,7 +518,10 @@ function parseCourseOptions(argv) {
   const options = {
     headless: true,
     url: null,
-    today: process.env.SZU_MOCK_TODAY ? new Date(process.env.SZU_MOCK_TODAY) : undefined
+    today: process.env.SZU_MOCK_TODAY ? new Date(process.env.SZU_MOCK_TODAY) : undefined,
+    term: null,
+    week: null,
+    weekday: null
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -528,6 +531,27 @@ function parseCourseOptions(argv) {
     }
     if (arg === '--url') {
       options.url = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--date') {
+      options.today = parseDateOption(requireValue(argv, i, arg), '--date');
+      options.weekday = weekdayOf(options.today);
+      i += 1;
+      continue;
+    }
+    if (arg === '--term') {
+      options.term = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--week') {
+      options.week = Number.parseInt(requireValue(argv, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--weekday') {
+      options.weekday = Number.parseInt(requireValue(argv, i, arg), 10);
       i += 1;
       continue;
     }
@@ -846,6 +870,7 @@ function parseLibraryOptions(action, argv) {
     keyword: null,
     target: null,
     limit: 10,
+    page: 1,
     advanced: {}
   };
 
@@ -873,6 +898,11 @@ function parseLibraryOptions(action, argv) {
     }
     if (arg === '--limit') {
       options.limit = Number.parseInt(requireValue(args, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--page') {
+      options.page = Number.parseInt(requireValue(args, i, arg), 10);
       i += 1;
       continue;
     }
@@ -952,6 +982,7 @@ function parseLibraryOptions(action, argv) {
   if (!Number.isInteger(options.limit) || options.limit < 1) {
     throw new Error('--limit must be a positive integer.');
   }
+  assertPositiveInteger(options.page, '--page');
 
   if (action === 'search' && !options.keyword && !hasAnyLibraryAdvancedField(options.advanced)) {
     throw new Error('library search requires a keyword or advanced search field.');
@@ -1012,6 +1043,16 @@ function parseAcademicOptions(domain, action, argv) {
     }
     if (arg === '--format') {
       options.format = normalizeAcademicFormat(requireValue(args, i, arg));
+      i += 1;
+      continue;
+    }
+    if (arg === '--year') {
+      options.year = requireValue(args, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--type') {
+      options.type = requireValue(args, i, arg);
       i += 1;
       continue;
     }
@@ -1181,6 +1222,27 @@ function addDays(date, days) {
   return copy;
 }
 
+function parseDateOption(value, option) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    throw new Error(`${option} must use YYYY-MM-DD.`);
+  }
+  const date = new Date(`${value}T12:00:00+08:00`);
+  if (Number.isNaN(date.getTime())) {
+    throw new Error(`${option} must be a valid date.`);
+  }
+  return date;
+}
+
+function parseDateString(value, option) {
+  parseDateOption(value, option);
+  return value;
+}
+
+function weekdayOf(date) {
+  const day = date.getDay();
+  return day === 0 ? 7 : day;
+}
+
 function formatDate(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -1330,6 +1392,16 @@ function parseNoticeOptions(action, argv) {
       i += 1;
       continue;
     }
+    if (arg === '--from') {
+      options.from = parseDateString(requireValue(args, i, arg), '--from');
+      i += 1;
+      continue;
+    }
+    if (arg === '--to') {
+      options.to = parseDateString(requireValue(args, i, arg), '--to');
+      i += 1;
+      continue;
+    }
     if (arg === '--type') {
       options.type = requireValue(args, i, arg);
       i += 1;
@@ -1351,7 +1423,10 @@ function parseNoticeOptions(action, argv) {
   if (!Number.isInteger(options.pages) || options.pages < 1) {
     throw new Error('--pages must be a positive integer.');
   }
-  if (action === 'search' && !options.keyword && !options.publisher && !options.year && options.category === 'all') {
+  if (options.from && options.to && options.from > options.to) {
+    throw new Error('--from must be earlier than or equal to --to.');
+  }
+  if (action === 'search' && !options.keyword && !options.publisher && !options.year && !options.from && !options.to && options.category === 'all') {
     throw new Error('notice search requires a keyword or filter option.');
   }
 

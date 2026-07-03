@@ -45,7 +45,7 @@ export function buildLibrarySearchPayload(options) {
     keyword: options.keyword,
     ...(options.advanced ? { advanced: options.advanced } : {}),
     total: meta.total,
-    page: meta.page,
+    page: meta.page ?? options.page ?? null,
     pageCount: meta.pageCount,
     loggedIn: meta.loggedIn,
     historyRecorded: meta.historyRecorded,
@@ -65,6 +65,9 @@ export function buildLibrarySearchUrl(options) {
     sm: 'table',
     dept: options.location ?? 'ALL'
   });
+  if (options.page) {
+    params.set('page', String(options.page));
+  }
 
   if (advanced) {
     appendIfPresent(params, 'title_f', options.title);

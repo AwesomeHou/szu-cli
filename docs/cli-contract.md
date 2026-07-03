@@ -24,7 +24,9 @@ szu-cli notice view 577444 --json
 szu-cli notice download 577444 --dir downloads --json
 szu-cli course status --json
 szu-cli course list --json
+szu-cli course list --week 17 --weekday 2 --json
 szu-cli course today --json
+szu-cli course today --date 2026-06-23 --json
 szu-cli program status --json
 szu-cli program list --json --limit 5
 szu-cli program item <id-or-planCode> --json
@@ -52,17 +54,19 @@ szu-cli lecture item <id> --json
 szu-cli lecture progress --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
-szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
+szu-cli electricity query --building 红豆斋 --room 838 --json
 szu-cli library status --json
-szu-cli library search 交通设计 --json
+szu-cli library search 交通设计 --page 2 --json
 szu-cli library search --title 交通设计 --author 刘立新 --json
 szu-cli library item 3706432 --json
 szu-cli cnki search 交通设计 --headed --json
+szu-cli cnki search 交通设计 --headed --year 2026 --type 期刊 --json
 szu-cli cnki search 交通设计 --headed --format gbt7714 --json
 szu-cli cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
 szu-cli cnki item <url> --headed --json
 szu-cli cnki download <url> --headed --dir downloads --json
 szu-cli wanfang search 交通设计 --headed --json
+szu-cli wanfang search 交通设计 --headed --year 2026 --type 期刊 --json
 szu-cli wanfang search 交通设计 --headed --format markdown --json
 szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
 szu-cli wanfang item <url> --headed --json
@@ -268,6 +272,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 - `--pages <n>`：从 `--page` 开始返回多少页，默认 `1`。
 - `--category <置顶|教务|科研|行政|学工|会议|讲座|生活|全部>`：公文类别，默认 `全部`。
 - `--keyword <关键词>`：可选搜索词；推荐在 `notice list` 中使用，`notice search <关键词>` 保留为兼容别名。
+- `--from YYYY-MM-DD` / `--to YYYY-MM-DD`：按发布日期闭区间过滤，可与类别、关键词、发文单位组合。
 
 `notice search` 会提交网站搜索表单，同时支持：
 
@@ -344,7 +349,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`szu-cli course today --json` 返回同样的课程 item 结构，但按本机日期和当前教学周过滤。`szu-cli course status --json` 只检查访问状态，返回 `loggedIn`、`reason`、`term` 和 `sourceUrl`。
+`szu-cli course list --json` 可用 `--term <termId>`、`--week <n>` 和 `--weekday <1-7>` 过滤当前已读取课表，其中星期一为 `1`、星期日为 `7`。`szu-cli course today --json` 返回同样的课程 item 结构，但按本机日期和当前教学周过滤；使用 `--date YYYY-MM-DD` 可查询指定日期。`szu-cli course status --json` 只检查访问状态，返回 `loggedIn`、`reason`、`term` 和 `sourceUrl`。
 
 ## 培养方案 Schema
 
@@ -758,7 +763,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`szu-cli electricity query --campus <name> --building <name> --room <room> --json` 查询用电记录，并返回日期范围内找到的最新剩余电量。默认查询最近 7 天。使用 `--from YYYY-MM-DD --to YYYY-MM-DD` 可覆盖范围。
+`szu-cli electricity query --campus <name> --building <name> --room <room> --json` 查询用电记录，并返回日期范围内找到的最新剩余电量。默认查询最近 7 天。使用 `--from YYYY-MM-DD --to YYYY-MM-DD` 可覆盖范围。`--campus` 可省略；当 `--building` 能唯一匹配一个楼栋时，CLI 会自动补全校区。校区和楼栋支持唯一的部分匹配。
 
 ```json
 {
@@ -795,7 +800,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 
 ## 图书馆馆藏搜索 Schema
 
-`szu-cli library search <keyword> --json` 搜索深大 OPAC 馆藏。它使用持久化浏览器 profile，因此 OPAC 已登录时可以记录检索历史。使用 `--limit <n>` 限制返回行数，默认 `10`。
+`szu-cli library search <keyword> --json` 搜索深大 OPAC 馆藏。它使用持久化浏览器 profile，因此 OPAC 已登录时可以记录检索历史。使用 `--limit <n>` 限制返回行数，默认 `10`；使用 `--page <n>` 翻页。
 
 ```json
 {
@@ -906,7 +911,7 @@ szu-cli library search --title 交通设计 --author 刘立新 --doc-type 普通
 
 `szu-cli cnki search <keyword> --headed --json` 和 `szu-cli wanfang search <keyword> --headed --json` 通过深大图书馆校内通道执行只读元数据检索。
 
-这些 MVP 命令需要 `--headed`。CNKI 和万方也支持由用户发起的单条 PDF/全文下载命令，该命令只点击可见下载按钮。使用 `--limit <n>` 限制返回行数，默认 `10`。
+这些 MVP 命令需要 `--headed`。CNKI 和万方也支持由用户发起的单条 PDF/全文下载命令，该命令只点击可见下载按钮。使用 `--limit <n>` 限制返回行数，默认 `10`。使用 `--year <yyyy>` 和 `--type <类型>` 可对已返回元数据做结果层过滤；这不是远端站点高级筛选。
 
 搜索命令支持通过 `--format <markdown|gbt7714|bibtex>` 导出引用。引用字符串只基于可见元数据生成，返回在 `data.exports` 下；缺失信息不会编造。
 

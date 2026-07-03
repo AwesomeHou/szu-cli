@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 import { classifyAuthPage } from './auth-detector.js';
 import { getLaunchOptions } from './browser-options.js';
 import { getProfilePath } from './paths.js';
-import { buildCoursePayload, filterTodayCourses } from './course-parser.js';
+import { buildCoursePayload, filterCoursePayload, filterTodayCourses } from './course-parser.js';
 
 const EHALL_HOME_URL = 'https://ehall.szu.edu.cn/new/index.html';
 const COURSE_ENTRY_URL = 'https://ehall.szu.edu.cn/jwapp/sys/wdkb/*default/index.do?EMAP_LANG=zh&THEME=cherry#/xskcb';
@@ -36,7 +36,7 @@ export async function getCourseList(options = {}) {
   const { pageState, api, sourceUrl } = await loadCourseApi(options);
   const authState = classifyCoursePage(pageState);
   assertCourseAccess(authState, pageState);
-  return buildCoursePayload(api, { sourceUrl });
+  return filterCoursePayload(buildCoursePayload(api, { sourceUrl }), options);
 }
 
 export async function getTodayCourses(options = {}) {

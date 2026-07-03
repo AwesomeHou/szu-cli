@@ -93,6 +93,24 @@ test('electricity query returns latest remaining kWh', () => {
   assert.equal(body.data.latestRecord.room, '838');
 });
 
+test('electricity query can infer campus from a unique building', () => {
+  const result = runElectricity([
+    'electricity',
+    'query',
+    '--json',
+    '--building',
+    '红豆',
+    '--room',
+    '838'
+  ]);
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.data.campus, '深大新斋区');
+  assert.equal(body.data.building, '红豆斋');
+  assert.equal(body.data.remainingKwh, 338.88);
+});
+
 test('electricity query requires campus building and room', () => {
   const result = runElectricity(['electricity', 'query', '--json']);
 

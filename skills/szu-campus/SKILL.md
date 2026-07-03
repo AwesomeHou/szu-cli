@@ -33,6 +33,7 @@ szu-cli notice list --limit 10 --json
 szu-cli notice list --category 科研 --limit 10 --json
 szu-cli notice list --publisher 土木与交通工程学院 --year 2026 --limit 10 --json
 szu-cli notice list --keyword 奖学金 --type title --json
+szu-cli notice list --from 2026-06-18 --to 2026-06-22 --json
 szu-cli notice list --page 2 --limit 10 --json
 szu-cli notice search 奖学金 --json
 szu-cli notice search 奖学金 --type title --range 6m --json
@@ -40,7 +41,9 @@ szu-cli notice view 577444 --json
 szu-cli notice download 577444 --dir downloads --json
 szu-cli course status --json
 szu-cli course list --json
+szu-cli course list --week 17 --weekday 2 --json
 szu-cli course today --json
+szu-cli course today --date 2026-06-23 --json
 szu-cli program status --json
 szu-cli program list --limit 5 --json
 szu-cli program item <id-or-planCode> --json
@@ -68,26 +71,28 @@ szu-cli lecture item <id> --json
 szu-cli lecture progress --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
-szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
+szu-cli electricity query --building 红豆斋 --room 838 --json
 szu-cli library status --json
-szu-cli library search 交通设计 --json
+szu-cli library search 交通设计 --page 2 --json
 szu-cli library search --title 交通设计 --author 刘立新 --json
 szu-cli library item 3706432 --json
 szu-cli cnki search 交通设计 --headed --json
+szu-cli cnki search 交通设计 --headed --year 2026 --type 期刊 --json
 szu-cli cnki search 交通设计 --headed --format gbt7714 --json
 szu-cli cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
 szu-cli cnki item <url> --headed --json
 szu-cli cnki download <url> --headed --dir downloads --json
 szu-cli wanfang search 交通设计 --headed --json
+szu-cli wanfang search 交通设计 --headed --year 2026 --type 期刊 --json
 szu-cli wanfang search 交通设计 --headed --format markdown --json
 szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
 szu-cli wanfang item <url> --headed --json
 szu-cli wanfang download <url> --headed --dir downloads --json
 ```
 
-Use `notice list` as the preferred notice entry point. It defaults to `--category 全部` and supports `--category <置顶|教务|科研|行政|学工|会议|讲座|生活|全部>`, `--keyword <text>`, `--publisher <发文单位>`, `--year <年份>`, paging, and limits. Use `--publisher` for publishing-unit requests; do not approximate a publishing-unit query with `notice search <unit name>`. `notice search` is kept as a compatibility entry point for website search. Use `--type title` when the user expects the keyword to appear in titles. Use `notice view <id|url>` to fetch the title, publisher, publish time, plain-text body, and indexed attachment links. Do not ask users to open attachment URLs directly; use `notice download <id|url> --index <n> --dir <path>` so the CLI downloads through the logged-in detail page.
+Use `notice list` as the preferred notice entry point. It defaults to `--category 全部` and supports `--category <置顶|教务|科研|行政|学工|会议|讲座|生活|全部>`, `--keyword <text>`, `--publisher <发文单位>`, `--year <年份>`, `--from YYYY-MM-DD`, `--to YYYY-MM-DD`, paging, and limits. Use `--publisher` for publishing-unit requests; do not approximate a publishing-unit query with `notice search <unit name>`. `notice search` is kept as a compatibility entry point for website search. Use `--type title` when the user expects the keyword to appear in titles. Use `notice view <id|url>` to fetch the title, publisher, publish time, plain-text body, and indexed attachment links. Do not ask users to open attachment URLs directly; use `notice download <id|url> --index <n> --dir <path>` so the CLI downloads through the logged-in detail page.
 
-Use `course status` to check eHall timetable access, `course list` for the current term timetable, and `course today` for today's courses. Course commands do not require the user to provide the eHall URL in normal use.
+Use `course status` to check eHall timetable access, `course list` for the current term timetable, and `course today` for today's courses. Use `course list --week <n> --weekday <1-7>` for questions like "第17周周二有什么课"; use `course today --date YYYY-MM-DD` after converting "明天/某天" to an exact date. Course commands do not require the user to provide the eHall URL in normal use.
 
 Use `program status` to check all-school training program query access, `program list` to search published program summaries, and `program item <id-or-planCode>` to read one program's objectives, requirements, modules, and courses.
 
@@ -103,11 +108,11 @@ Use `completion status` to check Academic Completion access and calculation read
 
 Use `lecture status` to check Innovation Lecture login and availability. `lecture list` defaults to lectures that are both inside the registration window and have remaining classroom capacity; inspect `summary.fullCount` and `summary.unknownCount` when the list is empty. Use `--availability open` to include full/unknown open lectures, `--availability all` for history, and `lecture item <id>` for classroom locations and remaining seats. Use `lecture progress` for completed and required online/offline study counts. These commands are read-only; do not attempt registration or expose the raw user profile.
 
-Use `electricity status` to check whether the SIMS electricity intranet system is reachable, `electricity buildings` to discover valid campus/building names, and `electricity query --campus <name> --building <name> --room <room>` to read recent usage records and latest remaining kWh. Electricity payment is not supported.
+Use `electricity status` to check whether the SIMS electricity intranet system is reachable, `electricity buildings` to discover valid campus/building names, and `electricity query --building <name> --room <room>` to read recent usage records and latest remaining kWh. Add `--campus <name>` when a building name is ambiguous; unique partial campus/building names are accepted. Electricity payment is not supported.
 
-Use `library status` to check OPAC reachability and login state. Use `library search <keyword>` for quick catalog search. Use `library search --title <text> --author <text> --isbn <isbn>` and related field flags for advanced OPAC search. Use `library item <id|url>` to inspect copy-level holdings, locations, barcodes, status, and reservation queues. OPAC commands use the persistent browser profile so search history can be recorded when logged in.
+Use `library status` to check OPAC reachability and login state. Use `library search <keyword>` for quick catalog search, with `--page <n>` when the user asks for later pages. Use `library search --title <text> --author <text> --isbn <isbn>` and related field flags for advanced OPAC search. Use `library item <id|url>` to inspect copy-level holdings, locations, barcodes, status, and reservation queues. OPAC commands use the persistent browser profile so search history can be recorded when logged in.
 
-Use `cnki search <keyword> --headed --json` and `wanfang search <keyword> --headed --json` for academic metadata search. For CNKI advanced search, use field flags such as `cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json`; `--abstract` can be repeated, conditions are joined with AND, and the MVP defaults to the 学术期刊 database scope. For Wanfang advanced search, use `wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json`; supported fields are `--title`, `--author`, `--keyword`, and `--abstract`, joined with AND in the 学术期刊 periodical scope. Add `--format markdown`, `--format gbt7714`, or `--format bibtex` when the user asks for citations or exportable references; read `data.exports.items` instead of reformatting manually. Use `cnki item <url> --headed --json` or `wanfang item <url> --headed --json` to inspect one detail page's abstract, keywords, DOI, fund, classification, and citation helper fields. Use `cnki download <url> --headed --dir <path> --json` or `wanfang download <url> --headed --dir <path> --json` only for a single user-requested detail page when the user explicitly asks to download that one item; it clicks a visible PDF/full-text browser download button and returns the saved path. Do not use downloads for batches, queues, retries, direct-link extraction, CAJ conversion, CAPTCHA bypass, or hidden downloads.
+Use `cnki search <keyword> --headed --json` and `wanfang search <keyword> --headed --json` for academic metadata search. Add `--year <yyyy>` or `--type <类型>` only as returned-result filters; they do not change the remote provider's search scope. For CNKI advanced search, use field flags such as `cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json`; `--abstract` can be repeated, conditions are joined with AND, and the MVP defaults to the 学术期刊 database scope. For Wanfang advanced search, use `wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json`; supported fields are `--title`, `--author`, `--keyword`, and `--abstract`, joined with AND in the 学术期刊 periodical scope. Add `--format markdown`, `--format gbt7714`, or `--format bibtex` when the user asks for citations or exportable references; read `data.exports.items` instead of reformatting manually. Use `cnki item <url> --headed --json` or `wanfang item <url> --headed --json` to inspect one detail page's abstract, keywords, DOI, fund, classification, and citation helper fields. Use `cnki download <url> --headed --dir <path> --json` or `wanfang download <url> --headed --dir <path> --json` only for a single user-requested detail page when the user explicitly asks to download that one item; it clicks a visible PDF/full-text browser download button and returns the saved path. Do not use downloads for batches, queues, retries, direct-link extraction, CAJ conversion, CAPTCHA bypass, or hidden downloads.
 
 ## Error Handling
 

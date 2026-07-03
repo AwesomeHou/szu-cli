@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "docs:check": "node scripts/check-docs.mjs",
+    "eval:cli": "node scripts/eval-cli.mjs",
     "prepack": "npm test && npm run docs:check",
     "szu-cli": "node src/cli.js",
     "test": "node --test"

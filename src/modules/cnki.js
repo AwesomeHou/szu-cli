@@ -40,12 +40,14 @@ export async function searchCnki(options = {}) {
     throw new Error('cnki search requires a keyword.');
   }
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
+    const items = filterAcademicItems(mockData().search?.items ?? [], options).slice(0, options.limit);
     return {
       ...mockData().search,
       keyword: options.keyword,
       ...(options.advanced ? { advanced: options.advanced } : {}),
-      ...(options.format ? { exports: formatCnkiSearchExports((mockData().search?.items ?? []).slice(0, options.limit), options.format) } : {}),
-      items: (mockData().search?.items ?? []).slice(0, options.limit)
+      ...(academicFilters(options) ? { filters: academicFilters(options) } : {}),
+      ...(options.format ? { exports: formatCnkiSearchExports(items, options.format) } : {}),
+      items
     };
   }
   assertHeaded(options);
@@ -64,7 +66,7 @@ export async function searchCnki(options = {}) {
     assertAccessible(state, 'CNKI');
     const rows = await extractCnkiRows(page);
 
-    return buildCnkiSearchPayload({
+    return filterAcademicPayload(buildCnkiSearchPayload({
       keyword: options.keyword,
       text: state.text,
       rows,
@@ -72,7 +74,7 @@ export async function searchCnki(options = {}) {
       advanced: options.advanced,
       format: options.format,
       sourceUrl: page.url()
-    });
+    }), options);
   } finally {
     await context.close();
   }
@@ -251,6 +253,37 @@ async function runAdvancedSearch(page, options) {
 
 function hasAdvancedConditions(options) {
   return Boolean(options.advanced?.conditions?.length);
+}
+
+function filterAcademicPayload(payload, options) {
+  const filters = academicFilters(options);
+  if (!filters) {
+    return payload;
+  }
+  const items = filterAcademicItems(payload.items, options);
+  return {
+    ...payload,
+    filters,
+    items,
+    ...(payload.exports ? { exports: formatCnkiSearchExports(items, payload.exports.format) } : {})
+  };
+}
+
+function filterAcademicItems(items = [], options = {}) {
+  return items.filter((item) => (
+    (!options.year || item.year === options.year)
+    && (!options.type || item.type === options.type)
+  ));
+}
+
+function academicFilters(options = {}) {
+  if (!options.year && !options.type) {
+    return null;
+  }
+  return {
+    ...(options.year ? { year: options.year } : {}),
+    ...(options.type ? { type: options.type } : {})
+  };
 }
 
 async function extractCnkiDetail(page) {
