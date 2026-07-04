@@ -69,6 +69,32 @@ test('skill install creates portable AI IDE bundle', () => {
   rmSync(targetRoot, { recursive: true, force: true });
 });
 
+test('skill install supports WorkBuddy and Claude Code roots', () => {
+  for (const target of ['workbuddy', 'claudecode']) {
+    const targetRoot = mkdtempSync(join(tmpdir(), `szu-${target}-`));
+    const result = runCli([
+      'skill',
+      'install',
+      '--target',
+      target,
+      '--dir',
+      targetRoot,
+      '--json'
+    ], { cleanup: false });
+
+    const targetDir = join(targetRoot, 'szu-campus');
+    assert.equal(result.status, 0, result.stderr);
+    const body = JSON.parse(result.stdout);
+    assert.equal(body.ok, true);
+    assert.equal(body.data.target, target);
+    assert.equal(body.data.installedPath, targetDir);
+    assert.match(readFileSync(join(targetDir, 'SKILL.md'), 'utf8'), /SZU Campus CLI Skill/);
+    assert.equal(existsSync(join(targetDir, 'references', 'commands.md')), true);
+    assert.equal(existsSync(join(targetDir, 'agents', 'openai.yaml')), true);
+    rmSync(targetRoot, { recursive: true, force: true });
+  }
+});
+
 function runCli(args, options = {}) {
   const home = mkdtempSync(join(tmpdir(), 'szu-cli-test-'));
   const result = spawnSync(process.execPath, [cliPath, ...args], {

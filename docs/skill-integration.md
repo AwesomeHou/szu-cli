@@ -37,6 +37,15 @@ szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
 
 该目录包含 `SKILL.md` 和 `AGENTS.md`，适合 Cursor、Windsurf、Cline、Trae 等支持 prompt pack、skill bundle 或项目说明文件的工具。
 
+WorkBuddy 和 Claude Code 使用各自默认 skills 根目录：
+
+```bash
+szu-cli skill install --target workbuddy --json
+szu-cli skill install --target claudecode --json
+```
+
+分别安装到 `~/.workbuddy/skills/szu-campus` 和 `~/.claude/skills/szu-campus`。
+
 如果只是安装到自定义目录，可以省略 `--target codex`：
 
 ```bash

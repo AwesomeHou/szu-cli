@@ -189,6 +189,28 @@ const cases = [
     ]
   },
   {
+    id: 'skill.install-workbuddy',
+    layer: 'L0',
+    args: (home) => ['skill', 'install', '--target', 'workbuddy', '--dir', join(home, 'workbuddy-skills'), '--json'],
+    checks: [
+      statusIs(0),
+      jsonPathIs('meta.command', 'skill install'),
+      jsonPathIs('data.target', 'workbuddy'),
+      jsonPathIs('data.installed', true)
+    ]
+  },
+  {
+    id: 'skill.install-claudecode',
+    layer: 'L0',
+    args: (home) => ['skill', 'install', '--target', 'claudecode', '--dir', join(home, 'claude-skills'), '--json'],
+    checks: [
+      statusIs(0),
+      jsonPathIs('meta.command', 'skill install'),
+      jsonPathIs('data.target', 'claudecode'),
+      jsonPathIs('data.installed', true)
+    ]
+  },
+  {
     id: 'notice.list-all-default',
     layer: 'L0',
     args: ['notice', 'list', '--limit', '2', '--json'],

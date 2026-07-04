@@ -43,6 +43,8 @@ szu-cli doctor --json
 szu-cli skill path --json
 szu-cli skill install --target codex --json
 szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
+szu-cli skill install --target workbuddy --json
+szu-cli skill install --target claudecode --json
 ```
 
 然后手动初始化登录：

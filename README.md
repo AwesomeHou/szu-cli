@@ -31,6 +31,13 @@ szu-cli skill install --target codex --json
 szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
 ```
 
+安装到 WorkBuddy 或 Claude Code：
+
+```bash
+szu-cli skill install --target workbuddy --json
+szu-cli skill install --target claudecode --json
+```
+
 初始化浏览器登录态：
 
 ```bash

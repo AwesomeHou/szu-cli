@@ -16,6 +16,8 @@ szu-cli auth status --json
 szu-cli skill path --json
 szu-cli skill install --target codex --json
 szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
+szu-cli skill install --target workbuddy --json
+szu-cli skill install --target claudecode --json
 szu-cli notice list --limit 10 --json
 szu-cli notice list --page 2 --pages 1 --limit 10 --json
 szu-cli notice search 奖学金 --json
@@ -203,6 +205,26 @@ szu-cli wanfang download <url> --headed --dir downloads --json
     "installed": true,
     "sourcePath": ".../skills/szu-campus",
     "installedPath": "./SZU-Campus.skill"
+  },
+  "meta": {
+    "command": "skill install",
+    "gateway": "auto",
+    "backend": "playwright"
+  }
+}
+```
+
+`szu-cli skill install --target workbuddy --json` 和 `szu-cli skill install --target claudecode --json` 会安装到对应工具的默认 skill 根目录。
+
+```json
+{
+  "ok": true,
+  "data": {
+    "target": "workbuddy",
+    "name": "szu-campus",
+    "installed": true,
+    "sourcePath": ".../skills/szu-campus",
+    "installedPath": "C:/Users/name/.workbuddy/skills/szu-campus"
   },
   "meta": {
     "command": "skill install",

@@ -31,6 +31,13 @@ Build a portable AI IDE skill bundle:
 szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
 ```
 
+Install for WorkBuddy or Claude Code:
+
+```bash
+szu-cli skill install --target workbuddy --json
+szu-cli skill install --target claudecode --json
+```
+
 Then initialize the browser login profile:
 
 ```bash
@@ -38,7 +45,7 @@ szu-cli auth login
 szu-cli auth status --json
 ```
 
-The npm package includes the CLI and `skills/szu-campus`, but `npm install` does not automatically write agent directories. `szu-cli skill install --target codex --json` copies the skill to `~/.agents/skills/szu-campus`; `--target ai-ide --dest ./SZU-Campus.skill` builds a portable folder for AI IDEs.
+The npm package includes the CLI and `skills/szu-campus`, but `npm install` does not automatically write agent directories. Use `--target codex`, `--target workbuddy`, or `--target claudecode` for the matching default skill directory; `--target ai-ide --dest ./SZU-Campus.skill` builds a portable folder.
 
 ## Direction
 
@@ -80,6 +87,8 @@ szu-cli auth login
 szu-cli skill path --json
 szu-cli skill install --target codex --json
 szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
+szu-cli skill install --target workbuddy --json
+szu-cli skill install --target claudecode --json
 szu-cli notice list --limit 10 --json
 szu-cli notice list --page 2 --limit 10 --json
 szu-cli notice search 奖学金 --json
@@ -143,6 +152,8 @@ npm run szu-cli -- auth login --url https://www1.szu.edu.cn/board/
 npm run szu-cli -- skill path --json
 npm run szu-cli -- skill install --target codex --json
 npm run szu-cli -- skill install --target ai-ide --dest ./SZU-Campus.skill --json
+npm run szu-cli -- skill install --target workbuddy --json
+npm run szu-cli -- skill install --target claudecode --json
 npm run szu-cli -- notice list --limit 10 --json
 npm run szu-cli -- notice list --page 2 --limit 10 --json
 npm run szu-cli -- notice search 奖学金 --limit 10 --json

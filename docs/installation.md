@@ -37,6 +37,30 @@ szu-cli skill install --target codex --json
 ~/.agents/skills/szu-campus
 ```
 
+安装到 WorkBuddy：
+
+```bash
+szu-cli skill install --target workbuddy --json
+```
+
+默认目录：
+
+```text
+~/.workbuddy/skills/szu-campus
+```
+
+安装到 Claude Code：
+
+```bash
+szu-cli skill install --target claudecode --json
+```
+
+默认目录：
+
+```text
+~/.claude/skills/szu-campus
+```
+
 ## 生成 AI IDE Skill Bundle
 
 Cursor、Windsurf、Cline、Trae 等 AI IDE 可以使用便携目录：
