@@ -1,113 +1,43 @@
-# Campus Commands
+# Campus Command Routing
 
-Use JSON output for agent workflows.
+Use this as a routing card. For exact schemas and newly added flags, trust the installed CLI help and the repo `docs/cli-contract.md` that shipped with it.
 
-## Readiness
+## Always
 
 ```bash
 szu-cli doctor --json
 szu-cli auth status --json
 ```
 
-Run `szu-cli auth login` only by asking the user to do it; the user completes login in the opened browser.
+Ask the user to run `szu-cli auth login` only when login is required; the user completes login in the browser opened by the CLI.
 
-## Notices
+## Route By Intent
 
-Use `notice list` as the preferred entry point:
+| User intent | Use | Avoid |
+|---|---|---|
+| Readiness or login state | `doctor --json`, then `auth status --json` | Asking for passwords or cookies |
+| Latest notices | `notice list --limit <n> --json` | Scraping public pages |
+| Notice by category/date/keyword | `notice list --category/--from/--to/--keyword ... --json` | Client-side filtering after an overbroad query |
+| Notice by publishing unit | `notice list --publisher <unit> --json` | `notice search <unit>` as a fake publisher filter |
+| Notice detail or attachment | `notice view <id|url> --json`; single requested file with `notice download ... --index <n> --dir <path> --json` | Bulk downloads or direct hidden attachment URLs |
+| My timetable today or a date | `course today --json`; add `--date YYYY-MM-DD` for a specific date | Using all-school timetable for the current user |
+| My timetable by week/day | `course list --week <n> --weekday <1-7> --json` | Guessing the current teaching week |
+| A class timetable | Find `classCode` with `timetable classes`, then `timetable view <classCode> --json` | Guessing class codes |
+| Program requirements | `program list ... --json`, then `program item <id-or-planCode> --json` | Treating `not-taken` courses as current offerings |
+| Remaining credits or unfinished modules | `completion summary/modules --json`; drill down with `completion courses --module <code> --json` | Recomputing progress from grades |
+| Grades | `grade list --json`; add `--term` when requested | Dumping the full grade table when a summary answers |
+| GPA, rank, credit summary | `growth summary --json` or `growth list --json` | Calculating GPA manually from grades |
+| Ideology/social-practice credits | `ideology summary --json` | Inferring qualification from unrelated records |
+| Lectures available now | `lecture list --json` | Calling registration endpoints |
+| Lectures still open but full/unknown | `lecture list --availability open --json` | Treating unknown capacity as available |
+| Lecture detail or progress | `lecture item <id> --json`; `lecture progress --json` | Exposing raw private progress records |
+| Dorm electricity | `electricity buildings --json` when names are uncertain; then `electricity query --building <name> --room <room> --json` | Guessing room/building or trying to pay |
+| Library holdings | `library search ... --json`; detail with `library item <id|url> --json` | Treating search rows as copy-level holdings |
+| CNKI/Wanfang/literature | Read `academic-databases.md` | Running downloads before metadata/citation work |
 
-```bash
-szu-cli notice list --limit 10 --json
-szu-cli notice list --category 科研 --limit 10 --json
-szu-cli notice list --publisher 土木与交通工程学院 --year 2026 --limit 10 --json
-szu-cli notice list --keyword 奖学金 --type title --json
-szu-cli notice list --from 2026-06-18 --to 2026-06-22 --json
-szu-cli notice list --page 2 --limit 10 --json
-```
+## Answer Shape
 
-Use `notice search <keyword>` only when the website search form behavior is wanted:
-
-```bash
-szu-cli notice search 奖学金 --json
-szu-cli notice search 奖学金 --type title --range 6m --json
-```
-
-Use `notice view <id|url>` for title, publisher, publish time, plain-text body, and indexed attachments. Use `notice download <id|url> --index <n> --dir <path>` for a user-requested attachment; do not ask users to open attachment URLs directly.
-
-## Courses And Programs
-
-```bash
-szu-cli course status --json
-szu-cli course list --json
-szu-cli course list --week 17 --weekday 2 --json
-szu-cli course today --json
-szu-cli course today --date 2026-06-23 --json
-szu-cli program status --json
-szu-cli program list --limit 5 --json
-szu-cli program item <id-or-planCode> --json
-szu-cli timetable status --json
-szu-cli timetable classes --limit 5 --json
-szu-cli timetable view <classCode> --json
-```
-
-Use `course` for the current user's timetable. Use `timetable` for all-school class schedules. Convert relative dates such as "tomorrow" to `YYYY-MM-DD` before using `course today --date`.
-
-## Grades And Progress
-
-```bash
-szu-cli grade status --json
-szu-cli grade list --json
-szu-cli grade list --term 2025-2026-1 --json
-szu-cli growth status --json
-szu-cli growth summary --json
-szu-cli growth list --json
-szu-cli growth list --term 2025-2026-2 --json
-szu-cli growth list --year 2025-2026 --json
-szu-cli ideology status --json
-szu-cli ideology summary --json
-```
-
-Grades, GPA, ranking, and ideology records are private. Summarize narrowly.
-
-## Academic Completion
-
-```bash
-szu-cli completion status --json
-szu-cli completion summary --json
-szu-cli completion modules --json
-szu-cli completion courses --module <moduleCode> --json
-```
-
-Use `completion summary` for plan-level remaining credits, `completion modules` to find unfinished module codes, and `completion courses --module <moduleCode>` for completed, selected, and `not-taken` curriculum courses. Treat `not-taken` as a curriculum candidate only, not a current offering or enrollment recommendation.
-
-## Lectures
-
-```bash
-szu-cli lecture status --json
-szu-cli lecture list --json
-szu-cli lecture list --availability open --json
-szu-cli lecture item <id> --json
-szu-cli lecture progress --json
-```
-
-`lecture list` defaults to registerable lectures with remaining capacity. Use `--availability open` to include full or unknown open lectures, and `--availability all` only when history is needed. Do not register for lectures.
-
-## Electricity
-
-```bash
-szu-cli electricity status --json
-szu-cli electricity buildings --json
-szu-cli electricity query --building 红豆斋 --room 838 --json
-```
-
-Use `electricity buildings` to discover valid names. Add `--campus <name>` when a building name is ambiguous. Electricity payment is not supported.
-
-## Library
-
-```bash
-szu-cli library status --json
-szu-cli library search 交通设计 --page 2 --json
-szu-cli library search --title 交通设计 --author 刘立新 --json
-szu-cli library item 3706432 --json
-```
-
-Use quick search for a keyword and field flags for advanced OPAC search. Use `library item <id|url>` for copy-level holdings, locations, barcodes, status, and reservation queues.
+- Summarize returned JSON; do not paste raw JSON unless the user asks.
+- Include exact dates, names, IDs, modules, or saved paths when they matter.
+- Say when a field is missing or uncertain; do not infer data the CLI did not return.
+- Keep private records narrow: answer the question, not the whole account.

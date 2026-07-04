@@ -1,40 +1,28 @@
 # Academic Databases
 
-Use CNKI and Wanfang commands for metadata workflows through the Shenzhen University library channel. These commands need a visible browser session.
+Use CNKI and Wanfang only for user-initiated metadata, citation, item-detail, or single-download workflows through the Shenzhen University library channel. These commands need `--headed`.
 
-## Search
-
-```bash
-szu-cli cnki search 交通设计 --headed --json
-szu-cli cnki search 交通设计 --headed --year 2026 --type 期刊 --json
-szu-cli cnki search 交通设计 --headed --format gbt7714 --json
-szu-cli cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
-szu-cli wanfang search 交通设计 --headed --json
-szu-cli wanfang search 交通设计 --headed --year 2026 --type 期刊 --json
-szu-cli wanfang search 交通设计 --headed --format markdown --json
-szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
-```
-
-Use `--year` and `--type` only as returned-result filters; they do not change the remote provider's search scope.
-
-For citations, add `--format markdown`, `--format gbt7714`, or `--format bibtex`, then read `data.exports.items` instead of reformatting manually.
-
-## Item Metadata
+Run status first when access is uncertain:
 
 ```bash
-szu-cli cnki item <url> --headed --json
-szu-cli wanfang item <url> --headed --json
+szu-cli cnki status --headed --json
+szu-cli wanfang status --headed --json
 ```
 
-Use item commands to inspect one detail page's abstract, keywords, DOI, fund, classification, and citation helper fields. Do not download from item commands.
+## Route By Intent
 
-## Single Downloads
+| User intent | Use | Boundary |
+|---|---|---|
+| Search papers | `cnki search <keyword> --headed --json` or `wanfang search <keyword> --headed --json` | Metadata only |
+| Fielded search | CNKI: `--title`, repeated `--abstract`; Wanfang: `--title`, `--author`, `--keyword`, `--abstract` | Use supported fields only |
+| Returned-result filter | Add `--year <yyyy>` or `--type <type>` | These do not change remote provider scope |
+| Citation export | Add `--format markdown`, `--format gbt7714`, or `--format bibtex`; read `data.exports.items` | Do not reformat or invent missing fields |
+| One detail page | `cnki item <url> --headed --json` or `wanfang item <url> --headed --json` | No download from item commands |
+| One requested full text | `cnki download <url> --headed --dir <path> --json` or Wanfang equivalent | Single visible-button download only |
 
-```bash
-szu-cli cnki download <url> --headed --dir downloads --json
-szu-cli wanfang download <url> --headed --dir downloads --json
-```
+## Hard Limits
 
-Use downloads only for one user-requested detail page. The CLI clicks a visible PDF or full-text browser download button and returns the saved path.
-
-Do not use downloads for batches, queues, retries, direct-link extraction, CAJ conversion, CAPTCHA bypass, hidden downloads, or non-user-requested full text.
+- Prefer metadata and citations before download.
+- Do not batch download PDFs, CAJ files, original full text, or attachments.
+- Do not construct hidden download URLs, bypass CAPTCHA/access controls, convert CAJ, or queue retries.
+- Citation strings must come from visible metadata or `data.exports`; do not fill DOI, issue, pages, or author data from memory.

@@ -13,13 +13,13 @@
 
 要求 Node.js 20 或更高版本。
 
-安装 alpha 版：
+安装 alpha 版，并把随包附带的 Codex skill 安装到 Codex：
 
 ```bash
-npm install -g szu-cli@alpha
+npm install -g szu-cli@alpha && szu-cli skill install --target codex --json
 ```
 
-安装随包附带的 Codex skill：
+如果已经安装过 `szu-cli`，也可以只安装 skill：
 
 ```bash
 szu-cli skill install --target codex --json
@@ -32,6 +32,13 @@ szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
 ```
 
 安装到 WorkBuddy 或 Claude Code：
+
+```bash
+npm install -g szu-cli@alpha && szu-cli skill install --target workbuddy --json
+npm install -g szu-cli@alpha && szu-cli skill install --target claudecode --json
+```
+
+如果已经安装过 `szu-cli`，也可以只安装对应 skill：
 
 ```bash
 szu-cli skill install --target workbuddy --json

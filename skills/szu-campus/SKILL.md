@@ -5,18 +5,25 @@ description: Use when an agent needs to operate Shenzhen University web services
 
 # SZU Campus CLI Skill
 
-Use the `szu-cli` CLI as the source of truth. Do not implement campus scraping or browser automation inside this skill.
+Use the local `szu-cli` CLI as the source of truth. Keep this skill as operating guidance only; do not implement campus scraping, browser automation, or campus business logic here.
 
 ## First Steps
 
-Check local readiness:
+Check local readiness before campus queries:
 
 ```bash
 szu-cli doctor --json
 szu-cli auth status --json
 ```
 
-If login is required, ask the user to run:
+If `szu-cli` is missing, tell the user to install it explicitly:
+
+```bash
+npm install -g szu-cli@alpha
+szu-cli skill install --target codex --json
+```
+
+Do not install it silently. If login is required, ask the user to run:
 
 ```bash
 szu-cli auth login
@@ -24,9 +31,16 @@ szu-cli auth login
 
 The user should complete login in the browser window opened by the CLI.
 
+## Workflow
+
+1. Map the user's request to the smallest supported read-only command.
+2. Run the command with `--json`; add `--headed` only for commands that require a visible browser.
+3. If `ok: false`, branch on `error.code` with `references/errors.md`.
+4. If `ok: true`, answer from returned fields only and include the minimum private data needed.
+
 ## Operating Rules
 
-- Use `--json` for agent workflows and branch on `error.code`, not prose.
+- Use `--json` for agent workflows and parse JSON, not stdout prose.
 - Prefer read-only commands. Require explicit user confirmation before any state-changing action.
 - Do not ask for passwords, cookies, tokens, or browser profile files.
 - Do not bypass authentication, CAPTCHA, WebVPN restrictions, rate limits, download controls, or access control.
@@ -38,7 +52,7 @@ The user should complete login in the browser window opened by the CLI.
 
 Read only the reference needed for the task:
 
-- `references/commands.md`: command selection for notices, courses, grades, completion, lectures, electricity, library, and related campus queries.
+- `references/commands.md`: compact user-intent routing for common campus queries.
 - `references/academic-databases.md`: CNKI and Wanfang metadata search, citation export, item lookup, and single visible-button downloads.
 - `references/errors.md`: structured error handling, retry limits, and follow-up commands.
 - `references/privacy-safety.md`: password, cookie, profile, download, private-data, and state-changing boundaries.
