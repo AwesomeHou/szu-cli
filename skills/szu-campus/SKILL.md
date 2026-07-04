@@ -1,6 +1,6 @@
 ---
 name: szu-campus
-description: Use when an agent needs to operate Shenzhen University web services through the local `szu-cli` CLI. Covers login checks, read-only campus queries, safety boundaries, and JSON error handling.
+description: Use when an agent needs to operate Shenzhen University web services through the local `szu-cli` CLI. Covers login checks, read-only campus queries, safety boundaries, academic database access, and JSON error handling.
 ---
 
 # SZU Campus CLI Skill
@@ -24,124 +24,23 @@ szu-cli auth login
 
 The user should complete login in the browser window opened by the CLI.
 
-## Read-Only Commands
+## Operating Rules
 
-Use JSON output for agent workflows:
+- Use `--json` for agent workflows and branch on `error.code`, not prose.
+- Prefer read-only commands. Require explicit user confirmation before any state-changing action.
+- Do not ask for passwords, cookies, tokens, or browser profile files.
+- Do not bypass authentication, CAPTCHA, WebVPN restrictions, rate limits, download controls, or access control.
+- Do not loop retries aggressively. Stop on `RATE_LIMITED`; handle login and network errors once.
+- Treat grades, GPA, ranking, identity fields, and study records as private; echo only what the user needs.
+- Requires `szu-cli >= 0.1.0` once the first runtime release exists.
 
-```bash
-szu-cli notice list --limit 10 --json
-szu-cli notice list --category 科研 --limit 10 --json
-szu-cli notice list --publisher 土木与交通工程学院 --year 2026 --limit 10 --json
-szu-cli notice list --keyword 奖学金 --type title --json
-szu-cli notice list --from 2026-06-18 --to 2026-06-22 --json
-szu-cli notice list --page 2 --limit 10 --json
-szu-cli notice search 奖学金 --json
-szu-cli notice search 奖学金 --type title --range 6m --json
-szu-cli notice view 577444 --json
-szu-cli notice download 577444 --dir downloads --json
-szu-cli course status --json
-szu-cli course list --json
-szu-cli course list --week 17 --weekday 2 --json
-szu-cli course today --json
-szu-cli course today --date 2026-06-23 --json
-szu-cli program status --json
-szu-cli program list --limit 5 --json
-szu-cli program item <id-or-planCode> --json
-szu-cli timetable status --json
-szu-cli timetable classes --limit 5 --json
-szu-cli timetable view <classCode> --json
-szu-cli grade status --json
-szu-cli grade list --json
-szu-cli grade list --term 2025-2026-1 --json
-szu-cli growth status --json
-szu-cli growth summary --json
-szu-cli growth list --json
-szu-cli growth list --term 2025-2026-2 --json
-szu-cli growth list --year 2025-2026 --json
-szu-cli ideology status --json
-szu-cli ideology summary --json
-szu-cli completion status --json
-szu-cli completion summary --json
-szu-cli completion modules --json
-szu-cli completion courses --module <moduleCode> --json
-szu-cli lecture status --json
-szu-cli lecture list --json
-szu-cli lecture list --availability open --json
-szu-cli lecture item <id> --json
-szu-cli lecture progress --json
-szu-cli electricity status --json
-szu-cli electricity buildings --json
-szu-cli electricity query --building 红豆斋 --room 838 --json
-szu-cli library status --json
-szu-cli library search 交通设计 --page 2 --json
-szu-cli library search --title 交通设计 --author 刘立新 --json
-szu-cli library item 3706432 --json
-szu-cli cnki search 交通设计 --headed --json
-szu-cli cnki search 交通设计 --headed --year 2026 --type 期刊 --json
-szu-cli cnki search 交通设计 --headed --format gbt7714 --json
-szu-cli cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
-szu-cli cnki item <url> --headed --json
-szu-cli cnki download <url> --headed --dir downloads --json
-szu-cli wanfang search 交通设计 --headed --json
-szu-cli wanfang search 交通设计 --headed --year 2026 --type 期刊 --json
-szu-cli wanfang search 交通设计 --headed --format markdown --json
-szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
-szu-cli wanfang item <url> --headed --json
-szu-cli wanfang download <url> --headed --dir downloads --json
-```
+## Load References
 
-Use `notice list` as the preferred notice entry point. It defaults to `--category 全部` and supports `--category <置顶|教务|科研|行政|学工|会议|讲座|生活|全部>`, `--keyword <text>`, `--publisher <发文单位>`, `--year <年份>`, `--from YYYY-MM-DD`, `--to YYYY-MM-DD`, paging, and limits. Use `--publisher` for publishing-unit requests; do not approximate a publishing-unit query with `notice search <unit name>`. `notice search` is kept as a compatibility entry point for website search. Use `--type title` when the user expects the keyword to appear in titles. Use `notice view <id|url>` to fetch the title, publisher, publish time, plain-text body, and indexed attachment links. Do not ask users to open attachment URLs directly; use `notice download <id|url> --index <n> --dir <path>` so the CLI downloads through the logged-in detail page.
+Read only the reference needed for the task:
 
-Use `course status` to check eHall timetable access, `course list` for the current term timetable, and `course today` for today's courses. Use `course list --week <n> --weekday <1-7>` for questions like "第17周周二有什么课"; use `course today --date YYYY-MM-DD` after converting "明天/某天" to an exact date. Course commands do not require the user to provide the eHall URL in normal use.
+- `references/commands.md`: command selection for notices, courses, grades, completion, lectures, electricity, library, and related campus queries.
+- `references/academic-databases.md`: CNKI and Wanfang metadata search, citation export, item lookup, and single visible-button downloads.
+- `references/errors.md`: structured error handling, retry limits, and follow-up commands.
+- `references/privacy-safety.md`: password, cookie, profile, download, private-data, and state-changing boundaries.
 
-Use `program status` to check all-school training program query access, `program list` to search published program summaries, and `program item <id-or-planCode>` to read one program's objectives, requirements, modules, and courses.
-
-Use `timetable status` to check all-school class timetable access, `timetable classes` to find a `classCode`, and `timetable view <classCode>` to read that class's weekly schedule. Keep `timetable` separate from `course`: `course` is the current user's own timetable.
-
-Use `grade status` to check eHall grade-query access and `grade list` for read-only grade records. Use `grade list --term <termId>` when the user asks for one term. Grade output must not be treated as public data; avoid echoing full grade records unless the user explicitly needs them.
-
-Use `growth status` to check Growth Record access, `growth summary` for cumulative GPA and professional ranking, and `growth list` for term or academic-year summaries. Use `--term <termId>` or `--year <academicYear>` when the user requests one period. GPA and ranking data are private; only echo the fields needed for the user's request.
-
-Use `ideology status` to check Ideology and Social Practice access and `ideology summary` to read earned credits and qualification status. Do not expose student name, student number, class code, or internal record IDs.
-
-Use `completion status` to check Academic Completion access and calculation readiness, `completion summary` for plan-level credits, and `completion modules` to discover module codes and remaining credits. Use `completion courses --module <moduleCode>` to return all completed, selected, and not-taken curriculum courses for one module. Treat `not-taken` as a curriculum candidate only; do not claim it is currently offered or that the student can enroll. The calculation can take time; allow the command to wait and increase `--timeout <seconds>` only when needed. Do not retry `CALCULATION_TIMEOUT` aggressively.
-
-Use `lecture status` to check Innovation Lecture login and availability. `lecture list` defaults to lectures that are both inside the registration window and have remaining classroom capacity; inspect `summary.fullCount` and `summary.unknownCount` when the list is empty. Use `--availability open` to include full/unknown open lectures, `--availability all` for history, and `lecture item <id>` for classroom locations and remaining seats. Use `lecture progress` for completed and required online/offline study counts. These commands are read-only; do not attempt registration or expose the raw user profile.
-
-Use `electricity status` to check whether the SIMS electricity intranet system is reachable, `electricity buildings` to discover valid campus/building names, and `electricity query --building <name> --room <room>` to read recent usage records and latest remaining kWh. Add `--campus <name>` when a building name is ambiguous; unique partial campus/building names are accepted. Electricity payment is not supported.
-
-Use `library status` to check OPAC reachability and login state. Use `library search <keyword>` for quick catalog search, with `--page <n>` when the user asks for later pages. Use `library search --title <text> --author <text> --isbn <isbn>` and related field flags for advanced OPAC search. Use `library item <id|url>` to inspect copy-level holdings, locations, barcodes, status, and reservation queues. OPAC commands use the persistent browser profile so search history can be recorded when logged in.
-
-Use `cnki search <keyword> --headed --json` and `wanfang search <keyword> --headed --json` for academic metadata search. Add `--year <yyyy>` or `--type <类型>` only as returned-result filters; they do not change the remote provider's search scope. For CNKI advanced search, use field flags such as `cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json`; `--abstract` can be repeated, conditions are joined with AND, and the MVP defaults to the 学术期刊 database scope. For Wanfang advanced search, use `wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json`; supported fields are `--title`, `--author`, `--keyword`, and `--abstract`, joined with AND in the 学术期刊 periodical scope. Add `--format markdown`, `--format gbt7714`, or `--format bibtex` when the user asks for citations or exportable references; read `data.exports.items` instead of reformatting manually. Use `cnki item <url> --headed --json` or `wanfang item <url> --headed --json` to inspect one detail page's abstract, keywords, DOI, fund, classification, and citation helper fields. Use `cnki download <url> --headed --dir <path> --json` or `wanfang download <url> --headed --dir <path> --json` only for a single user-requested detail page when the user explicitly asks to download that one item; it clicks a visible PDF/full-text browser download button and returns the saved path. Do not use downloads for batches, queues, retries, direct-link extraction, CAJ conversion, CAPTCHA bypass, or hidden downloads.
-
-## Error Handling
-
-Branch on `error.code`, not natural-language messages.
-
-Important codes:
-
-- `LOGIN_REQUIRED`: ask the user to log in.
-- `WEBVPN_LOGIN_REQUIRED`: ask the user to log in through WebVPN.
-- `NETWORK_REQUIRED`: explain that campus network or WebVPN is needed.
-- `PAGE_CHANGED`: report that the adapter may need updating.
-- `PROGRAM_NOT_FOUND`: ask the user to rerun `program list --json`.
-- `CLASS_NOT_FOUND`: ask the user to rerun `timetable classes --json`.
-- `MODULE_NOT_FOUND`: ask the user to rerun `completion modules --json`.
-- `CALCULATION_TIMEOUT`: do not retry aggressively; increase `--timeout <seconds>` only when useful.
-- `LECTURE_NOT_FOUND`: ask the user to rerun `lecture list --json`.
-- `RATE_LIMITED`: stop retrying.
-- `HEADED_REQUIRED`: rerun with `--headed`.
-
-## Safety Rules
-
-- Do not ask for the user's password.
-- Do not request cookies or browser profile files.
-- Do not loop commands aggressively.
-- Do not batch download academic database PDFs, CAJ files, original full text, or attachments.
-- Do not use hidden direct links or bypass controls; only `cnki download <url>` and `wanfang download <url>` may click one visible provider download button for one user-requested item.
-- Do not submit state-changing actions unless the user explicitly confirms.
-- Prefer read-only commands.
-
-## Version Requirement
-
-Requires `szu-cli >= 0.1.0` once the first runtime release exists.
+When details conflict, trust the installed `szu-cli` behavior and `docs/cli-contract.md` in the project that shipped the CLI.

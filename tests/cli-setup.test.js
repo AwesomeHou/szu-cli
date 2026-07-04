@@ -39,6 +39,8 @@ test('skill install copies bundled skill to explicit directory', () => {
   assert.equal(body.data.installed, true);
   assert.equal(body.data.installedPath, join(targetRoot, 'szu-campus'));
   assert.match(readFileSync(join(targetRoot, 'szu-campus', 'SKILL.md'), 'utf8'), /SZU Campus CLI Skill/);
+  assert.equal(existsSync(join(targetRoot, 'szu-campus', 'references', 'commands.md')), true);
+  assert.equal(existsSync(join(targetRoot, 'szu-campus', 'agents', 'openai.yaml')), true);
   rmSync(targetRoot, { recursive: true, force: true });
 });
 
@@ -62,6 +64,8 @@ test('skill install creates portable AI IDE bundle', () => {
   assert.equal(body.data.installedPath, targetDir);
   assert.match(readFileSync(join(targetDir, 'SKILL.md'), 'utf8'), /SZU Campus CLI Skill/);
   assert.match(readFileSync(join(targetDir, 'AGENTS.md'), 'utf8'), /SZU Campus CLI Skill/);
+  assert.equal(existsSync(join(targetDir, 'references', 'commands.md')), true);
+  assert.equal(existsSync(join(targetDir, 'agents', 'openai.yaml')), true);
   rmSync(targetRoot, { recursive: true, force: true });
 });
 

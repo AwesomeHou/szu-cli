@@ -1,0 +1,4 @@
+interface:
+  display_name: "SZU Campus"
+  short_description: "Use szu-cli for Shenzhen University services"
+  default_prompt: "Use $szu-campus to query Shenzhen University services through the local szu-cli CLI."
