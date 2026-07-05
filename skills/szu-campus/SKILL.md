@@ -1,6 +1,6 @@
 ---
 name: szu-campus
-description: Use when an agent needs to operate Shenzhen University web services through the local `szu-cli` CLI. Covers login checks, read-only campus queries, safety boundaries, academic database access, and JSON error handling.
+description: Use when an agent needs to install or operate the local `szu-cli` CLI for Shenzhen University web services. Covers CLI setup, login checks, read-only campus queries, safety boundaries, academic database access, and JSON error handling.
 ---
 
 # SZU Campus CLI Skill
@@ -12,18 +12,32 @@ Use the local `szu-cli` CLI as the source of truth. Keep this skill as operating
 Check local readiness before campus queries:
 
 ```bash
+node --version
+szu-cli --version
+```
+
+`szu-cli` requires Node.js 20 or newer. If Node.js is missing or too old, tell the user to install or upgrade Node.js first.
+
+If `szu-cli` is missing, ask before changing the user's environment, then have the user run:
+
+```bash
+npm install -g szu-cli@alpha
+```
+
+Verify the CLI after installation:
+
+```bash
 szu-cli doctor --json
 szu-cli auth status --json
 ```
 
-If `szu-cli` is missing, tell the user to install it explicitly:
+If the user is using a Codex environment and needs the bundled skill installed from the npm package, tell them to run:
 
 ```bash
-npm install -g szu-cli@alpha
 szu-cli skill install --target codex --json
 ```
 
-Do not install it silently. If login is required, ask the user to run:
+Do not install the CLI silently. If login is required, ask the user to run:
 
 ```bash
 szu-cli auth login
