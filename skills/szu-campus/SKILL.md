@@ -1,6 +1,9 @@
 ---
 name: szu-campus
 description: Use when an agent needs to install or operate the local `szu-cli` CLI for Shenzhen University web services. Covers CLI setup, login checks, read-only campus queries, safety boundaries, academic database access, and JSON error handling.
+version: 0.2.0-beta.1
+compatible_cli: ">=0.2.0-beta.1"
+channel: beta
 ---
 
 # SZU Campus CLI Skill
@@ -21,7 +24,7 @@ szu-cli --version
 If `szu-cli` is missing, ask before changing the user's environment, then have the user run:
 
 ```bash
-npm install -g szu-cli@alpha
+npm install -g szu-cli@beta
 ```
 
 Verify the CLI after installation:
@@ -60,7 +63,7 @@ The user should complete login in the browser window opened by the CLI.
 - Do not bypass authentication, CAPTCHA, WebVPN restrictions, rate limits, download controls, or access control.
 - Do not loop retries aggressively. Stop on `RATE_LIMITED`; handle login and network errors once.
 - Treat grades, GPA, ranking, identity fields, and study records as private; echo only what the user needs.
-- Requires `szu-cli >= 0.1.0` once the first runtime release exists.
+- Requires `szu-cli >= 0.2.0-beta.1`.
 
 ## Load References
 

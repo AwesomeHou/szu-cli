@@ -13,10 +13,10 @@ The goal is to turn common campus web workflows into stable CLI commands with st
 
 Requires Node.js 20 or newer.
 
-Install the alpha package:
+Install the beta package:
 
 ```bash
-npm install -g szu-cli@alpha
+npm install -g szu-cli@beta
 ```
 
 Install the bundled Codex skill explicitly:

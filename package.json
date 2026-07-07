@@ -1,6 +1,6 @@
 {
   "name": "szu-cli",
-  "version": "0.1.0-alpha.2",
+  "version": "0.2.0-beta.1",
   "private": false,
   "description": "Agent-friendly CLI for Shenzhen University web services.",
   "type": "module",
