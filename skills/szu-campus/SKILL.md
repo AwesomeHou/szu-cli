@@ -1,9 +1,10 @@
 ---
 name: szu-campus
+slug: szu-campus
+displayName: SZU Campus
 description: Use when an agent needs to install or operate the local `szu-cli` CLI for Shenzhen University web services. Covers CLI setup, login checks, read-only campus queries, safety boundaries, academic database access, and JSON error handling.
-version: 0.2.0-beta.1
+version: 0.2.0
 compatible_cli: ">=0.2.0-beta.1"
-channel: beta
 ---
 
 # SZU Campus CLI Skill

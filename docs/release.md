@@ -71,7 +71,7 @@ szu-cli skill install --target codex --json
 
 ## SkillHub / ClawHub
 
-`skills/szu-campus` 单独上线 SkillHub 和 ClawHub 时，版本号与 CLI 对齐为 `0.2.0-beta.1`。如果平台支持兼容性字段，声明 `szu-cli >= 0.2.0-beta.1`。
+`skills/szu-campus` 单独上线 SkillHub 和 ClawHub 时，按正式 skill 发布，版本号使用 `0.2.0`，不带 alpha/beta 后缀。如果平台支持兼容性字段，声明 `szu-cli >= 0.2.0-beta.1`。
 
 Alpha 通道冻结，不再同步 beta；只有明确恢复早期实验通道时才从 `develop` 更新 `alpha`。
 

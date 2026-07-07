@@ -62,7 +62,7 @@ szu-cli skill install --target codex --json
 skill 可以声明最低 CLI 版本：
 
 ```text
-Version: 0.2.0-beta.1
+Skill Version: 0.2.0
 Requires: szu-cli >= 0.2.0-beta.1
 ```
 
