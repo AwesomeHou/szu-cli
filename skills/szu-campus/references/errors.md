@@ -15,6 +15,10 @@ Always parse JSON and branch on `error.code`.
 - `MODULE_NOT_FOUND`: ask the user to rerun `szu-cli completion modules --json`.
 - `CALCULATION_TIMEOUT`: do not retry aggressively; increase `--timeout <seconds>` only when the user needs the result and waiting is reasonable.
 - `LECTURE_NOT_FOUND`: ask the user to rerun `szu-cli lecture list --json`.
+- `SPORTS_CONFIRM_REQUIRED`: rerun with `--dry-run` for preview, or ask the user for explicit confirmation before `--confirm`.
+- `SPORTS_CAMPUS_NOT_FOUND`: rerun `szu-cli sports campuses --json`.
+- `SPORTS_VENUE_NOT_FOUND`: rerun `szu-cli sports venues --campus <name> --json`.
+- `SPORTS_SLOT_NOT_FOUND` / `SPORTS_SLOT_UNAVAILABLE`: rerun `szu-cli sports slots ... --json` and pick a selectable slot.
 - `DOWNLOAD_UNAVAILABLE`: tell the user the visible download button was unavailable; do not construct direct links.
 - `RATE_LIMITED`: stop retrying.
 - `HEADED_REQUIRED`: rerun the same academic database command with `--headed`.
@@ -24,6 +28,6 @@ Always parse JSON and branch on `error.code`.
 
 - Retry login-required commands only after the user completes login.
 - Retry transient network failures at most once unless the user asks for another attempt.
-- Do not batch retries for academic database downloads, attachment downloads, or lecture operations.
+- Do not batch retries for academic database downloads, attachment downloads, lecture operations, or sports reservations.
 - Prefer status commands before deeper queries when the access state is unclear.
 - Preserve the original `error.hint` when it contains the next safe command.

@@ -54,6 +54,11 @@ szu-cli lecture list --json
 szu-cli lecture list --availability open --json
 szu-cli lecture item <id> --json
 szu-cli lecture progress --json
+szu-cli sports status --json
+szu-cli sports campuses --json
+szu-cli sports venues --campus 粤海校区 --json
+szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --json
+szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --dry-run --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
 szu-cli electricity query --building 红豆斋 --room 838 --json
@@ -128,6 +133,11 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 - `DOWNLOAD_UNAVAILABLE`：未找到可见下载按钮，或下载按钮没有产出可下载文件。
 - `SKILL_NOT_FOUND`：安装包中缺少随包 agent skill。
 - `LECTURE_NOT_FOUND`：讲座列表中找不到指定讲座 ID。
+- `SPORTS_CONFIRM_REQUIRED`：体育预约需要 `--dry-run` 或 `--confirm`。
+- `SPORTS_CAMPUS_NOT_FOUND`：找不到指定体育场馆校区。
+- `SPORTS_VENUE_NOT_FOUND`：找不到指定体育场馆。
+- `SPORTS_SLOT_NOT_FOUND`：找不到指定预约时段。
+- `SPORTS_SLOT_UNAVAILABLE`：指定时段不可预约。
 - `CLASS_NOT_FOUND`：全校课表中找不到指定班级。
 - `PROGRAM_NOT_FOUND`：培养方案中找不到指定方案。
 - `CALCULATION_TIMEOUT`：学业完成计算超时。
@@ -152,6 +162,11 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 - `24`：学业完成计算超时。
 - `25`：模块不存在。
 - `26`：讲座不存在。
+- `27`：体育预约缺少确认模式。
+- `28`：体育场馆校区不存在。
+- `29`：体育场馆不存在。
+- `32`：体育预约时段不存在。
+- `33`：体育预约时段不可用。
 - `30`：疑似限流或反滥用信号。
 - `31`：下载不可用。
 
@@ -742,6 +757,43 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 
 `lecture progress` 返回 `offline` 和 `online` 对象，包含 `completed`、`required`、`remaining` 和 `passed`，并包含总体 `percentage`。它永不返回原始用户记录、姓名、学号、密码、salt 或 session 标识。`lecture status` 检查登录状态并返回 `registerableCount`。当前不支持讲座报名，适配器也不会调用报名或取消报名接口。
 
+## 体育场馆预约 Schema
+
+`szu-cli sports campuses --json` 返回体育场馆预约页可见校区。`sports venues --campus <校区> --json` 返回该校区可见场馆。`sports dates --campus <校区> --venue <场馆> --json` 返回该场馆当前开放预约的日期。`sports slots --campus <校区> --venue <场馆> --json` 会按开放日期分组返回日期和对应时段；加 `--date YYYY-MM-DD` 时只返回指定日期的时段状态。
+
+```json
+{
+  "ok": true,
+  "data": {
+    "campus": "粤海校区",
+    "venue": "一楼重量型健身",
+    "date": "2026-07-08",
+    "bookingMode": "散场",
+    "place": "运动广场西馆一楼健身房",
+    "items": [
+      {
+        "id": "20:00-21:00",
+        "label": "20:00-21:00",
+        "startTime": "20:00",
+        "endTime": "21:00",
+        "state": "可预约",
+        "expired": false,
+        "selectable": true,
+        "remaining": 3,
+        "place": "运动广场西馆一楼健身房"
+      }
+    ],
+    "sourceUrl": "https://ehall.szu.edu.cn/qljfwapp/sys/lwSzuCgyy/index.do#/sportVenue"
+  },
+  "meta": {
+    "command": "sports slots",
+    "gateway": "direct",
+    "backend": "playwright"
+  }
+}
+```
+
+`sports reserve --dry-run --json` 只选择页面条件并检查是否可提交，不点击“提交预约”。真实提交必须显式传入 `--confirm`；当前 live MVP 不自动支付、不取消预约、不取消支付。如果提交后出现付款入口，CLI 只返回 `payment.required` 和付款提示/链接。
 ## 电费 Schema
 
 `szu-cli electricity buildings --json` 返回 SIMS 电费查询页中的可用校区和楼栋。该命令需要校园内网访问。

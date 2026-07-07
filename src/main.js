@@ -26,6 +26,14 @@ import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
 import { getProgramItem, getProgramList, getProgramStatus } from './modules/program.js';
 import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
 import { getSkillPath, installSkill } from './modules/skill.js';
+import {
+  getSportsCampuses,
+  getSportsDates,
+  getSportsSlots,
+  getSportsStatus,
+  getSportsVenues,
+  reserveSportsSlot
+} from './modules/sports.js';
 import { getTimetableClasses, getTimetableStatus, getTimetableView } from './modules/timetable.js';
 import { downloadWanfangPdf, getWanfangItem, getWanfangStatus, searchWanfang } from './modules/wanfang.js';
 
@@ -219,6 +227,31 @@ export async function run(argv) {
       }));
     } catch (error) {
       handleKnownError(error, `lecture ${action}`);
+    }
+    return;
+  }
+
+  if (domain === 'sports' && (action === 'status' || action === 'campuses' || action === 'venues' || action === 'dates' || action === 'slots' || action === 'reserve')) {
+    try {
+      const options = parseSportsOptions(action, argv.slice(2));
+      const data = action === 'status'
+        ? await getSportsStatus(options)
+        : action === 'campuses'
+          ? await getSportsCampuses(options)
+          : action === 'venues'
+            ? await getSportsVenues(options)
+            : action === 'dates'
+              ? await getSportsDates(options)
+              : action === 'slots'
+                ? await getSportsSlots(options)
+                : await reserveSportsSlot(options);
+      writeJson(successEnvelope(data, {
+        command: `sports ${action}`,
+        gateway: 'direct',
+        sourceUrl: data.sourceUrl
+      }));
+    } catch (error) {
+      handleKnownError(error, `sports ${action}`);
     }
     return;
   }
@@ -733,6 +766,69 @@ function parseLectureOptions(action, argv) {
   assertPositiveInteger(options.limit, '--limit');
   if (!['available', 'open', 'all'].includes(options.availability)) {
     throw new Error('--availability must be one of: available, open, all.');
+  }
+  return options;
+}
+
+function parseSportsOptions(action, argv) {
+  const options = {
+    headless: true,
+    url: null,
+    campus: null,
+    venue: null,
+    date: null,
+    slot: null,
+    dryRun: false,
+    confirm: false
+  };
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--url' && action === 'status') {
+      options.url = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--campus' && ['venues', 'dates', 'slots', 'reserve'].includes(action)) {
+      options.campus = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--venue' && ['dates', 'slots', 'reserve'].includes(action)) {
+      options.venue = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--date' && ['slots', 'reserve'].includes(action)) {
+      options.date = parseDateString(requireValue(argv, i, arg), '--date');
+      i += 1;
+      continue;
+    }
+    if (arg === '--slot' && action === 'reserve') {
+      options.slot = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--dry-run' && action === 'reserve') {
+      options.dryRun = true;
+      continue;
+    }
+    if (arg === '--confirm' && action === 'reserve') {
+      options.confirm = true;
+      continue;
+    }
+    if (arg === '--headed') {
+      options.headless = false;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  if (options.dryRun && options.confirm) {
+    throw new Error('--dry-run and --confirm cannot be used together.');
   }
   return options;
 }
@@ -1427,6 +1523,11 @@ function handleKnownError(error, command) {
     CALCULATION_TIMEOUT: 24,
     MODULE_NOT_FOUND: 25,
     LECTURE_NOT_FOUND: 26,
+    SPORTS_CONFIRM_REQUIRED: 27,
+    SPORTS_CAMPUS_NOT_FOUND: 28,
+    SPORTS_VENUE_NOT_FOUND: 29,
+    SPORTS_SLOT_NOT_FOUND: 32,
+    SPORTS_SLOT_UNAVAILABLE: 33,
     RATE_LIMITED: 30,
     DOWNLOAD_UNAVAILABLE: 31,
     HEADED_REQUIRED: 2

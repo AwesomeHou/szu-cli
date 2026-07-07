@@ -18,6 +18,8 @@ The implemented campus modules are:
 - `growth`: eHall Growth Record status, cumulative summary, and period GPA/ranking list.
 - `ideology`: eHall ideology/social-practice credit status and summary.
 - `completion`: eHall training-plan completion summary, modules, and module course details.
+- `lecture`: Innovation Lecture availability, detail, and progress queries.
+- `sports`: eHall sports venue campuses, venues, slots, and safe reservation dry-run.
 - `electricity`: direct intranet electricity status, campus/building discovery, and room usage query.
 - `library`: OPAC status and catalog search.
 - `cnki`: headed-browser CNKI metadata status and search.

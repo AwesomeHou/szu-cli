@@ -10,7 +10,7 @@ This skill handles user-account campus data. Prefer the least data that answers 
 
 ## Private Data
 
-- Treat grades, GPA, professional ranking, student identity, completion status, lecture progress, and OPAC history as private.
+- Treat grades, GPA, professional ranking, student identity, completion status, lecture progress, sports reservations, and OPAC history as private.
 - Do not expose student name, student number, internal IDs, or raw user profiles unless the user explicitly asks and the CLI returns them.
 - Summarize only the fields needed for the user's task.
 - Avoid pasting complete records when a count, status, remaining value, or filtered subset answers the question.
@@ -26,4 +26,5 @@ This skill handles user-account campus data. Prefer the least data that answers 
 
 - Prefer read-only commands.
 - Do not submit state-changing campus actions unless the user explicitly confirms.
-- Any future state-changing command must support `--dry-run`; use it first.
+- Any state-changing command must support `--dry-run`; use it first.
+- For `sports reserve`, do not run `--confirm` unless the user explicitly asks for that exact reservation. Do not cancel reservations, cancel payments, pay automatically, or retry repeatedly.
