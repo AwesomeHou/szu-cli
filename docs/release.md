@@ -71,10 +71,23 @@ szu-cli skill install --target codex --json
 
 ## SkillHub / ClawHub
 
-`skills/szu-campus` 单独上线 SkillHub 和 ClawHub 时，按正式 skill 发布，版本号使用 `0.2.0`，不带 alpha/beta 后缀。如果平台支持兼容性字段，声明 `szu-cli >= 0.2.0-beta.1`。
+`skills/szu-campus` 单独上线 SkillHub 和 ClawHub 时，按正式 skill 发布，版本号使用 `0.2.0`，不带 alpha/beta 后缀。
+
+SkillHub CLI 会从 `SKILL.md` frontmatter 读取 `slug`、`version`、`displayName`、`summary`、`description`、`tags`、`license` 和 `homepage`，所以上架介绍应在 `SKILL.md` 中保持中文：
+
+```bash
+skillhub publish skills/szu-campus --dry-run --json
+skillhub publish skills/szu-campus --json
+```
+
+ClawHub CLI 发布 skill 时展示名来自 `--name` 或目录名。发布时显式传中文展示名，并用 `--topics` 补充中文主题：
+
+```bash
+clawhub skill publish skills/szu-campus --slug szu-campus --name "深圳大学校园事务 CLI" --version 0.2.0 --topics "深圳大学,校园事务,CLI,agent,szu-cli" --dry-run --json
+clawhub skill publish skills/szu-campus --slug szu-campus --name "深圳大学校园事务 CLI" --version 0.2.0 --topics "深圳大学,校园事务,CLI,agent,szu-cli" --json
+```
 
 Alpha 通道冻结，不再同步 beta；只有明确恢复早期实验通道时才从 `develop` 更新 `alpha`。
-
 ## 发布稳定版
 
 beta 验证完成后：

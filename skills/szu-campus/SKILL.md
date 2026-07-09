@@ -1,8 +1,11 @@
 ---
 name: szu-campus
 slug: szu-campus
-displayName: SZU Campus
-description: Use when an agent needs to install or operate the local `szu-cli` CLI for Shenzhen University web services. Covers CLI setup, login checks, read-only campus queries, safety boundaries, academic database access, and JSON error handling.
+displayName: 深圳大学校园事务 CLI
+summary: 面向深圳大学校园事务的 agent skill，指导 agent 安全调用本地 szu-cli 完成登录检查、公文通、课表、成绩、体育场馆、图书馆和学术数据库等查询。
+description: 用于通过本地 szu-cli 操作深圳大学校园事务。覆盖 CLI 安装、登录态检查、只读校园查询、安全边界、学术数据库访问、体育预约 dry-run/confirm 规则和 JSON 错误处理。
+tags: [深圳大学, 校园事务, CLI, agent, szu-cli]
+license: MIT
 version: 0.2.0
 compatible_cli: ">=0.2.0-beta.1"
 ---
@@ -71,7 +74,8 @@ The user should complete login in the browser window opened by the CLI.
 
 Read only the reference needed for the task:
 
-- `references/commands.md`: compact user-intent routing for common campus queries.
+- `references/commands.md`: module-level routing; use it to decide which command family fits the user request.
+- `references/examples.md`: natural-language-to-CLI examples; use it when the user asks in ordinary language or when command shape is unclear.
 - `references/academic-databases.md`: CNKI and Wanfang metadata search, citation export, item lookup, and single visible-button downloads.
 - `references/errors.md`: structured error handling, retry limits, and follow-up commands.
 - `references/privacy-safety.md`: password, cookie, profile, download, private-data, and state-changing boundaries.

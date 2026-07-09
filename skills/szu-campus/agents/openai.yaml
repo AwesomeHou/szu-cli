@@ -1,4 +1,4 @@
 interface:
-  display_name: "SZU Campus"
-  short_description: "Use szu-cli for Shenzhen University services"
-  default_prompt: "Use $szu-campus to query Shenzhen University services through the local szu-cli CLI."
+  display_name: "深圳大学校园事务 CLI"
+  short_description: "使用 szu-cli 查询和操作深圳大学校园事务"
+  default_prompt: "使用 $szu-campus 通过本地 szu-cli 查询深圳大学校园事务；状态变更操作必须先 dry-run，真实执行需用户明确确认。"

@@ -2,13 +2,28 @@
 
 这是 `szu-cli` 配套的 Codex/Agent skill，用来告诉 agent 如何安全地调用深圳大学校园事务 CLI。核心业务逻辑在 `szu-cli` 内，skill 只保存使用说明、命令路由和安全边界。
 
-## 安装
+## 推荐安装
 
-安装 `szu-cli` 后，可以一键安装本 skill：
+推荐用一行命令同时安装 `szu-cli` 和本 skill：
+
+```bash
+npm install -g szu-cli@beta && szu-cli skill install --target codex --json
+```
+
+如果已经安装过 `szu-cli`，只安装或更新 skill：
 
 ```bash
 szu-cli skill install --target codex --json
 ```
+
+上架后，也可以从 SkillHub 或 ClawHub 安装本 skill：
+
+```bash
+skillhub install szu-campus
+clawhub install szu-campus
+```
+
+但 skill 只是 agent 使用说明，仍然需要本机安装 `szu-cli` 才能真正查询校园事务。
 
 也可以从本仓库复制 `skills/szu-campus` 到 Codex 的 skills 目录。
 
@@ -30,7 +45,8 @@ szu-cli auth login
 ## 目录
 
 - `SKILL.md`: agent 入口说明。
-- `references/commands.md`: 常见需求到 CLI 命令的路由。
+- `references/commands.md`: 模块到命令的路由。
+- `references/examples.md`: 自然语言到 CLI 命令的示例。
 - `references/errors.md`: 结构化错误码处理。
 - `references/privacy-safety.md`: 隐私、安全和状态变更边界。
 - `references/academic-databases.md`: 学术数据库检索相关说明。
