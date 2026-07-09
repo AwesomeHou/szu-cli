@@ -60,7 +60,7 @@ The user should complete login in the browser window opened by the CLI.
 
 - Use `--json` for agent workflows and parse JSON, not stdout prose.
 - Prefer read-only commands. Require explicit user confirmation before any state-changing action.
-- For sports reservations, use `sports slots` or `sports reserve --dry-run` first; do not run `sports reserve --confirm`, cancellation, payment, or repeated attempts unless the user explicitly asks.
+- For sports reservations, use `sports bookings`, `sports slots`, `sports reserve --dry-run`, or `sports cancel --dry-run` first; do not run `sports reserve --confirm`, `sports cancel --confirm`, payment, or repeated attempts unless the user explicitly asks for one exact target.
 - Do not ask for passwords, cookies, tokens, or browser profile files.
 - Do not bypass authentication, CAPTCHA, WebVPN restrictions, rate limits, download controls, or access control.
 - Do not loop retries aggressively. Stop on `RATE_LIMITED`; handle login and network errors once.

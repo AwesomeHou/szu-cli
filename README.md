@@ -81,10 +81,12 @@ szu-cli completion courses --module <moduleCode> --json
 szu-cli lecture list --json
 szu-cli lecture item <id> --json
 szu-cli lecture progress --json
+szu-cli sports bookings --json
 szu-cli sports campuses --json
 szu-cli sports venues --campus 粤海校区 --json
 szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --json
 szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --dry-run --json
+szu-cli sports cancel --order <orderNo> --dry-run --json
 szu-cli electricity buildings --json
 szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
 szu-cli library search 交通设计 --json
@@ -114,7 +116,7 @@ skill 只负责告诉 agent 何时、如何安全调用 `szu-cli`。核心登录
 - 不绕过登录、验证码、WebVPN、访问控制或频率限制。
 - 默认优先实现只读能力。
 - 不做高频抓取或批量下载。
-- 状态变更命令必须先支持 `--dry-run`。`sports reserve` 真实提交必须显式 `--confirm`，不自动支付、不取消预约、不取消支付。
+- 状态变更命令必须先支持 `--dry-run`。`sports reserve` 和 `sports cancel` 的真实状态变更都必须显式 `--confirm`，不自动支付、不取消支付。
 - 不把 cookies、浏览器 profile、截图、HAR、trace 等本地敏感文件提交到 Git。
 
 ## 文档

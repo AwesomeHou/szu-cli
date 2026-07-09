@@ -123,10 +123,12 @@ szu-cli lecture list --json
 szu-cli lecture list --availability open --json
 szu-cli lecture item <id> --json
 szu-cli lecture progress --json
+szu-cli sports bookings --json
 szu-cli sports campuses --json
 szu-cli sports venues --campus 粤海校区 --json
 szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --json
 szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --dry-run --json
+szu-cli sports cancel --order <orderNo> --dry-run --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
 szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
@@ -247,7 +249,7 @@ Completion commands read the eHall Academic Completion Query application. The pa
 
 Lecture commands reuse the persistent browser profile with the SZU CAS login. `lecture list` defaults to lectures that are inside the registration window and still have classroom capacity. Use `--availability open` to include full lectures or `--availability all` to include closed history. `lecture item <id>` returns classroom locations and remaining seats. `lecture progress` returns completed, required, and remaining online/offline study counts without exposing the raw user profile. Registration is intentionally not supported.
 
-Sports commands read the eHall sports venue reservation app. Use `sports campuses`, `sports venues`, and `sports slots` for read-only discovery. `sports reserve --dry-run` previews a reservation without submitting. Live `--confirm`, cancellation, payment cancellation, and automatic payment are intentionally outside the safe MVP.
+Sports commands read the eHall sports venue reservation app. Use `sports bookings`, `sports campuses`, `sports venues`, and `sports slots` for read-only discovery. `sports reserve --dry-run` and `sports cancel --dry-run` preview state changes. Live reservation or cancellation requires explicit `--confirm`; payment cancellation and automatic payment are intentionally unsupported.
 
 Electricity commands read the campus intranet SIMS electricity query system. They do not require login, do not use the persistent browser profile, and currently support direct campus-network access only. Use `electricity buildings --json` to list available campuses and buildings before querying a room. `electricity query` defaults to the last 7 days of usage records and reports the latest remaining kWh found in that range.
 
@@ -270,4 +272,4 @@ Future state-changing commands, such as reservations, must begin with dry-run be
 
 ## Status
 
-This repository currently contains the project structure, design documents, persistent-profile login foundation, and read-only adapters for notices, personal course timetable, all-school program/timetable queries, grades, Growth Record GPA/rankings, ideology/social-practice credits, academic completion modules/courses, Innovation Lecture availability/progress, sports venue availability/dry-run reservation, electricity usage, library catalog search, and headed academic metadata search for CNKI and Wanfang.
+This repository currently contains the project structure, design documents, persistent-profile login foundation, and read-only adapters for notices, personal course timetable, all-school program/timetable queries, grades, Growth Record GPA/rankings, ideology/social-practice credits, academic completion modules/courses, Innovation Lecture availability/progress, sports venue booking history, availability, dry-run reservation, confirmed reservation, and guarded cancellation, electricity usage, library catalog search, and headed academic metadata search for CNKI and Wanfang.

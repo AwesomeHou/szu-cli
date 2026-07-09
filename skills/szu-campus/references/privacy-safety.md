@@ -27,4 +27,4 @@ This skill handles user-account campus data. Prefer the least data that answers 
 - Prefer read-only commands.
 - Do not submit state-changing campus actions unless the user explicitly confirms.
 - Any state-changing command must support `--dry-run`; use it first.
-- For `sports reserve`, do not run `--confirm` unless the user explicitly asks for that exact reservation. Do not cancel reservations, cancel payments, pay automatically, or retry repeatedly.
+- For `sports reserve` and `sports cancel`, do not run `--confirm` unless the user explicitly asks for one exact reservation or order. Do not cancel payments, pay automatically, or retry repeatedly.
