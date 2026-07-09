@@ -4,6 +4,7 @@ import { classifyAuthPage } from './auth-detector.js';
 import { getLaunchOptions } from './browser-options.js';
 import { getProfilePath } from './paths.js';
 import {
+  buildSportsBookingsPayload,
   buildSportsCampusesPayload,
   buildSportsDatesPayload,
   buildSportsReserveConfirmPayload,
@@ -11,10 +12,12 @@ import {
   buildSportsSlotsByDatePayload,
   buildSportsSlotsPayload,
   buildSportsVenuesPayload,
+  parseSportsBookingsFromText,
   parseSportsSnapshotFromText
 } from './sports-parser.js';
 
 const SPORTS_URL = 'https://ehall.szu.edu.cn/qljfwapp/sys/lwSzuCgyy/index.do#/sportVenue';
+const SPORTS_BOOKINGS_URL = 'https://ehall.szu.edu.cn/qljfwapp/sys/lwSzuCgyy/index.do#/myBooking';
 const EHALL_HOME_URL = 'https://ehall.szu.edu.cn/new/index.html';
 
 export async function getSportsStatus(options = {}) {
@@ -86,6 +89,16 @@ export async function getSportsSlots(options = {}) {
     });
 }
 
+
+export async function getSportsBookings(options = {}) {
+  const loaded = await loadSportsBookingsPage(options);
+  assertSportsAccess(classifySportsPage(loaded.pageState), loaded.pageState);
+  return buildSportsBookingsPayload(loaded.snapshot, {
+    limit: options.limit ?? 3,
+    sourceUrl: loaded.sourceUrl
+  });
+}
+
 export async function reserveSportsSlot(options = {}) {
   requireOption(options.campus, '--campus');
   requireOption(options.venue, '--venue');
@@ -102,6 +115,66 @@ export async function reserveSportsSlot(options = {}) {
     return buildSportsReserveConfirmPayload(slots, options.slot);
   }
   return submitSportsReservation(options, slots);
+}
+
+
+export async function cancelSportsBooking(options = {}) {
+  requireOption(options.orderNo, '--order');
+  if (!options.dryRun && !options.confirm) {
+    throwSportsError('SPORTS_CONFIRM_REQUIRED', 'Use --dry-run to preview or --confirm to cancel a sports reservation.');
+  }
+  if (options.dryRun || process.env.SZU_BROWSER_BACKEND === 'mock') {
+    return {
+      cancelled: Boolean(options.confirm),
+      wouldCancel: Boolean(options.dryRun),
+      requiresConfirmation: Boolean(options.dryRun),
+      orderNo: options.orderNo,
+      sourceUrl: SPORTS_URL
+    };
+  }
+  const profilePath = getProfilePath();
+  const { chromium } = await importPlaywright();
+  const context = await chromium.launchPersistentContext(
+    profilePath,
+    getLaunchOptions({ headless: options.headless ?? true })
+  );
+  try {
+    const page = context.pages()[0] ?? await context.newPage();
+    await page.goto(options.url ?? SPORTS_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForTimeout(1500);
+    await clickText(page, '我的预约');
+    await page.waitForTimeout(1500);
+    const text = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
+    assertSportsAccess(classifySportsPage({ title: await page.title(), text, status: null }), { title: await page.title(), text });
+    if (!text.includes(options.orderNo)) {
+      throwSportsError('SPORTS_BOOKING_NOT_FOUND', `Sports booking not found: ${options.orderNo}.`);
+    }
+    const row = page.getByText(options.orderNo).first().locator('xpath=ancestor::*[self::tr or self::li or self::div][contains(., "取消预约")][1]');
+    const scopedCancel = row.getByText('取消预约', { exact: true }).first();
+    const cancel = await scopedCancel.count().catch(() => 0) ? scopedCancel : page.getByText('取消预约', { exact: true }).first();
+    if (!(await cancel.count().catch(() => 0))) {
+      throwPageChanged('cancel button');
+    }
+    await cancel.click({ timeout: 3000 });
+    await page.waitForTimeout(500);
+    await clickDialogPrimary(page);
+    await page.waitForTimeout(1500);
+    const afterText = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
+    const booking = parseSportsBookingsFromText(afterText).find((item) => item.orderNo === options.orderNo);
+    const cancelled = !booking || /取消预约|预约作废|已取消|取消成功/.test(String(booking.status ?? '') + ' ' + String(booking.note ?? ''));
+    if (!cancelled) {
+      const error = new Error('Sports cancellation was not confirmed by the page.');
+      error.code = 'SPORTS_CANCEL_UNVERIFIED';
+      throw error;
+    }
+    return {
+      cancelled: true,
+      orderNo: options.orderNo,
+      sourceUrl: sanitizeSportsSourceUrl(page.url())
+    };
+  } finally {
+    await context.close();
+  }
 }
 
 async function submitSportsReservation(options, slots) {
@@ -247,6 +320,30 @@ async function settleSportsPage(page, options) {
   }
 }
 
+
+async function clickDialogPrimary(page) {
+  const primary = page.locator('.bh-bhdialog-container .bh-dialog-btn.bh-bg-primary').last();
+  if (await primary.count().catch(() => 0)) {
+    await primary.click({ timeout: 3000 });
+    return true;
+  }
+  return clickFirstVisibleText(page, ['确认取消', '确定', '确认', '是']);
+}
+
+async function clickFirstVisibleText(page, labels) {
+  for (const label of labels) {
+    const matches = page.getByText(label, { exact: true });
+    const count = await matches.count().catch(() => 0);
+    for (let i = 0; i < count; i += 1) {
+      const item = matches.nth(i);
+      if (await item.isVisible().catch(() => false)) {
+        await item.click({ timeout: 3000 });
+        return true;
+      }
+    }
+  }
+  return false;
+}
 async function clickText(page, text) {
   const locator = page.getByText(text, { exact: true }).first();
   if (await locator.count().catch(() => 0)) {
@@ -308,6 +405,44 @@ async function loadSportsSlotsByDate(options) {
     await context.close();
   }
 }
+
+async function loadSportsBookingsPage(options) {
+  if (process.env.SZU_BROWSER_BACKEND === 'mock') {
+    return loadMockSports({ ...options, url: SPORTS_BOOKINGS_URL });
+  }
+  const profilePath = getProfilePath();
+  if (!existsSync(profilePath)) {
+    const error = new Error('Browser profile does not exist.');
+    error.code = 'LOGIN_REQUIRED';
+    error.hint = `Run \`szu-cli auth login --url ${SPORTS_URL}\` first.`;
+    throw error;
+  }
+  const { chromium } = await importPlaywright();
+  const context = await chromium.launchPersistentContext(
+    profilePath,
+    getLaunchOptions({ headless: options.headless ?? true })
+  );
+  try {
+    const page = context.pages()[0] ?? await context.newPage();
+    const response = await page.goto(options.url ?? SPORTS_BOOKINGS_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForTimeout(2500);
+    const text = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
+    const pageState = {
+      url: page.url(),
+      title: await page.title(),
+      text,
+      status: response?.status() ?? null
+    };
+    return {
+      pageState,
+      snapshot: { text },
+      sourceUrl: sanitizeSportsSourceUrl(page.url())
+    };
+  } finally {
+    await context.close();
+  }
+}
+
 function loadMockSports(options) {
   const status = Number(process.env.SZU_MOCK_SPORTS_STATUS ?? 200);
   const url = process.env.SZU_MOCK_SPORTS_URL ?? options.url ?? SPORTS_URL;

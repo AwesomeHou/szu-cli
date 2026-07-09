@@ -19,7 +19,7 @@ The implemented campus modules are:
 - `ideology`: eHall ideology/social-practice credit status and summary.
 - `completion`: eHall training-plan completion summary, modules, and module course details.
 - `lecture`: Innovation Lecture availability, detail, and progress queries.
-- `sports`: eHall sports venue campuses, venues, slots, and safe reservation dry-run.
+- `sports`: eHall sports venue bookings, campuses, venues, slots, safe reservation dry-run, and guarded cancellation.
 - `electricity`: direct intranet electricity status, campus/building discovery, and room usage query.
 - `library`: OPAC status and catalog search.
 - `cnki`: headed-browser CNKI metadata status and search.

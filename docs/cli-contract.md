@@ -59,6 +59,7 @@ szu-cli sports campuses --json
 szu-cli sports venues --campus 粤海校区 --json
 szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --json
 szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --dry-run --json
+szu-cli sports cancel --order <orderNo> --dry-run --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
 szu-cli electricity query --building 红豆斋 --room 838 --json
@@ -760,7 +761,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 
 ## 体育场馆预约 Schema
 
-`szu-cli sports campuses --json` 返回体育场馆预约页可见校区。`sports venues --campus <校区> --json` 返回该校区可见场馆。`sports dates --campus <校区> --venue <场馆> --json` 返回该场馆当前开放预约的日期。`sports slots --campus <校区> --venue <场馆> --json` 会按开放日期分组返回日期和对应时段；加 `--date YYYY-MM-DD` 时只返回指定日期的时段状态。
+`szu-cli sports bookings --json` 默认返回“我的预约”最近 3 条记录；可用 `--limit <n>` 调整数量。`szu-cli sports campuses --json` 返回体育场馆预约页可见校区。`sports venues --campus <校区> --json` 返回该校区可见场馆。`sports dates --campus <校区> --venue <场馆> --json` 返回该场馆当前开放预约的日期。`sports slots --campus <校区> --venue <场馆> --json` 会按开放日期分组返回日期和对应时段；加 `--date YYYY-MM-DD` 时只返回指定日期的时段状态。
 
 ```json
 {
@@ -794,7 +795,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`sports reserve --dry-run --json` 只选择页面条件并检查是否可提交，不点击“提交预约”。真实提交必须显式传入 `--confirm`；当前 live MVP 不自动支付、不跳转支付页、不取消预约、不取消支付。预约成功后 CLI 只返回 `payment.required` 和手动支付提醒，不输出支付链接。
+`sports bookings` 的记录字段包含 `actions`、`orderNo`、`timeRange`、`bookedAt`、`campus`、`venue`、`field`、`project`、`status`、`orderType` 和 `note`，不输出姓名、学号、学院等身份字段。`sports reserve --dry-run --json` 只选择页面条件并检查是否可提交，不点击“提交预约”。真实提交必须显式传入 `--confirm`；当前 live MVP 不自动支付、不跳转支付页、不取消支付。预约成功后 CLI 只返回 `payment.required` 和手动支付提醒，不输出支付链接。`sports cancel --order <orderNo> --dry-run --json` 只预览取消；真实取消必须显式传入 `--confirm`。
 ## 电费 Schema
 
 `szu-cli electricity buildings --json` 返回 SIMS 电费查询页中的可用校区和楼栋。该命令需要校园内网访问。

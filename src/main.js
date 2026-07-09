@@ -27,12 +27,14 @@ import { getProgramItem, getProgramList, getProgramStatus } from './modules/prog
 import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
 import { getSkillPath, installSkill } from './modules/skill.js';
 import {
+  getSportsBookings,
   getSportsCampuses,
   getSportsDates,
   getSportsSlots,
   getSportsStatus,
   getSportsVenues,
-  reserveSportsSlot
+  reserveSportsSlot,
+  cancelSportsBooking
 } from './modules/sports.js';
 import { getTimetableClasses, getTimetableStatus, getTimetableView } from './modules/timetable.js';
 import { downloadWanfangPdf, getWanfangItem, getWanfangStatus, searchWanfang } from './modules/wanfang.js';
@@ -231,7 +233,7 @@ export async function run(argv) {
     return;
   }
 
-  if (domain === 'sports' && (action === 'status' || action === 'campuses' || action === 'venues' || action === 'dates' || action === 'slots' || action === 'reserve')) {
+  if (domain === 'sports' && (action === 'status' || action === 'campuses' || action === 'venues' || action === 'dates' || action === 'slots' || action === 'bookings' || action === 'reserve' || action === 'cancel')) {
     try {
       const options = parseSportsOptions(action, argv.slice(2));
       const data = action === 'status'
@@ -244,7 +246,11 @@ export async function run(argv) {
               ? await getSportsDates(options)
               : action === 'slots'
                 ? await getSportsSlots(options)
-                : await reserveSportsSlot(options);
+                : action === 'bookings'
+                  ? await getSportsBookings(options)
+                  : action === 'reserve'
+                  ? await reserveSportsSlot(options)
+                  : await cancelSportsBooking(options);
       writeJson(successEnvelope(data, {
         command: `sports ${action}`,
         gateway: 'direct',
@@ -779,7 +785,8 @@ function parseSportsOptions(action, argv) {
     date: null,
     slot: null,
     dryRun: false,
-    confirm: false
+    confirm: false,
+    limit: 3
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -812,11 +819,21 @@ function parseSportsOptions(action, argv) {
       i += 1;
       continue;
     }
-    if (arg === '--dry-run' && action === 'reserve') {
+    if (arg === '--limit' && action === 'bookings') {
+      options.limit = Number.parseInt(requireValue(argv, i, arg), 10);
+      i += 1;
+      continue;
+    }
+    if (arg === '--order' && action === 'cancel') {
+      options.orderNo = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--dry-run' && ['reserve', 'cancel'].includes(action)) {
       options.dryRun = true;
       continue;
     }
-    if (arg === '--confirm' && action === 'reserve') {
+    if (arg === '--confirm' && ['reserve', 'cancel'].includes(action)) {
       options.confirm = true;
       continue;
     }
@@ -827,6 +844,9 @@ function parseSportsOptions(action, argv) {
     throw new Error(`Unknown option: ${arg}`);
   }
 
+  if (action === 'bookings') {
+    assertPositiveInteger(options.limit, '--limit');
+  }
   if (options.dryRun && options.confirm) {
     throw new Error('--dry-run and --confirm cannot be used together.');
   }
@@ -1529,6 +1549,8 @@ function handleKnownError(error, command) {
     SPORTS_SLOT_NOT_FOUND: 32,
     SPORTS_SLOT_UNAVAILABLE: 33,
     SPORTS_SUBMIT_UNVERIFIED: 34,
+    SPORTS_BOOKING_NOT_FOUND: 35,
+    SPORTS_CANCEL_UNVERIFIED: 36,
     RATE_LIMITED: 30,
     DOWNLOAD_UNAVAILABLE: 31,
     HEADED_REQUIRED: 2

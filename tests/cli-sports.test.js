@@ -21,6 +21,12 @@ const snapshot = {
     { label: '19:00-20:00', place: '运动广场西馆一楼健身房', remaining: 0 },
     { label: '20:00-21:00', place: '运动广场西馆一楼健身房', remaining: 3 }
   ],
+  bookings: [
+    { orderNo: '202607091405161043', timeRange: '2026-07-09 20:00~2026-07-09 21:00', bookedAt: '2026-07-09 14:05:16', campus: '粤海校区', venue: '运动广场西馆一楼健身房', field: '一楼健身房', project: '一楼重量型健身', status: '取消预约', orderType: '2.0', note: '未支付取消预约，预约作废', actions: ['详情'] },
+    { orderNo: '202607090035540373', timeRange: '2026-07-09 09:00~2026-07-09 10:00', bookedAt: '2026-07-09 00:35:54', campus: '粤海校区', venue: '运动广场西馆一楼健身房', field: '一楼健身房', project: '一楼重量型健身', status: '已完成', orderType: '2.0', note: '已入场', actions: ['详情'] },
+    { orderNo: '202607081529208688', timeRange: '2026-07-08 15:00~2026-07-08 16:00', bookedAt: '2026-07-08 15:29:20', campus: '粤海校区', venue: '运动广场西馆一楼健身房', field: '一楼健身房', project: '一楼重量型健身', status: '已完成', orderType: '2.0', note: '已入场', actions: ['详情'] },
+    { orderNo: '202607070922035740', timeRange: '2026-07-07 09:00~2026-07-07 10:00', bookedAt: '2026-07-07 09:22:03', campus: '粤海校区', venue: '运动广场西馆一楼健身房', field: '一楼健身房', project: '一楼重量型健身', status: '已完成', orderType: '2.0', note: '已入场', actions: ['详情'] }
+  ],
   studentId: '2023000000',
   name: '测试用户'
 };
@@ -146,6 +152,20 @@ test('sports slots works after venue page hides venue list', () => {
   assert.equal(result.status, 0, result.stderr);
   assert.equal(JSON.parse(result.stdout).data.items[0].label, '20:00-21:00');
 });
+
+test('sports bookings returns latest three records by default', () => {
+  const result = runSports(['sports', 'bookings', '--json']);
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.data.items.length, 3);
+  assert.equal(body.data.items[0].orderNo, '202607091405161043');
+  assert.equal(body.data.items[0].status, '取消预约');
+  assert.equal(JSON.stringify(body).includes('2023000000'), false);
+  assert.equal(JSON.stringify(body).includes('测试用户'), false);
+  assert.equal(body.meta.command, 'sports bookings');
+});
+
 test('sports reserve dry-run does not submit', () => {
   const result = runSports([
     'sports',
@@ -190,6 +210,36 @@ test('sports reserve confirm is covered only by mock backend', () => {
   assert.equal(body.data.submitted, true);
   assert.equal(body.data.payment.required, true);
 });
+
+test('sports cancel confirm is covered only by mock backend', () => {
+  const result = runSports([
+    'sports',
+    'cancel',
+    '--order',
+    '202607091405161043',
+    '--confirm',
+    '--json'
+  ]);
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.data.cancelled, true);
+  assert.equal(body.data.orderNo, '202607091405161043');
+});
+
+test('sports cancel requires dry-run or confirm', () => {
+  const result = runSports([
+    'sports',
+    'cancel',
+    '--order',
+    '202607091405161043',
+    '--json'
+  ]);
+
+  assert.notEqual(result.status, 0);
+  assert.equal(JSON.parse(result.stdout).error.code, 'SPORTS_CONFIRM_REQUIRED');
+});
+
 test('sports reserve requires dry-run or confirm', () => {
   const result = runSports([
     'sports',

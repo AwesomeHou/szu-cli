@@ -31,8 +31,9 @@ Ask the user to run `szu-cli auth login` only when login is required; the user c
 | Lectures available now | `lecture list --json` | Calling registration endpoints |
 | Lectures still open but full/unknown | `lecture list --availability open --json` | Treating unknown capacity as available |
 | Lecture detail or progress | `lecture item <id> --json`; `lecture progress --json` | Exposing raw private progress records |
+| Sports bookings | `sports bookings --json`; add `--limit <n>` when more than 3 records are needed | Exposing unrelated booking history |
 | Sports venue availability | `sports campuses --json`; `sports venues --campus <name> --json`; `sports dates --campus <name> --venue <name> --json`; `sports slots --campus <name> --venue <name> --json` | Treating time-window availability as a successful reservation |
-| Sports reservation preview | `sports reserve ... --dry-run --json` | Running `--confirm`, cancellation, payment, or repeated attempts without explicit user instruction |
+| Sports reservation preview | `sports reserve ... --dry-run --json`; `sports cancel --order <orderNo> --dry-run --json` | Running `--confirm`, payment, or repeated attempts without explicit user instruction |
 | Dorm electricity | `electricity buildings --json` when names are uncertain; then `electricity query --building <name> --room <room> --json` | Guessing room/building or trying to pay |
 | Library holdings | `library search ... --json`; detail with `library item <id|url> --json` | Treating search rows as copy-level holdings |
 | CNKI/Wanfang/literature | Read `academic-databases.md` | Running downloads before metadata/citation work |

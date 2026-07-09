@@ -30,6 +30,55 @@ export function buildSportsSlotsByDatePayload(snapshot, options = {}) {
     sourceUrl: options.sourceUrl
   };
 }
+
+export function buildSportsBookingsPayload(snapshot, options = {}) {
+  const limit = options.limit ?? 3;
+  return {
+    items: parseSportsBookingsFromText(snapshot?.text)
+      .concat(rows(snapshot?.bookings).map(normalizeBooking))
+      .slice(0, limit),
+    sourceUrl: options.sourceUrl
+  };
+}
+
+export function parseSportsBookingsFromText(text) {
+  return String(text ?? '')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => line.split('\t').map((part) => part.trim()))
+    .filter((parts) => parts.length >= 11 && /^\d{12,}$/.test(parts[1] ?? ''))
+    .map((parts) => normalizeBooking({
+      actions: parts[0].split('|').map((part) => part.trim()).filter(Boolean),
+      orderNo: parts[1],
+      timeRange: parts[2],
+      bookedAt: parts[3],
+      campus: parts[4],
+      venue: parts[5],
+      field: parts[6],
+      project: parts[7],
+      status: parts[8],
+      orderType: parts[9],
+      note: parts[10]
+    }));
+}
+
+function normalizeBooking(row) {
+  return {
+    actions: rows(row.actions).map(stringOrNull).filter(Boolean),
+    orderNo: stringOrNull(row.orderNo),
+    timeRange: stringOrNull(row.timeRange),
+    bookedAt: stringOrNull(row.bookedAt),
+    campus: stringOrNull(row.campus),
+    venue: stringOrNull(row.venue),
+    field: stringOrNull(row.field),
+    project: stringOrNull(row.project),
+    status: stringOrNull(row.status),
+    orderType: stringOrNull(row.orderType),
+    note: stringOrNull(row.note)
+  };
+}
+
 export function buildSportsCampusesPayload(snapshot, options = {}) {
   return {
     items: uniqueStrings(snapshot?.campuses).map((name) => ({ name })),

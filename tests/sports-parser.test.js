@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  buildSportsBookingsPayload,
   buildSportsCampusesPayload,
   buildSportsDatesPayload,
   buildSportsReserveDryRunPayload,
@@ -110,4 +111,31 @@ test('sports parser extracts field choices from selected slot text', () => {
   const snapshot = parseSportsSnapshotFromText('选择场地\n一楼健身房(109/120)\n取消\n提交预约');
 
   assert.deepEqual(snapshot.fields, [{ name: '一楼健身房', label: '一楼健身房(109/120)', remaining: 109, capacity: 120 }]);
+});
+
+test('sports parser returns latest bookings with default limit shape', () => {
+  const text = [
+    '取消预约 | 未支付 | 详情\t202607091405161043\t2026-07-09 20:00~2026-07-09 21:00\t2026-07-09 14:05:16\t粤海校区\t运动广场西馆一楼健身房\t一楼健身房\t一楼重量型健身\t已预约\t2.0\t未支付\t预约人',
+    '详情\t202606262325017026\t2026-06-27 09:00~2026-06-27 10:00\t2026-06-26 23:25:01\t粤海校区\t运动广场西馆一楼健身房\t一楼健身房\t一楼重量型健身\t取消预约\t2.0\t未支付取消预约，预约作废\t预约人',
+    '2023096055',
+    '测试用户'
+  ].join('\n');
+  const payload = buildSportsBookingsPayload({ text }, { sourceUrl: 'https://example.test/', limit: 1 });
+
+  assert.equal(payload.items.length, 1);
+  assert.deepEqual(payload.items[0], {
+    actions: ['取消预约', '未支付', '详情'],
+    orderNo: '202607091405161043',
+    timeRange: '2026-07-09 20:00~2026-07-09 21:00',
+    bookedAt: '2026-07-09 14:05:16',
+    campus: '粤海校区',
+    venue: '运动广场西馆一楼健身房',
+    field: '一楼健身房',
+    project: '一楼重量型健身',
+    status: '已预约',
+    orderType: '2.0',
+    note: '未支付'
+  });
+  assert.equal(JSON.stringify(payload).includes('2023096055'), false);
+  assert.equal(JSON.stringify(payload).includes('测试用户'), false);
 });
