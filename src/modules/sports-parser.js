@@ -96,7 +96,7 @@ export function buildSportsReserveConfirmPayload(slotsPayload, slotLabel, result
     payment: result.payment ?? {
       required: true,
       url: null,
-      message: '请在浏览器中手动完成付款。'
+      message: '预约已提交；请及时到 我的预约 中手动完成支付。'
     }
   };
 }

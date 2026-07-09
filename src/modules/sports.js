@@ -142,8 +142,8 @@ async function submitSportsReservation(options, slots) {
       status: 'pending-payment',
       payment: {
         required: true,
-        url: paymentUrlOrNull(page.url()),
-        message: '预约已提交；请在浏览器或学校页面中手动完成付款。'
+        url: null,
+        message: '预约已提交；请及时到 我的预约 中手动完成支付。'
       }
     });
   } finally {
@@ -353,9 +353,7 @@ function isSubmitConfirmed(text, url) {
   const value = `${text ?? ''} ${url ?? ''}`;
   return /预约成功|提交成功|待支付|支付|订单|pay/i.test(value);
 }
-function paymentUrlOrNull(value) {
-  return String(value).includes('/qljfwapp/sys/lwSzuCgyy/') ? null : value;
-}
+
 function sanitizeSportsSourceUrl(value) {
   const url = new URL(value);
   url.search = '';

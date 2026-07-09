@@ -794,7 +794,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`sports reserve --dry-run --json` 只选择页面条件并检查是否可提交，不点击“提交预约”。真实提交必须显式传入 `--confirm`；当前 live MVP 不自动支付、不取消预约、不取消支付。如果提交后出现付款入口，CLI 只返回 `payment.required` 和付款提示/链接。
+`sports reserve --dry-run --json` 只选择页面条件并检查是否可提交，不点击“提交预约”。真实提交必须显式传入 `--confirm`；当前 live MVP 不自动支付、不跳转支付页、不取消预约、不取消支付。预约成功后 CLI 只返回 `payment.required` 和手动支付提醒，不输出支付链接。
 ## 电费 Schema
 
 `szu-cli electricity buildings --json` 返回 SIMS 电费查询页中的可用校区和楼栋。该命令需要校园内网访问。
