@@ -19,6 +19,7 @@ Always parse JSON and branch on `error.code`.
 - `SPORTS_CAMPUS_NOT_FOUND`: rerun `szu-cli sports campuses --json`.
 - `SPORTS_VENUE_NOT_FOUND`: rerun `szu-cli sports venues --campus <name> --json`.
 - `SPORTS_SLOT_NOT_FOUND` / `SPORTS_SLOT_UNAVAILABLE`: rerun `szu-cli sports slots ... --json` and pick a selectable slot.
+- `SPORTS_SUBMIT_UNVERIFIED`: do not retry automatically; ask the user to check `我的预约` or rerun a read-only sports status/query command.
 - `DOWNLOAD_UNAVAILABLE`: tell the user the visible download button was unavailable; do not construct direct links.
 - `RATE_LIMITED`: stop retrying.
 - `HEADED_REQUIRED`: rerun the same academic database command with `--headed`.

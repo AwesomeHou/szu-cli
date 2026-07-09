@@ -138,6 +138,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 - `SPORTS_VENUE_NOT_FOUND`：找不到指定体育场馆。
 - `SPORTS_SLOT_NOT_FOUND`：找不到指定预约时段。
 - `SPORTS_SLOT_UNAVAILABLE`：指定时段不可预约。
+- `SPORTS_SUBMIT_UNVERIFIED`：体育预约点击提交后，页面没有出现可确认的成功、订单或待支付状态。
 - `CLASS_NOT_FOUND`：全校课表中找不到指定班级。
 - `PROGRAM_NOT_FOUND`：培养方案中找不到指定方案。
 - `CALCULATION_TIMEOUT`：学业完成计算超时。

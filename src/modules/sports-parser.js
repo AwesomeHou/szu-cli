@@ -118,6 +118,7 @@ export function parseSportsSnapshotFromText(text) {
   return {
     campuses,
     dates: parseDates(value),
+    fields: parseFields(value),
     venues: venueNames
       .filter((name) => value.includes(name))
       .map((name) => ({
@@ -149,6 +150,27 @@ function normalizeSlot(row) {
   };
 }
 
+function parseFields(text) {
+  const lines = String(text ?? '').split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const start = lines.indexOf('选择场地');
+  if (start < 0) {
+    return [];
+  }
+  const result = [];
+  for (const line of lines.slice(start + 1)) {
+    if (line === '取消' || line === '提交预约') {
+      break;
+    }
+    const match = line.match(/^(.+?)\((\d+)\/(\d+)\)$/);
+    result.push({
+      name: match?.[1] ?? line,
+      label: line,
+      remaining: match ? Number.parseInt(match[2], 10) : null,
+      capacity: match ? Number.parseInt(match[3], 10) : null
+    });
+  }
+  return result;
+}
 function parseDates(text) {
   const matches = String(text ?? '').match(/20\d{2}-\d{2}-\d{2}/g) ?? [];
   return [...new Set(matches)];

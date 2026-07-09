@@ -6,7 +6,8 @@ import {
   buildSportsDatesPayload,
   buildSportsReserveDryRunPayload,
   buildSportsSlotsPayload,
-  buildSportsVenuesPayload
+  buildSportsVenuesPayload,
+  parseSportsSnapshotFromText
 } from '../src/modules/sports-parser.js';
 
 const snapshot = {
@@ -104,4 +105,9 @@ test('sports parser returns open dates', () => {
   });
 
   assert.deepEqual(payload.items, [{ date: '2026-07-07' }, { date: '2026-07-08' }]);
+});
+test('sports parser extracts field choices from selected slot text', () => {
+  const snapshot = parseSportsSnapshotFromText('选择场地\n一楼健身房(109/120)\n取消\n提交预约');
+
+  assert.deepEqual(snapshot.fields, [{ name: '一楼健身房', label: '一楼健身房(109/120)', remaining: 109, capacity: 120 }]);
 });

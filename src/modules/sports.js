@@ -117,13 +117,27 @@ async function submitSportsReservation(options, slots) {
     await page.goto(options.url ?? SPORTS_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await settleSportsPage(page, options);
     await clickText(page, dryRun.selected.label);
+    await page.waitForTimeout(1000);
+    const afterSlotText = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
+    const field = parseSportsSnapshotFromText(afterSlotText).fields[0];
+    if (!field) {
+      throwSportsError('SPORTS_SLOT_UNAVAILABLE', 'No selectable sports field appeared after selecting this slot.');
+    }
+    await clickText(page, field.label);
     await page.waitForTimeout(500);
     const submit = page.getByText('提交预约', { exact: true }).first();
     if (!(await submit.count().catch(() => 0))) {
       throwPageChanged('submit button');
     }
     await submit.click({ timeout: 3000 });
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(2000);
+    const resultText = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
+    if (!isSubmitConfirmed(resultText, page.url())) {
+      const error = new Error('Sports reservation submit was not confirmed by the page.');
+      error.code = 'SPORTS_SUBMIT_UNVERIFIED';
+      error.details = { text: resultText.slice(0, 300), url: page.url() };
+      throw error;
+    }
     return buildSportsReserveConfirmPayload(slots, options.slot, {
       status: 'pending-payment',
       payment: {
@@ -335,6 +349,10 @@ function throwSportsError(code, message) {
   throw error;
 }
 
+function isSubmitConfirmed(text, url) {
+  const value = `${text ?? ''} ${url ?? ''}`;
+  return /预约成功|提交成功|待支付|支付|订单|pay/i.test(value);
+}
 function paymentUrlOrNull(value) {
   return String(value).includes('/qljfwapp/sys/lwSzuCgyy/') ? null : value;
 }
