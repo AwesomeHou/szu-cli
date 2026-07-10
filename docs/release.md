@@ -73,11 +73,12 @@ szu-cli skill install --target codex --json
 
 `skills/szu-campus` 单独上线 SkillHub 和 ClawHub 时，按正式 skill 发布，版本号使用 `0.2.0`，不带 alpha/beta 后缀。
 
-SkillHub CLI 会从 `SKILL.md` frontmatter 读取 `slug`、`version`、`displayName`、`summary`、`description`、`tags`、`license` 和 `homepage`，所以上架介绍应在 `SKILL.md` 中保持中文：
+仓库中的 `SKILL.md` 保持 Codex 标准 frontmatter。发布前生成临时 SkillHub 包，将市场元数据注入临时副本：
 
 ```bash
-skillhub publish skills/szu-campus --dry-run --json
-skillhub publish skills/szu-campus --json
+npm run skill:skillhub:prepare
+skillhub publish scratch/skillhub-szu-campus --dry-run --json
+skillhub publish scratch/skillhub-szu-campus --json
 ```
 
 ClawHub CLI 发布 skill 时展示名来自 `--name` 或目录名。发布时显式传中文展示名，并用 `--topics` 补充中文主题：

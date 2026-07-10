@@ -1,8 +1,8 @@
-# Campus CLI Examples
+# 校园 CLI 示例
 
-Use this when the user describes a task in natural language and you need concrete command examples. For module-level routing, read `commands.md` first.
+用户以自然语言描述任务、需要具体命令示例时读取本文件。模块级路由先读取 `commands.md`。
 
-## Natural Language To CLI
+## 自然语言到 CLI
 
 | 用户自然语言 | 推荐命令 | 说明 |
 |---|---|---|

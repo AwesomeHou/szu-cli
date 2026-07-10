@@ -1,83 +1,79 @@
 ---
 name: szu-campus
-slug: szu-campus
-displayName: 深圳大学校园事务 CLI
-summary: 面向深圳大学校园事务的 agent skill，指导 agent 安全调用本地 szu-cli 完成登录检查、公文通、课表、成绩、体育场馆、图书馆和学术数据库等查询。
-description: 用于通过本地 szu-cli 操作深圳大学校园事务。覆盖 CLI 安装、登录态检查、只读校园查询、安全边界、学术数据库访问、体育预约 dry-run/confirm 规则和 JSON 错误处理。
-tags: [深圳大学, 校园事务, CLI, agent, szu-cli]
+description: 当用户需要通过本地 szu-cli 查询或操作深圳大学校园事务时使用，包括登录检查、公文通、我的课表、全校课表、成绩、绩点排名、培养方案、学业完成、思政学分、创新讲座、宿舍电费、体育场馆预约、图书馆馆藏、知网和万方检索。指导 agent 使用 JSON 输出、安全处理隐私，并对预约和取消执行 dry-run/confirm 规则。
 license: MIT
-version: 0.2.0
-compatible_cli: ">=0.2.0-beta.1"
+metadata:
+  compatible_cli: ">=0.2.0-beta.1"
 ---
 
-# SZU Campus CLI Skill
+# 深圳大学校园事务 CLI Skill
 
-Use the local `szu-cli` CLI as the source of truth. Keep this skill as operating guidance only; do not implement campus scraping, browser automation, or campus business logic here.
+以本地 `szu-cli` 为唯一事实来源。本 skill 只提供调用指引，不在此实现校园网站抓取、浏览器自动化或业务逻辑。
 
-## First Steps
+## 开始前
 
-Check local readiness before campus queries:
+执行校园查询前，先检查本地环境：
 
 ```bash
 node --version
 szu-cli --version
 ```
 
-`szu-cli` requires Node.js 20 or newer. If Node.js is missing or too old, tell the user to install or upgrade Node.js first.
+`szu-cli` 要求 Node.js 20 或更高版本。若 Node.js 缺失或版本过低，先提示用户安装或升级。
 
-If `szu-cli` is missing, ask before changing the user's environment, then have the user run:
+若未安装 `szu-cli`，变更用户环境前先征得同意，再让用户执行：
 
 ```bash
 npm install -g szu-cli@beta
 ```
 
-Verify the CLI after installation:
+安装后验证 CLI：
 
 ```bash
 szu-cli doctor --json
 szu-cli auth status --json
 ```
 
-If the user is using a Codex environment and needs the bundled skill installed from the npm package, tell them to run:
+用户在 Codex 环境中且需要从 npm 包安装附带 skill 时，执行：
 
 ```bash
 szu-cli skill install --target codex --json
 ```
 
-Do not install the CLI silently. If login is required, ask the user to run:
+不要静默安装 CLI。需要登录时，让用户执行：
 
 ```bash
 szu-cli auth login
 ```
 
-The user should complete login in the browser window opened by the CLI.
+用户应在 CLI 打开的浏览器窗口中完成登录。
 
-## Workflow
+## 工作流
 
-1. Map the user's request to the smallest supported read-only command.
-2. Run the command with `--json`; add `--headed` only for commands that require a visible browser.
-3. If `ok: false`, branch on `error.code` with `references/errors.md`.
-4. If `ok: true`, answer from returned fields only and include the minimum private data needed.
+1. 将用户请求映射到最小可用的只读命令。
+2. 使用 `--json` 执行；仅在需要可视浏览器时添加 `--headed`。
+3. `ok: false` 时，按 `references/errors.md` 中的 `error.code` 处理。
+4. `ok: true` 时，只基于返回字段作答，并仅保留必要的隐私数据。
 
-## Operating Rules
+## 操作规则
 
-- Use `--json` for agent workflows and parse JSON, not stdout prose.
-- Prefer read-only commands. Require explicit user confirmation before any state-changing action.
-- For sports reservations, use `sports bookings`, `sports slots`, `sports reserve --dry-run`, or `sports cancel --dry-run` first; do not run `sports reserve --confirm`, `sports cancel --confirm`, payment, or repeated attempts unless the user explicitly asks for one exact target.
-- Do not ask for passwords, cookies, tokens, or browser profile files.
-- Do not bypass authentication, CAPTCHA, WebVPN restrictions, rate limits, download controls, or access control.
-- Do not loop retries aggressively. Stop on `RATE_LIMITED`; handle login and network errors once.
-- Treat grades, GPA, ranking, identity fields, and study records as private; echo only what the user needs.
-- Requires `szu-cli >= 0.2.0-beta.1`.
+- Agent 工作流使用并解析 `--json`，不要依赖 stdout 文案。
+- 优先只读命令。任何会改变状态的操作都需要用户明确确认。
+- 体育预约先使用 `sports bookings`、`sports slots`、`sports reserve --dry-run` 或 `sports cancel --dry-run`；除非用户明确指定唯一目标，否则不要运行 `sports reserve --confirm`、`sports cancel --confirm`、支付或重复尝试。
+- 不要索取密码、Cookie、令牌或浏览器 profile 文件。
+- 不要绕过认证、验证码、WebVPN 限制、限流、下载控制或访问控制。
+- 不要激进重试。遇到 `RATE_LIMITED` 立即停止；登录和网络错误各处理一次。
+- 成绩、绩点、排名、身份字段和学习记录均为隐私；只回显用户所需内容。
+- 要求 `szu-cli >= 0.2.0-beta.1`。
 
-## Load References
+## 按需读取参考文件
 
-Read only the reference needed for the task:
+仅读取当前任务需要的文件：
 
-- `references/commands.md`: module-level routing; use it to decide which command family fits the user request.
-- `references/examples.md`: natural-language-to-CLI examples; use it when the user asks in ordinary language or when command shape is unclear.
-- `references/academic-databases.md`: CNKI and Wanfang metadata search, citation export, item lookup, and single visible-button downloads.
-- `references/errors.md`: structured error handling, retry limits, and follow-up commands.
-- `references/privacy-safety.md`: password, cookie, profile, download, private-data, and state-changing boundaries.
+- `references/commands.md`：模块级路由，用于确定请求属于哪个命令域。
+- `references/examples.md`：自然语言到 CLI 的示例；用户用日常语言提问或命令形式不明确时读取。
+- `references/academic-databases.md`：知网、万方的元数据检索、引用导出、条目详情和单篇可见按钮下载规则。
+- `references/errors.md`：结构化错误、重试限制与后续命令。
+- `references/privacy-safety.md`：密码、Cookie、profile、下载、隐私数据和状态变更边界。
 
-When details conflict, trust the installed `szu-cli` behavior and `docs/cli-contract.md` in the project that shipped the CLI.
+信息冲突时，以已安装 `szu-cli` 的实际行为和随 CLI 发布的 `docs/cli-contract.md` 为准。

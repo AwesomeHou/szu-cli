@@ -1,30 +1,31 @@
-# Privacy And Safety
+# 隐私与安全
 
-This skill handles user-account campus data. Prefer the least data that answers the task.
+本 skill 会处理用户账号中的校园数据。只读取和展示足以回答当前问题的数据。
 
-## Credentials And Session State
+## 凭据与登录态
 
-- Do not ask for the user's password.
-- Do not request cookies, tokens, browser profile files, traces, screenshots, or HAR files.
-- Use the persistent browser profile through `szu-cli`; do not manage login state in the skill.
+- 不要索取用户密码。
+- 不要索取 Cookie、令牌、浏览器 profile、trace、截图或 HAR 文件。
+- 只通过 `szu-cli` 使用持久化浏览器 profile；不要在 skill 中自行管理登录态。
 
-## Private Data
+## 隐私数据
 
-- Treat grades, GPA, professional ranking, student identity, completion status, lecture progress, sports reservations, and OPAC history as private.
-- Do not expose student name, student number, internal IDs, or raw user profiles unless the user explicitly asks and the CLI returns them.
-- Summarize only the fields needed for the user's task.
-- Avoid pasting complete records when a count, status, remaining value, or filtered subset answers the question.
+- 将成绩、绩点、专业排名、学生身份、学业完成情况、讲座进度、体育预约和 OPAC 历史记录视为隐私。
+- 除非用户明确要求且 CLI 已返回，否则不要展示姓名、学号、内部 ID 或原始用户资料。
+- 只概述当前任务需要的字段。
+- 数量、状态、剩余值或筛选后的子集足够回答时，不要粘贴完整记录。
 
-## Downloads
+## 下载
 
-- Do not batch download academic database PDFs, CAJ files, original full text, or notice attachments.
-- Do not construct hidden direct links or bypass provider controls.
-- Use only supported CLI download commands for a single user-requested item or attachment.
-- Keep downloaded files in a user-requested directory; do not move them into Git-tracked docs unless asked.
+- 不要批量下载学术数据库 PDF、CAJ、原文或公文通附件。
+- 不要构造隐藏直链或绕过服务商控制。
+- 仅使用 CLI 已支持的下载命令，下载用户明确指定的单篇文献或单个附件。
+- 文件保存到用户指定目录；除非用户要求，不要移动到 Git 跟踪目录。
 
-## Actions
+## 状态变更
 
-- Prefer read-only commands.
-- Do not submit state-changing campus actions unless the user explicitly confirms.
-- Any state-changing command must support `--dry-run`; use it first.
-- For `sports reserve` and `sports cancel`, do not run `--confirm` unless the user explicitly asks for one exact reservation or order. Do not cancel payments, pay automatically, or retry repeatedly.
+- 优先只读命令。
+- 未获得用户明确确认时，不要提交任何会改变校园系统状态的操作。
+- 状态变更命令必须先使用 `--dry-run`。
+- 对 `sports reserve` 和 `sports cancel`，只有用户明确指定唯一预约或订单后才能运行 `--confirm`。
+- 不要支付、取消支付或重复提交预约/取消操作。
