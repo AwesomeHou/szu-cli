@@ -34,12 +34,6 @@ szu-cli doctor --json
 szu-cli auth status --json
 ```
 
-用户在 Codex 环境中且需要从 npm 包安装附带 skill 时，执行：
-
-```bash
-szu-cli skill install --target codex --json
-```
-
 不要静默安装 CLI。需要登录时，让用户执行：
 
 ```bash
