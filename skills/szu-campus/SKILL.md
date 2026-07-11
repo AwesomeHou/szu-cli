@@ -3,7 +3,7 @@ name: szu-campus
 description: 当用户需要通过本地 szu-cli 查询或操作深圳大学校园事务时使用，包括登录检查、公文通、我的课表、全校课表、成绩、绩点排名、培养方案、学业完成、思政学分、创新讲座、宿舍电费、体育场馆预约、图书馆馆藏、知网和万方检索。指导 agent 使用 JSON 输出、安全处理隐私，并对预约和取消执行 dry-run/confirm 规则。
 license: MIT
 metadata:
-  compatible_cli: ">=0.2.0-beta.1"
+  compatible_cli: ">=0.2.0"
 ---
 
 # 深圳大学校园事务 CLI Skill
@@ -24,7 +24,7 @@ szu-cli --version
 若未安装 `szu-cli`，变更用户环境前先征得同意，再让用户执行：
 
 ```bash
-npm install -g szu-cli@beta
+npm install -g szu-cli
 ```
 
 安装后验证 CLI：
@@ -59,12 +59,12 @@ szu-cli auth login
 
 - Agent 工作流使用并解析 `--json`，不要依赖 stdout 文案。
 - 优先只读命令。任何会改变状态的操作都需要用户明确确认。
-- 体育预约先使用 `sports bookings`、`sports slots`、`sports reserve --dry-run` 或 `sports cancel --dry-run`；除非用户明确指定唯一目标，否则不要运行 `sports reserve --confirm`、`sports cancel --confirm`、支付或重复尝试。
+- 体育预约先使用 `sports bookings`、`sports slots`、`sports reserve --dry-run` 或 `sports cancel --dry-run`；预约必须用 `--field` 指定唯一场地。除非用户明确指定唯一目标，否则不要运行 `sports reserve --confirm`、`sports cancel --confirm`、支付或重复尝试。
 - 不要索取密码、Cookie、令牌或浏览器 profile 文件。
 - 不要绕过认证、验证码、WebVPN 限制、限流、下载控制或访问控制。
 - 不要激进重试。遇到 `RATE_LIMITED` 立即停止；登录和网络错误各处理一次。
 - 成绩、绩点、排名、身份字段和学习记录均为隐私；只回显用户所需内容。
-- 要求 `szu-cli >= 0.2.0-beta.1`。
+- 要求 `szu-cli >= 0.2.0`。
 
 ## 按需读取参考文件
 

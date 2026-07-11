@@ -21,6 +21,7 @@ const snapshot = {
     { label: '19:00-20:00', place: '运动广场西馆一楼健身房', remaining: 0 },
     { label: '20:00-21:00', place: '运动广场西馆一楼健身房', remaining: 3 }
   ],
+  fields: [{ name: '一楼健身房', label: '一楼健身房(109/120)', remaining: 109, capacity: 120 }],
   bookings: [
     { orderNo: '202607091405161043', timeRange: '2026-07-09 20:00~2026-07-09 21:00', bookedAt: '2026-07-09 14:05:16', campus: '粤海校区', venue: '运动广场西馆一楼健身房', field: '一楼健身房', project: '一楼重量型健身', status: '取消预约', orderType: '2.0', note: '未支付取消预约，预约作废', actions: ['详情'] },
     { orderNo: '202607090035540373', timeRange: '2026-07-09 09:00~2026-07-09 10:00', bookedAt: '2026-07-09 00:35:54', campus: '粤海校区', venue: '运动广场西馆一楼健身房', field: '一楼健身房', project: '一楼重量型健身', status: '已完成', orderType: '2.0', note: '已入场', actions: ['详情'] },
@@ -178,6 +179,8 @@ test('sports reserve dry-run does not submit', () => {
     '2026-07-08',
     '--slot',
     '20:00-21:00',
+    '--field',
+    '一楼健身房',
     '--dry-run',
     '--json'
   ]);
@@ -187,9 +190,10 @@ test('sports reserve dry-run does not submit', () => {
   assert.equal(body.data.submitted, false);
   assert.equal(body.data.requiresConfirmation, true);
   assert.equal(body.data.selected.label, '20:00-21:00');
+  assert.equal(body.data.field.name, '一楼健身房');
 });
 
-test('sports reserve confirm is covered only by mock backend', () => {
+test('sports reserve confirm validates the explicit field in mock backend', () => {
   const result = runSports([
     'sports',
     'reserve',
@@ -201,6 +205,8 @@ test('sports reserve confirm is covered only by mock backend', () => {
     '2026-07-08',
     '--slot',
     '20:00-21:00',
+    '--field',
+    '一楼健身房',
     '--confirm',
     '--json'
   ]);
@@ -209,6 +215,7 @@ test('sports reserve confirm is covered only by mock backend', () => {
   const body = JSON.parse(result.stdout);
   assert.equal(body.data.submitted, true);
   assert.equal(body.data.payment.required, true);
+  assert.equal(body.data.field.name, '一楼健身房');
 });
 
 test('sports cancel confirm is covered only by mock backend', () => {
@@ -225,6 +232,20 @@ test('sports cancel confirm is covered only by mock backend', () => {
   const body = JSON.parse(result.stdout);
   assert.equal(body.data.cancelled, true);
   assert.equal(body.data.orderNo, '202607091405161043');
+});
+
+test('sports cancel dry-run rejects an unknown order', () => {
+  const result = runSports([
+    'sports',
+    'cancel',
+    '--order',
+    'missing-order',
+    '--dry-run',
+    '--json'
+  ]);
+
+  assert.equal(result.status, 35);
+  assert.equal(JSON.parse(result.stdout).error.code, 'SPORTS_BOOKING_NOT_FOUND');
 });
 
 test('sports cancel requires dry-run or confirm', () => {

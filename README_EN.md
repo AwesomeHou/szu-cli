@@ -13,10 +13,10 @@ The goal is to turn common campus web workflows into stable CLI commands with st
 
 Requires Node.js 20 or newer.
 
-Install the beta package:
+Install the stable package:
 
 ```bash
-npm install -g szu-cli@beta
+npm install -g szu-cli
 ```
 
 Install the bundled Codex skill explicitly:
@@ -127,7 +127,7 @@ szu-cli sports bookings --json
 szu-cli sports campuses --json
 szu-cli sports venues --campus 粤海校区 --json
 szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --json
-szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --dry-run --json
+szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --field 一楼健身房 --dry-run --json
 szu-cli sports cancel --order <orderNo> --dry-run --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
@@ -197,7 +197,7 @@ npm run szu-cli -- lecture progress --json
 npm run szu-cli -- sports campuses --json
 npm run szu-cli -- sports venues --campus 粤海校区 --json
 npm run szu-cli -- sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --json
-npm run szu-cli -- sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --dry-run --json
+npm run szu-cli -- sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --field 一楼健身房 --dry-run --json
 npm run szu-cli -- electricity status --json
 npm run szu-cli -- electricity buildings --json
 npm run szu-cli -- electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json

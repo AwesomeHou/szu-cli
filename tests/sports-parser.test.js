@@ -73,12 +73,13 @@ test('sports reserve dry-run does not submit and requires confirmation', () => {
     date: '2026-07-08',
     sourceUrl: 'https://example.test/'
   });
-  const payload = buildSportsReserveDryRunPayload(slots, '20:00-21:00');
+  const payload = buildSportsReserveDryRunPayload(slots, '20:00-21:00', '一楼健身房');
 
   assert.equal(payload.wouldSubmit, true);
   assert.equal(payload.requiresConfirmation, true);
   assert.equal(payload.submitted, false);
   assert.equal(payload.selected.label, '20:00-21:00');
+  assert.equal(payload.field.name, '一楼健身房');
 });
 
 test('sports reserve dry-run accepts a slot time without status suffix', () => {
@@ -94,7 +95,7 @@ test('sports reserve dry-run accepts a slot time without status suffix', () => {
     venue: '一楼重量型健身',
     date: '2026-07-08'
   });
-  const payload = buildSportsReserveDryRunPayload(slots, '20:00-21:00');
+  const payload = buildSportsReserveDryRunPayload(slots, '20:00-21:00', '一楼健身房');
 
   assert.equal(payload.selected.label, '20:00-21:00(可预约)');
 });

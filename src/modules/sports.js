@@ -107,12 +107,14 @@ export async function reserveSportsSlot(options = {}) {
   if (!options.dryRun && !options.confirm) {
     throwSportsError('SPORTS_CONFIRM_REQUIRED', 'Use --dry-run to preview or --confirm to submit a sports reservation.');
   }
+  requireOption(options.field, '--field');
   const slots = await getSportsSlots(options);
   if (options.dryRun) {
-    return buildSportsReserveDryRunPayload(slots, options.slot);
+    return buildSportsReserveDryRunPayload(slots, options.slot, options.field);
   }
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
-    return buildSportsReserveConfirmPayload(slots, options.slot);
+    resolveSportsField(loadMockSports(options).snapshot.fields ?? [], options.field);
+    return buildSportsReserveConfirmPayload(slots, options.slot, options.field);
   }
   return submitSportsReservation(options, slots);
 }
@@ -124,12 +126,16 @@ export async function cancelSportsBooking(options = {}) {
     throwSportsError('SPORTS_CONFIRM_REQUIRED', 'Use --dry-run to preview or --confirm to cancel a sports reservation.');
   }
   if (options.dryRun || process.env.SZU_BROWSER_BACKEND === 'mock') {
+    const bookings = await getSportsBookings({ ...options, limit: Number.MAX_SAFE_INTEGER });
+    if (!bookings.items.some((item) => item.orderNo === options.orderNo)) {
+      throwSportsError('SPORTS_BOOKING_NOT_FOUND', `Sports booking not found: ${options.orderNo}.`);
+    }
     return {
       cancelled: Boolean(options.confirm),
       wouldCancel: Boolean(options.dryRun),
       requiresConfirmation: Boolean(options.dryRun),
       orderNo: options.orderNo,
-      sourceUrl: SPORTS_URL
+      sourceUrl: bookings.sourceUrl
     };
   }
   const profilePath = getProfilePath();
@@ -142,26 +148,22 @@ export async function cancelSportsBooking(options = {}) {
     const page = context.pages()[0] ?? await context.newPage();
     await page.goto(options.url ?? SPORTS_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(1500);
-    await clickText(page, '我的预约');
+    await clickRequiredText(page, '我的预约', 'bookings navigation');
     await page.waitForTimeout(1500);
     const text = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
     assertSportsAccess(classifySportsPage({ title: await page.title(), text, status: null }), { title: await page.title(), text });
     if (!text.includes(options.orderNo)) {
       throwSportsError('SPORTS_BOOKING_NOT_FOUND', `Sports booking not found: ${options.orderNo}.`);
     }
-    const row = page.getByText(options.orderNo).first().locator('xpath=ancestor::*[self::tr or self::li or self::div][contains(., "取消预约")][1]');
-    const scopedCancel = row.getByText('取消预约', { exact: true }).first();
-    const cancel = await scopedCancel.count().catch(() => 0) ? scopedCancel : page.getByText('取消预约', { exact: true }).first();
-    if (!(await cancel.count().catch(() => 0))) {
-      throwPageChanged('cancel button');
-    }
+    const cancel = await findSportsCancelButton(page, options.orderNo);
     await cancel.click({ timeout: 3000 });
     await page.waitForTimeout(500);
-    await clickDialogPrimary(page);
+    if (!(await clickDialogPrimary(page))) {
+      throwPageChanged('cancel confirmation');
+    }
     await page.waitForTimeout(1500);
     const afterText = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
-    const booking = parseSportsBookingsFromText(afterText).find((item) => item.orderNo === options.orderNo);
-    const cancelled = !booking || /取消预约|预约作废|已取消|取消成功/.test(String(booking.status ?? '') + ' ' + String(booking.note ?? ''));
+    const cancelled = isSportsCancellationConfirmed(afterText, options.orderNo);
     if (!cancelled) {
       const error = new Error('Sports cancellation was not confirmed by the page.');
       error.code = 'SPORTS_CANCEL_UNVERIFIED';
@@ -178,7 +180,7 @@ export async function cancelSportsBooking(options = {}) {
 }
 
 async function submitSportsReservation(options, slots) {
-  const dryRun = buildSportsReserveDryRunPayload(slots, options.slot);
+  const dryRun = buildSportsReserveDryRunPayload(slots, options.slot, options.field);
   const profilePath = getProfilePath();
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
@@ -189,14 +191,11 @@ async function submitSportsReservation(options, slots) {
     const page = context.pages()[0] ?? await context.newPage();
     await page.goto(options.url ?? SPORTS_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await settleSportsPage(page, options);
-    await clickText(page, dryRun.selected.label);
+    await clickRequiredText(page, dryRun.selected.label, 'slot');
     await page.waitForTimeout(1000);
     const afterSlotText = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
-    const field = parseSportsSnapshotFromText(afterSlotText).fields[0];
-    if (!field) {
-      throwSportsError('SPORTS_SLOT_UNAVAILABLE', 'No selectable sports field appeared after selecting this slot.');
-    }
-    await clickText(page, field.label);
+    const field = resolveSportsField(parseSportsSnapshotFromText(afterSlotText).fields, options.field);
+    await clickRequiredText(page, field.label, 'field');
     await page.waitForTimeout(500);
     const submit = page.getByText('提交预约', { exact: true }).first();
     if (!(await submit.count().catch(() => 0))) {
@@ -205,13 +204,13 @@ async function submitSportsReservation(options, slots) {
     await submit.click({ timeout: 3000 });
     await page.waitForTimeout(2000);
     const resultText = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
-    if (!isSubmitConfirmed(resultText, page.url())) {
+    if (!isSportsSubmitConfirmed(resultText)) {
       const error = new Error('Sports reservation submit was not confirmed by the page.');
       error.code = 'SPORTS_SUBMIT_UNVERIFIED';
       error.details = { text: resultText.slice(0, 300), url: page.url() };
       throw error;
     }
-    return buildSportsReserveConfirmPayload(slots, options.slot, {
+    return buildSportsReserveConfirmPayload(slots, options.slot, options.field, {
       status: 'pending-payment',
       payment: {
         required: true,
@@ -307,15 +306,15 @@ async function loadSportsPage(options) {
 async function settleSportsPage(page, options) {
   await page.waitForTimeout(1500);
   if (options.campus) {
-    await clickText(page, options.campus);
+    await clickRequiredText(page, options.campus, 'campus');
     await page.waitForTimeout(1000);
   }
   if (options.venue) {
-    await clickText(page, options.venue);
+    await clickRequiredText(page, options.venue, 'venue');
     await page.waitForTimeout(1000);
   }
   if (options.date) {
-    await clickText(page, options.date);
+    await clickRequiredText(page, options.date, 'date');
     await page.waitForTimeout(1000);
   }
 }
@@ -344,10 +343,9 @@ async function clickFirstVisibleText(page, labels) {
   }
   return false;
 }
-async function clickText(page, text) {
-  const locator = page.getByText(text, { exact: true }).first();
-  if (await locator.count().catch(() => 0)) {
-    await locator.click({ timeout: 3000 }).catch(() => {});
+async function clickRequiredText(page, text, subject) {
+  if (!(await clickFirstVisibleText(page, [text]))) {
+    throwPageChanged(subject);
   }
 }
 
@@ -381,7 +379,7 @@ async function loadSportsSlotsByDate(options) {
     const baseSnapshot = parseSportsSnapshotFromText(firstText);
     const slotsByDate = {};
     for (const date of baseSnapshot.dates) {
-      await clickText(page, date);
+      await clickRequiredText(page, date, 'date');
       await page.waitForTimeout(1000);
       const dateText = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
       slotsByDate[date] = parseSportsSnapshotFromText(dateText).slots;
@@ -484,9 +482,36 @@ function throwSportsError(code, message) {
   throw error;
 }
 
-function isSubmitConfirmed(text, url) {
+export function isSportsSubmitConfirmed(text, url) {
   const value = `${text ?? ''} ${url ?? ''}`;
-  return /预约成功|提交成功|待支付|支付|订单|pay/i.test(value);
+  return /预约成功|提交成功|待支付/.test(value);
+}
+
+export function isSportsCancellationConfirmed(text, orderNo) {
+  const value = String(text ?? '');
+  const booking = parseSportsBookingsFromText(value).find((item) => item.orderNo === orderNo);
+  return /取消成功/.test(value) || Boolean(booking && /取消预约|预约作废|已取消/.test(`${booking.status ?? ''} ${booking.note ?? ''}`));
+}
+
+export function resolveSportsField(fields, requestedField) {
+  const field = fields.find((item) => item.name === requestedField || item.label === requestedField);
+  if (!field) {
+    throwSportsError('SPORTS_FIELD_NOT_FOUND', `Sports field not found: ${requestedField}.`);
+  }
+  if (field.remaining === 0) {
+    throwSportsError('SPORTS_FIELD_UNAVAILABLE', `Sports field is unavailable: ${requestedField}.`);
+  }
+  return field;
+}
+
+export async function findSportsCancelButton(page, orderNo) {
+  const row = page.getByText(orderNo, { exact: true }).first()
+    .locator('xpath=ancestor::*[self::tr or self::li or self::div][contains(., "取消预约")][1]');
+  const cancel = row.getByText('取消预约', { exact: true }).first();
+  if (!(await cancel.count().catch(() => 0))) {
+    throwPageChanged('cancel button for the requested order');
+  }
+  return cancel;
 }
 
 function sanitizeSportsSourceUrl(value) {

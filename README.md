@@ -13,10 +13,10 @@
 
 要求 Node.js 20 或更高版本。
 
-安装 beta 版，并把随包附带的 Codex skill 安装到 Codex：
+安装正式版，并把随包附带的 Codex skill 安装到 Codex：
 
 ```bash
-npm install -g szu-cli@beta && szu-cli skill install --target codex --json
+npm install -g szu-cli && szu-cli skill install --target codex --json
 ```
 
 如果已经安装过 `szu-cli`，也可以只安装 skill：
@@ -34,8 +34,8 @@ szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
 安装到 WorkBuddy 或 Claude Code：
 
 ```bash
-npm install -g szu-cli@beta && szu-cli skill install --target workbuddy --json
-npm install -g szu-cli@beta && szu-cli skill install --target claudecode --json
+npm install -g szu-cli && szu-cli skill install --target workbuddy --json
+npm install -g szu-cli && szu-cli skill install --target claudecode --json
 ```
 
 如果已经安装过 `szu-cli`，也可以只安装对应 skill：
@@ -85,7 +85,7 @@ szu-cli sports bookings --json
 szu-cli sports campuses --json
 szu-cli sports venues --campus 粤海校区 --json
 szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --json
-szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --dry-run --json
+szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --field 一楼健身房 --dry-run --json
 szu-cli sports cancel --order <orderNo> --dry-run --json
 szu-cli electricity buildings --json
 szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json

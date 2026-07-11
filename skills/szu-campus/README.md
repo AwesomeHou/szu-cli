@@ -7,7 +7,7 @@
 推荐用一行命令同时安装 `szu-cli` 和本 skill：
 
 ```bash
-npm install -g szu-cli@beta && szu-cli skill install --target codex --json
+npm install -g szu-cli && szu-cli skill install --target codex --json
 ```
 
 如果已经安装过 `szu-cli`，只安装或更新 skill：

@@ -4,16 +4,16 @@
 
 ## 安装 CLI
 
-安装 beta 版本：
+安装正式版本：
 
 ```bash
-npm install -g szu-cli@beta
+npm install -g szu-cli
 ```
 
 安装本地 tarball：
 
 ```bash
-npm install -g ./szu-cli-0.2.0-beta.1.tgz
+npm install -g ./szu-cli-0.2.0.tgz
 ```
 
 验证 CLI：

@@ -12,7 +12,7 @@
 | “用万方搜王老师 2024 年的论文” | `szu-cli wanfang search --author 王老师 --year 2024 --headed --json` | 字段检索走已支持参数。 |
 | “帮我查一本叫交通设计的馆藏书” | `szu-cli library search 交通设计 --json` | 详情再用返回的 id 调 `library item`。 |
 | “今晚八点粤海一楼重量健身能约吗” | `szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date <YYYY-MM-DD> --json` | 先查日期和时段，不把可预约当成已预约。 |
-| “帮我预览预约今晚 20:00 的健身房” | `szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date <YYYY-MM-DD> --slot 20:00-21:00 --dry-run --json` | 真实预约必须用户明确要求 `--confirm`。 |
+| “帮我预览预约今晚 20:00 的健身房” | `szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date <YYYY-MM-DD> --slot 20:00-21:00 --field 一楼健身房 --dry-run --json` | 真实预约必须用户明确要求 `--confirm`。 |
 | “取消刚才那条健身房预约” | `szu-cli sports bookings --json`，再 `szu-cli sports cancel --order <orderNo> --dry-run --json` | 先确认订单号；真实取消必须用户明确要求 `--confirm`。 |
 | “我还差哪些学分，哪些课能补” | `szu-cli completion modules --json`，再 `szu-cli completion courses --module <moduleCode> --json` | 以模块为单位看已修和未修课程。 |
 | “查一下绩点和排名” | `szu-cli growth summary --json` | 不要从成绩表自行重算。 |

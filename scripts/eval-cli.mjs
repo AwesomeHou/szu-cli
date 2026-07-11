@@ -95,6 +95,15 @@ const lectureClassroomsJson = JSON.stringify({
 });
 const lectureProgressJson = JSON.stringify({ offlineTimes: '1', onlineTimes: '3', sumOfflineTimes: 2, sumOnlineTimes: 5, studentId: '2023000000', name: '测试用户' });
 
+const sportsJson = JSON.stringify({
+  campuses: ['粤海校区'],
+  venues: [{ campus: '粤海校区', name: '一楼重量型健身', category: '健身', bookable: true }],
+  dates: ['2026-07-08'],
+  slots: [{ label: '20:00-21:00', place: '运动广场西馆一楼健身房', remaining: 3 }],
+  fields: [{ name: '一楼健身房', label: '一楼健身房(109/120)', remaining: 109, capacity: 120 }],
+  bookings: [{ orderNo: '202607091405161043', field: '一楼健身房', status: '已预约', actions: ['取消预约'] }]
+});
+
 const cnkiJson = JSON.stringify({
   status: { available: true, authorized: true, institution: '深圳大学', requiresHeaded: true, sourceUrl: 'https://kns.cnki.net/kns8s/?classid=YSTT4HG0' },
   search: { keyword: '交通设计', total: 1, authorized: true, institution: '深圳大学', items: [{ index: 1, title: '城市道路交通拥堵溯源分析方法：研究进展与展望', authors: ['杨晓光', '杨彦青'], source: '公路交通科技', year: '2026', type: '期刊', url: 'https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&filename=GLJK202605002' }], sourceUrl: 'https://kns.cnki.net/kns8s/search?kw=交通设计' },
@@ -669,6 +678,14 @@ const cases = [
       outputExcludes('2023000000')
     ]
   },
+  { id: 'sports.status', layer: 'L0', args: ['sports', 'status', '--json'], env: sportsEnv(), checks: [statusIs(0), jsonPathIs('data.loggedIn', true)] },
+  { id: 'sports.campuses', layer: 'L0', args: ['sports', 'campuses', '--json'], env: sportsEnv(), checks: [statusIs(0), jsonPathIs('data.items.0.name', '粤海校区')] },
+  { id: 'sports.venues', layer: 'L0', args: ['sports', 'venues', '--campus', '粤海校区', '--json'], env: sportsEnv(), checks: [statusIs(0), jsonPathIs('data.items.0.name', '一楼重量型健身')] },
+  { id: 'sports.dates', layer: 'L0', args: ['sports', 'dates', '--campus', '粤海校区', '--venue', '一楼重量型健身', '--json'], env: sportsEnv(), checks: [statusIs(0), jsonPathIs('data.items.0.date', '2026-07-08')] },
+  { id: 'sports.slots', layer: 'L0', args: ['sports', 'slots', '--campus', '粤海校区', '--venue', '一楼重量型健身', '--date', '2026-07-08', '--json'], env: sportsEnv(), checks: [statusIs(0), jsonPathIs('data.items.0.selectable', true)] },
+  { id: 'sports.bookings', layer: 'L0', args: ['sports', 'bookings', '--json'], env: sportsEnv(), checks: [statusIs(0), jsonPathIs('data.items.0.orderNo', '202607091405161043')] },
+  { id: 'sports.reserve-dry-run', layer: 'L0', args: ['sports', 'reserve', '--campus', '粤海校区', '--venue', '一楼重量型健身', '--date', '2026-07-08', '--slot', '20:00-21:00', '--field', '一楼健身房', '--dry-run', '--json'], env: sportsEnv(), checks: [statusIs(0), jsonPathIs('data.field.name', '一楼健身房'), jsonPathIs('data.submitted', false)] },
+  { id: 'sports.cancel-dry-run', layer: 'L0', args: ['sports', 'cancel', '--order', '202607091405161043', '--dry-run', '--json'], env: sportsEnv(), checks: [statusIs(0), jsonPathIs('data.wouldCancel', true)] },
   {
     id: 'electricity.status',
     layer: 'L0',
@@ -1321,6 +1338,16 @@ function lectureEnv(extra = {}) {
     SZU_MOCK_LECTURE_PROGRESS_JSON: lectureProgressJson,
     SZU_MOCK_LECTURE_TITLE: '创新领航讲座',
     SZU_MOCK_LECTURE_TEXT: '公告 讲座报名 学习进度 查看报名信息',
+    ...extra
+  };
+}
+
+function sportsEnv(extra = {}) {
+  return {
+    ...baseMock,
+    SZU_MOCK_SPORTS_JSON: sportsJson,
+    SZU_MOCK_SPORTS_TITLE: '体育场馆预约',
+    SZU_MOCK_SPORTS_TEXT: '体育场馆预约 学生组（场馆预约） 我的预约 粤海校区',
     ...extra
   };
 }

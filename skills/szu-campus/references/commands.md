@@ -33,7 +33,7 @@ szu-cli auth status --json
 | 讲座详情或学习进度 | `lecture item <id> --json`；`lecture progress --json` | 暴露原始私人进度记录 |
 | 我的体育预约 | `sports bookings --json`；需多于 3 条时加 `--limit <n>` | 暴露无关预约历史 |
 | 体育场馆可用情况 | `sports campuses --json`；`sports venues --campus <name> --json`；`sports dates --campus <name> --venue <name> --json`；`sports slots --campus <name> --venue <name> --json` | 将时段可用视作预约成功 |
-| 体育预约或取消的预览 | `sports reserve ... --dry-run --json`；`sports cancel --order <orderNo> --dry-run --json` | 未获明确指令就运行 `--confirm`、支付或重复尝试 |
+| 体育预约或取消的预览 | `sports reserve ... --field <field> --dry-run --json`；`sports cancel --order <orderNo> --dry-run --json` | 缺少唯一场地/订单号，或未获明确指令就运行 `--confirm`、支付或重复尝试 |
 | 宿舍电费 | 楼栋不确定时用 `electricity buildings --json`，再 `electricity query --building <name> --room <room> --json` | 猜测楼栋/房间或尝试缴费 |
 | 图书馆馆藏 | `library search ... --json`；详情用 `library item <id|url> --json` | 将检索行当作馆藏册详情 |
 | 知网、万方或文献检索 | 阅读 `academic-databases.md` | 在元数据/引用工作前直接下载 |

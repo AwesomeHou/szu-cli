@@ -784,6 +784,7 @@ function parseSportsOptions(action, argv) {
     venue: null,
     date: null,
     slot: null,
+    field: null,
     dryRun: false,
     confirm: false,
     limit: 3
@@ -816,6 +817,11 @@ function parseSportsOptions(action, argv) {
     }
     if (arg === '--slot' && action === 'reserve') {
       options.slot = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--field' && action === 'reserve') {
+      options.field = requireValue(argv, i, arg);
       i += 1;
       continue;
     }
@@ -1548,6 +1554,8 @@ function handleKnownError(error, command) {
     SPORTS_VENUE_NOT_FOUND: 29,
     SPORTS_SLOT_NOT_FOUND: 32,
     SPORTS_SLOT_UNAVAILABLE: 33,
+    SPORTS_FIELD_NOT_FOUND: 37,
+    SPORTS_FIELD_UNAVAILABLE: 38,
     SPORTS_SUBMIT_UNVERIFIED: 34,
     SPORTS_BOOKING_NOT_FOUND: 35,
     SPORTS_CANCEL_UNVERIFIED: 36,

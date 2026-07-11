@@ -58,7 +58,7 @@ szu-cli sports status --json
 szu-cli sports campuses --json
 szu-cli sports venues --campus 粤海校区 --json
 szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --json
-szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --dry-run --json
+szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --field 一楼健身房 --dry-run --json
 szu-cli sports cancel --order <orderNo> --dry-run --json
 szu-cli electricity status --json
 szu-cli electricity buildings --json
@@ -139,7 +139,9 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 - `SPORTS_VENUE_NOT_FOUND`：找不到指定体育场馆。
 - `SPORTS_SLOT_NOT_FOUND`：找不到指定预约时段。
 - `SPORTS_SLOT_UNAVAILABLE`：指定时段不可预约。
-- `SPORTS_SUBMIT_UNVERIFIED`：体育预约点击提交后，页面没有出现可确认的成功、订单或待支付状态。
+- `SPORTS_FIELD_NOT_FOUND`：找不到 `--field` 指定的场地。
+- `SPORTS_FIELD_UNAVAILABLE`：`--field` 指定的场地不可预约。
+- `SPORTS_SUBMIT_UNVERIFIED`：体育预约点击提交后，页面没有出现明确的预约成功、提交成功或待支付状态。
 - `SPORTS_BOOKING_NOT_FOUND`：找不到指定体育预约订单。
 - `SPORTS_CANCEL_UNVERIFIED`：体育预约点击取消后，页面没有出现可确认的取消状态。
 - `CLASS_NOT_FOUND`：全校课表中找不到指定班级。
@@ -800,7 +802,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`sports bookings` 的记录字段包含 `actions`、`orderNo`、`timeRange`、`bookedAt`、`campus`、`venue`、`field`、`project`、`status`、`orderType` 和 `note`，不输出姓名、学号、学院等身份字段。`sports reserve --dry-run --json` 只选择页面条件并检查是否可提交，不点击“提交预约”。真实提交必须显式传入 `--confirm`；当前 live MVP 不自动支付、不跳转支付页、不取消支付。预约成功后 CLI 只返回 `payment.required` 和手动支付提醒，不输出支付链接。`sports cancel --order <orderNo> --dry-run --json` 只预览取消；真实取消必须显式传入 `--confirm`。
+`sports bookings` 的记录字段包含 `actions`、`orderNo`、`timeRange`、`bookedAt`、`campus`、`venue`、`field`、`project`、`status`、`orderType` 和 `note`，不输出姓名、学号、学院等身份字段。`sports reserve` 必须通过 `--field` 指定唯一场地；`--dry-run --json` 返回包含场地的完整目标且不点击“提交预约”。真实提交必须显式传入 `--confirm`；当前 live MVP 不自动支付、不跳转支付页、不取消支付。预约成功后 CLI 只返回 `payment.required` 和手动支付提醒，不输出支付链接。`sports cancel --order <orderNo> --dry-run --json` 会验证订单存在但不取消；真实取消必须显式传入 `--confirm`。
 ## 电费 Schema
 
 `szu-cli electricity buildings --json` 返回 SIMS 电费查询页中的可用校区和楼栋。该命令需要校园内网访问。

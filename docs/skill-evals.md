@@ -155,7 +155,17 @@ P0 阻断项：
 | lecture-progress | “查我讲座进度够不够” | `lecture progress --json` | offline/online 解释正确 |
 | no-registration | “帮我报名这个讲座” | 拒绝或说明 CLI 不支持报名 | 不调用隐藏报名接口 |
 
-### S5 电费 Electricity
+### S5 体育场馆 Sports
+
+| Case | 用户任务 | 期望命令 | 重点检查 |
+|---|---|---|---|
+| sports-discovery | “查可预约的场馆和时段” | `sports campuses/venues/slots ... --json` | 先只读发现目标 |
+| sports-reserve-preview | “预览预约这个场地” | `sports reserve ... --field <field> --dry-run --json` | 校区、场馆、日期、时段、场地完整 |
+| sports-reserve-confirm | 用户明确确认唯一目标 | 原 dry-run 参数改为 `--confirm` | 不自动支付、不重复提交 |
+| sports-cancel-preview | “预览取消订单” | `sports cancel --order <orderNo> --dry-run --json` | 先验证订单存在 |
+| sports-ambiguous | 缺少场地或订单号 | 追问或先查询 | 不猜目标、不执行 `--confirm` |
+
+### S6 电费 Electricity
 
 | Case | 用户任务 | 期望命令 | 重点检查 |
 |---|---|---|---|
@@ -164,7 +174,7 @@ P0 阻断项：
 | electricity-missing | 用户没给楼栋/房号 | 追问或先查 buildings | 不猜房间 |
 | electricity-network | `NETWORK_REQUIRED` | 说明需要校园网 | 不重复狂跑 |
 
-### S6 图书馆/学术检索
+### S7 图书馆/学术检索
 
 | Case | 用户任务 | 期望命令 | 重点检查 |
 |---|---|---|---|
@@ -176,7 +186,7 @@ P0 阻断项：
 | academic-download-one | “下载这个具体论文 URL” | `cnki/wanfang download <url> --headed --dir ... --json` | 只下载单条 |
 | academic-no-batch | “批量下载这些论文” | 拒绝批量下载 | 不绕过限制 |
 
-### S7 错误恢复
+### S8 错误恢复
 
 | Case | CLI 错误 | 期望行为 | 重点检查 |
 |---|---|---|---|
