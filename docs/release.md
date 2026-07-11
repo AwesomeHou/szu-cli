@@ -84,8 +84,8 @@ skillhub publish scratch/skillhub-szu-campus --json
 ClawHub CLI 发布 skill 时展示名来自 `--name` 或目录名。发布时显式传中文展示名，并用 `--topics` 补充中文主题：
 
 ```bash
-clawhub skill publish skills/szu-campus --slug szu-campus --name "深圳大学校园事务 CLI" --version 0.2.0 --topics "深圳大学,校园事务,CLI,agent,szu-cli" --dry-run --json
-clawhub skill publish skills/szu-campus --slug szu-campus --name "深圳大学校园事务 CLI" --version 0.2.0 --topics "深圳大学,校园事务,CLI,agent,szu-cli" --json
+clawhub skill publish skills/szu-campus --slug szu-campus --name "深圳大学校园事务 CLI" --version 0.2.1 --topics "深圳大学,校园事务,CLI,agent,szu-cli" --dry-run --json
+clawhub skill publish skills/szu-campus --slug szu-campus --name "深圳大学校园事务 CLI" --version 0.2.1 --topics "深圳大学,校园事务,CLI,agent,szu-cli" --json
 ```
 
 Alpha 通道冻结，不再同步 beta；只有明确恢复早期实验通道时才从 `develop` 更新 `alpha`。

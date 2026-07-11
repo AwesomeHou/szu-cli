@@ -1,6 +1,6 @@
 {
   "slug": "szu-campus",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "displayName": "深圳大学校园事务 CLI",
   "summary": "面向深圳大学校园事务的 agent skill，指导 agent 安全调用本地 szu-cli 完成校园查询与体育预约操作。",
   "tags": [
