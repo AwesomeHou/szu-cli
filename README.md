@@ -1,4 +1,4 @@
-# szu-cli CLI
+# SZI-CLI
 
 [![文档 中文](https://img.shields.io/badge/docs-%E4%B8%AD%E6%96%87-blue)](README.md)
 [![Docs English](https://img.shields.io/badge/docs-English-blue)](README_EN.md)
