@@ -13,36 +13,31 @@
 
 要求 Node.js 20 或更高版本。
 
-安装正式版，并把随包附带的 Codex skill 安装到 Codex：
+安装正式版，并把随包附带的 skill 安装到 Codex：
 
 ```bash
 npm install -g szu-cli && szu-cli skill install --target codex --json
 ```
 
-如果已经安装过 `szu-cli`，也可以只安装 skill：
-
-```bash
-szu-cli skill install --target codex --json
-```
-
-生成 AI IDE 便携 skill 目录：
-
-```bash
-szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
-```
-
-安装到 WorkBuddy 或 Claude Code：
+或者安装到 WorkBuddy 或 Claude Code：
 
 ```bash
 npm install -g szu-cli && szu-cli skill install --target workbuddy --json
 npm install -g szu-cli && szu-cli skill install --target claudecode --json
 ```
 
-如果已经安装过 `szu-cli`，也可以只安装对应 skill：
+如果已经安装过 `szu-cli`，也可以只安装 skill：
 
 ```bash
+szu-cli skill install --target codex --json
 szu-cli skill install --target workbuddy --json
 szu-cli skill install --target claudecode --json
+```
+
+生成 AI IDE 便携 skill 目录：
+
+```bash
+szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
 ```
 
 初始化浏览器登录态：
@@ -64,36 +59,19 @@ szu-cli auth status --json
 
 ## 当前能力
 
-```bash
-szu-cli doctor --json
-szu-cli auth status --json
-szu-cli notice list --limit 10 --json
-szu-cli notice search 奖学金 --json
-szu-cli notice view 577444 --json
-szu-cli course list --json
-szu-cli course today --json
-szu-cli grade list --json
-szu-cli growth summary --json
-szu-cli ideology summary --json
-szu-cli completion summary --json
-szu-cli completion modules --json
-szu-cli completion courses --module <moduleCode> --json
-szu-cli lecture list --json
-szu-cli lecture item <id> --json
-szu-cli lecture progress --json
-szu-cli sports bookings --json
-szu-cli sports campuses --json
-szu-cli sports venues --campus 粤海校区 --json
-szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --json
-szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --field 一楼健身房 --dry-run --json
-szu-cli sports cancel --order <orderNo> --dry-run --json
-szu-cli electricity buildings --json
-szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json
-szu-cli library search 交通设计 --json
-szu-cli library item 3706432 --json
-szu-cli cnki search 交通设计 --headed --json
-szu-cli wanfang search 交通设计 --headed --json
-```
+| 模块 | 实现的功能 | 示例命令 |
+|---|---|---|
+| 环境与认证 | 检查运行环境、浏览器后端和当前登录状态 | `szu-cli doctor --json`<br>`szu-cli auth status --json` |
+| 公文通 | 查询公告列表、搜索公告并读取正文和附件信息 | `szu-cli notice list --limit 10 --json`<br>`szu-cli notice search 奖学金 --json` |
+| 个人课表 | 查询本学期课表或当天课程 | `szu-cli course list --json`<br>`szu-cli course today --json` |
+| 全校课表与培养方案 | 查询班级课表、培养方案及课程模块 | `szu-cli timetable classes --limit 5 --json`<br>`szu-cli program list --limit 5 --json` |
+| 成绩与学业进度 | 查询成绩、GPA、思政学分和培养方案完成情况 | `szu-cli grade list --json`<br>`szu-cli completion summary --json` |
+| 创新领航讲座 | 查询可报名讲座、讲座详情和个人学习进度 | `szu-cli lecture list --json`<br>`szu-cli lecture progress --json` |
+| 体育场馆 | 查询场馆和可预约时段，预览预约或取消操作 | `szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --json`<br>`szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --field 一楼健身房 --dry-run --json` |
+| 宿舍电费 | 查询可用楼栋及指定房间的用电余额 | `szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json` |
+| 图书馆馆藏 | 搜索图书并查询馆藏位置、索书号和借阅状态 | `szu-cli library search 交通设计 --json`<br>`szu-cli library item 3706432 --json` |
+| 知网 | 在用户可见浏览器中检索论文元数据和详情 | `szu-cli cnki search 交通设计 --headed --json` |
+| 万方 | 在用户可见浏览器中检索论文元数据和详情 | `szu-cli wanfang search 交通设计 --headed --json` |
 
 更多命令请看英文版 [README](README_EN.md) 和 [CLI 契约](docs/cli-contract.md)。
 
