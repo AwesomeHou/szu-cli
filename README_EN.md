@@ -108,6 +108,13 @@ The skill only teaches agents when and how to call `szu-cli` safely. Login state
 - [Skill Integration](docs/skill-integration.md)
 - [Roadmap](docs/roadmap.md)
 
+## Contributing and Feedback
+
+Feature ideas, bug reports, and documentation improvements are welcome.
+
+- Use [GitHub Issues](https://github.com/AwesomeHou/szu-cli/issues) for bugs and proposals. Search existing issues first; bug reports should include the environment, reproduction command, expected result, and actual result. Do not attach accounts, cookies, or browser profiles.
+- For a pull request, fork the repository and create a focused branch from `develop`. Keep the change scoped, and update affected command documentation and the skill together.
+- Run `npm test` and `npm run docs:check` before pushing. Then open a [Pull Request](https://github.com/AwesomeHou/szu-cli/compare) with the change scope, verification result, and related issue.
 ## License
 
 MIT

@@ -108,6 +108,13 @@ skill 只负责告诉 agent 何时、如何安全调用 `szu-cli`。核心登录
 - [Skill 集成](docs/skill-integration.md)
 - [路线图](docs/roadmap.md)
 
+## 贡献与反馈
+
+欢迎提交功能建议、Bug 报告和文档改进。
+
+- 通过 [GitHub Issues](https://github.com/AwesomeHou/szu-cli/issues) 反馈问题或建议。提交前先搜索已有 issue；Bug 请说明运行环境、复现命令、预期结果和实际结果，注意不要附带账号、Cookie 或浏览器 profile。
+- 提交 PR 时，先 Fork 仓库并从 `develop` 创建主题分支；保持改动聚焦，同时更新受影响的命令文档和 skill。
+- 提交前运行 `npm test` 和 `npm run docs:check`，然后推送分支并通过 [创建 Pull Request](https://github.com/AwesomeHou/szu-cli/compare) 发起 PR。请在描述中写明改动范围、验证结果和关联 issue。
 ## 许可证
 
 MIT
