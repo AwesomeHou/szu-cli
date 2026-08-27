@@ -22,6 +22,7 @@ import {
   getLectureStatus
 } from './modules/lecture.js';
 import { getLibraryItem, getLibraryStatus, searchLibrary } from './modules/library.js';
+import { installGlobal } from './modules/install.js';
 import { errorEnvelope, successEnvelope, writeJson } from './modules/output.js';
 import { getProgramItem, getProgramList, getProgramStatus } from './modules/program.js';
 import { downloadNoticeAttachment, getNoticeDetail, getNoticeItems } from './modules/notice.js';
@@ -49,6 +50,20 @@ export async function run(argv) {
 
   const [domain, action] = argv;
   const json = argv.includes('--json');
+
+  if (domain === 'install') {
+    try {
+      parseInstallOptions(argv.slice(1));
+      const data = await installGlobal({
+        packageName: packageInfo.name,
+        packageVersion: packageInfo.version
+      });
+      writeJson(successEnvelope(data, { command: 'install' }));
+    } catch (error) {
+      handleKnownError(error, 'install');
+    }
+    return;
+  }
 
   if (domain === 'doctor') {
     const data = await getDoctorReport({ packageInfo });
@@ -624,6 +639,14 @@ function parseSkillOptions(action, argv) {
   }
 
   return options;
+}
+
+function parseInstallOptions(argv) {
+  for (const arg of argv) {
+    if (arg !== '--json') {
+      throw new Error(`Unknown option: ${arg}`);
+    }
+  }
 }
 
 function parseGradeOptions(argv) {

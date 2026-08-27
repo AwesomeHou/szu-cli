@@ -9,41 +9,57 @@
 
 它把常用校园网页能力整理成稳定命令和结构化 JSON 输出，同时复用本机持久化浏览器登录态，不保存账号密码。
 
-## 快速开始
+## 安装与快速开始
 
-要求 Node.js 20 或更高版本。
+要求 Node.js 20 或更高版本，并确保 `npm`/`npx` 可用。
 
-安装正式版，并把随包附带的 skill 安装到 Codex：
+### 快速开始（人类用户）
 
-```bash
-npm install -g szu-cli && szu-cli skill install --target codex --json
-```
-
-或者安装到 WorkBuddy 或 Claude Code：
+#### 从 npm 安装（推荐）
 
 ```bash
-npm install -g szu-cli && szu-cli skill install --target workbuddy --json
-npm install -g szu-cli && szu-cli skill install --target claudecode --json
+npx szu-cli@latest install
 ```
 
-如果已经安装过 `szu-cli`，也可以只安装 skill：
-
-```bash
-szu-cli skill install --target codex --json
-szu-cli skill install --target workbuddy --json
-szu-cli skill install --target claudecode --json
-```
-
-生成 AI IDE 便携 skill 目录：
-
-```bash
-szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
-```
+> 该命令会完成两件事：
+>
+> 1. 将 `szu-cli@latest` 安装到 npm 全局路径，使 `szu-cli` 命令可以直接使用。
+> 2. 调用 `npx skills add`，把 `szu-campus` skill 以全局方式安装到当前环境中可识别的主流 AI Agent。
+>
+> 支持的 Agent 及其项目级、全局 skill 目录请参阅 [Supported Agents](https://github.com/vercel-labs/skills/blob/main/README.md#supported-agents)，包括 Codex、Claude Code、Cursor 等。WorkBuddy 可以直接在技能商店搜索 `szu-campus` 安装 skill。
 
 初始化浏览器登录态：
 
 ```bash
 szu-cli auth login
+szu-cli auth status --json
+```
+
+### 快速开始（AI Agent）
+
+以下步骤面向正在协助用户操作的 AI Agent；登录步骤需要用户在浏览器中完成。
+
+第 1 步 — 安装：
+
+```bash
+npx szu-cli@latest install
+```
+
+第 2 步 — 检查运行环境：
+
+```bash
+szu-cli doctor --json
+```
+
+第 3 步 — 登录：
+
+```bash
+szu-cli auth login
+```
+
+第 4 步 — 验证登录态：
+
+```bash
 szu-cli auth status --json
 ```
 

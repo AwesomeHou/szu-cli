@@ -9,41 +9,57 @@
 
 It provides stable commands and structured JSON output for common campus workflows, reuses a local persistent browser login profile, and never stores account passwords.
 
-## Quick Start
+## Installation and Quick Start
 
-Requires Node.js 20 or newer.
+Requires Node.js 20 or newer, with `npm`/`npx` available.
 
-Install the stable package and its bundled skill for Codex:
+### Quick Start (Human Users)
 
-```bash
-npm install -g szu-cli && szu-cli skill install --target codex --json
-```
-
-Alternatively, install it for WorkBuddy or Claude Code:
+#### Install from npm (Recommended)
 
 ```bash
-npm install -g szu-cli && szu-cli skill install --target workbuddy --json
-npm install -g szu-cli && szu-cli skill install --target claudecode --json
+npx szu-cli@latest install
 ```
 
-If `szu-cli` is already installed, install only the skill:
+This command:
 
-```bash
-szu-cli skill install --target codex --json
-szu-cli skill install --target workbuddy --json
-szu-cli skill install --target claudecode --json
-```
+1. Installs `szu-cli@latest` globally through npm so that the `szu-cli` command is available directly.
+2. Runs `npx skills add` to install the `szu-campus` skill globally for the mainstream AI Agents detected in the current environment.
 
-Build a portable AI IDE skill directory:
-
-```bash
-szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
-```
+See [Supported Agents](https://github.com/vercel-labs/skills/blob/main/README.md#supported-agents) for the supported agents and their project/global skill directories, including Codex, Claude Code, and Cursor. WorkBuddy users can search for `szu-campus` in the WorkBuddy skill store and install it directly.
 
 Initialize the browser login profile:
 
 ```bash
 szu-cli auth login
+szu-cli auth status --json
+```
+
+### Quick Start (AI Agent)
+
+The following steps are for an AI Agent assisting a user. The login step requires the user to complete login in the browser.
+
+Step 1 — Install:
+
+```bash
+npx szu-cli@latest install
+```
+
+Step 2 — Check the environment:
+
+```bash
+szu-cli doctor --json
+```
+
+Step 3 — Log in:
+
+```bash
+szu-cli auth login
+```
+
+Step 4 — Verify the login state:
+
+```bash
 szu-cli auth status --json
 ```
 

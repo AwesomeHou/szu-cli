@@ -7,14 +7,10 @@
 推荐用一行命令同时安装 `szu-cli` 和本 skill：
 
 ```bash
-npm install -g szu-cli && szu-cli skill install --target codex --json
+npx szu-cli@latest install
 ```
 
-如果已经安装过 `szu-cli`，只安装或更新 skill：
-
-```bash
-szu-cli skill install --target codex --json
-```
+该命令会将 CLI 安装到 npm 全局路径，并把本 skill 全局安装到当前环境中可识别的主流 Agent。WorkBuddy 用户可以直接在技能商店搜索 `szu-campus` 安装。
 
 上架后，也可以从 SkillHub 或 ClawHub 安装本 skill：
 

@@ -2,19 +2,15 @@
 
 本项目通过一个 npm 包发布，同时包含 `szu-cli` CLI 和可选的 `szu-campus` agent skill。
 
-## 安装 CLI
-
-安装正式版本：
+## 从 npm 安装（推荐）
 
 ```bash
-npm install -g szu-cli
+npx szu-cli@latest install
 ```
 
-安装本地 tarball：
+该命令会将 `szu-cli` 安装到 npm 全局路径，并调用 `npx skills add` 将 `szu-campus` skill 全局安装到当前环境中可识别的主流 Agent。支持的 Agent 索引见 [Supported Agents](https://github.com/vercel-labs/skills/blob/main/README.md#supported-agents)。
 
-```bash
-npm install -g ./szu-cli-0.2.0.tgz
-```
+WorkBuddy 用户可以直接在技能商店搜索 `szu-campus` 安装 skill。
 
 验证 CLI：
 
@@ -23,47 +19,9 @@ szu-cli --version
 szu-cli doctor --json
 ```
 
-## 安装 Codex Skill
+## 高级 Skill 操作
 
-npm 包内包含 `skills/szu-campus`，但 `npm install` 不会自动写入 agent 目录。需要显式安装：
-
-```bash
-szu-cli skill install --target codex --json
-```
-
-该命令会把随包 skill 复制到 Codex 可见的个人 skill 目录：
-
-```text
-~/.agents/skills/szu-campus
-```
-
-安装到 WorkBuddy：
-
-```bash
-szu-cli skill install --target workbuddy --json
-```
-
-默认目录：
-
-```text
-~/.workbuddy/skills/szu-campus
-```
-
-安装到 Claude Code：
-
-```bash
-szu-cli skill install --target claudecode --json
-```
-
-默认目录：
-
-```text
-~/.claude/skills/szu-campus
-```
-
-## 生成 AI IDE Skill Bundle
-
-Cursor、Windsurf、Cline、Trae 等 AI IDE 可以使用便携目录：
+如需生成 Cursor、Windsurf、Cline、Trae 等 AI IDE 使用的便携目录：
 
 ```bash
 szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
@@ -71,21 +29,11 @@ szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
 
 该命令会把随包 skill 复制到 `./SZU-Campus.skill`，并额外生成 `AGENTS.md`，方便支持项目说明文件的 AI IDE 直接读取。
 
-只查看随包 skill 路径：
+只查看随包 skill 路径，或将 skill 安装到自定义目录：
 
 ```bash
 szu-cli skill path --json
-```
-
-只安装 skill：
-
-```bash
 szu-cli skill install --target codex --json
-```
-
-测试或自定义 agent 目录时，可以覆盖目标目录：
-
-```bash
 szu-cli skill install --dir ./tmp/skills --json
 ```
 

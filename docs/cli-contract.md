@@ -11,6 +11,7 @@ szu-cli <domain> <action> [flags]
 示例：
 
 ```bash
+szu-cli install
 szu-cli doctor --json
 szu-cli auth status --json
 szu-cli skill path --json
@@ -80,6 +81,8 @@ szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --heade
 szu-cli wanfang item <url> --headed --json
 szu-cli wanfang download <url> --headed --dir downloads --json
 ```
+
+`szu-cli install` 是无 action 的安装引导命令；其他业务命令遵循上述 `<domain> <action>` 形式。
 
 ## 常用参数
 

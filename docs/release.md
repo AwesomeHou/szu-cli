@@ -1,6 +1,6 @@
 # 发布检查
 
-npm 包同时发布 CLI 和随包 `szu-campus` skill。skill 通过 `szu-cli skill install --target codex --json` 显式安装；`npm install` 不会写入 agent 配置目录。
+npm 包同时发布 CLI 和随包 `szu-campus` skill。用户推荐运行 `npx szu-cli@latest install`，该命令会全局安装 CLI，并通过 `npx skills add` 将 skill 安装到当前环境中可识别的主流 Agent。
 
 ## 发布前检查
 
@@ -65,8 +65,7 @@ npm publish --tag beta
 用户安装：
 
 ```bash
-npm install -g szu-cli@beta
-szu-cli skill install --target codex --json
+npx szu-cli@beta install
 ```
 
 ## SkillHub / ClawHub
@@ -101,8 +100,7 @@ npm publish
 用户安装：
 
 ```bash
-npm install -g szu-cli
-szu-cli skill install --target codex --json
+npx szu-cli@latest install
 ```
 
 ## 安全边界

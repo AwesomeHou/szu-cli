@@ -23,11 +23,12 @@ skill 不应复制浏览器自动化逻辑。agent 应调用 `szu-cli`。
 推荐方式：
 
 ```bash
-npm install -g szu-cli
-szu-cli skill install --target codex --json
+npx szu-cli@latest install
 ```
 
-`npm install` 让 `szu-cli` 命令可用。`szu-cli skill install --target codex --json` 显式把随包 `skills/szu-campus` 复制到 Codex 可见的 skill 目录。
+该命令会将 `szu-cli` 安装到 npm 全局路径，并调用 `npx skills add` 将 `szu-campus` skill 全局安装到当前环境中可识别的主流 Agent。支持的 Agent 索引见 [Supported Agents](https://github.com/vercel-labs/skills/blob/main/README.md#supported-agents)。
+
+WorkBuddy 可以直接在技能商店搜索 `szu-campus` 安装 skill。
 
 AI IDE 使用便携目录：
 
@@ -37,7 +38,7 @@ szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
 
 该目录包含 `SKILL.md` 和 `AGENTS.md`，适合 Cursor、Windsurf、Cline、Trae 等支持 prompt pack、skill bundle 或项目说明文件的工具。
 
-WorkBuddy 和 Claude Code 使用各自默认 skills 根目录：
+如需手动指定目标，WorkBuddy 和 Claude Code 仍可使用各自默认 skills 根目录：
 
 ```bash
 szu-cli skill install --target workbuddy --json
@@ -73,7 +74,7 @@ skill 可以包含安装说明或辅助脚本，但不应静默安装可执行�
 推荐写法：
 
 ```text
-如果缺少 `szu-cli`，请让用户先运行 `npm install -g szu-cli`，再运行 `szu-cli skill install --target codex --json`。
+如果缺少 `szu-cli`，请让用户先运行 `npx szu-cli@latest install`。
 ```
 
 避免：

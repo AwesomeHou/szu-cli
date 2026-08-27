@@ -24,7 +24,7 @@ szu-cli --version
 若未安装 `szu-cli`，变更用户环境前先征得同意，再让用户执行：
 
 ```bash
-npm install -g szu-cli
+npx szu-cli@latest install
 ```
 
 安装后验证 CLI：
