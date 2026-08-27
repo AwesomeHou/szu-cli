@@ -73,6 +73,20 @@ szu-cli auth login
 szu-cli auth status --json
 ```
 
+### 仅安装CLI或skill
+
+仅安装 CLI：
+
+```bash
+npm install --global szu-cli
+```
+
+仅安装 skill：
+
+```bash
+npx --yes skills add https://github.com/AwesomeHou/szu-cli --skill szu-campus --yes --global
+```
+
 ## 当前能力
 
 | 模块 | 实现的功能 | 示例命令 |

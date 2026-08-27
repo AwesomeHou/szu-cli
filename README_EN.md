@@ -73,6 +73,20 @@ szu-cli auth login
 szu-cli auth status --json
 ```
 
+### Install Only the CLI or Skill
+
+Install only the CLI:
+
+```bash
+npm install --global szu-cli
+```
+
+Install only the skill:
+
+```bash
+npx --yes skills add https://github.com/AwesomeHou/szu-cli --skill szu-campus --yes --global
+```
+
 ## Current Capabilities
 
 | Module | Implemented functionality | Example commands |
