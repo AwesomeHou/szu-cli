@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -30,7 +30,7 @@ test('prints package version', () => {
 });
 
 test('doctor prints JSON readiness envelope', () => {
-  const result = runCli(['doctor', '--json']);
+  const result = runCli(['doctor']);
 
   assert.equal(result.status, 0, result.stderr);
   const body = JSON.parse(result.stdout);
@@ -39,11 +39,32 @@ test('doctor prints JSON readiness envelope', () => {
   assert.equal(body.data.node.ok, true);
   assert.equal(body.data.profile.path.includes('szu-cli-test-'), true);
   assert.equal(typeof body.data.playwright.installed, 'boolean');
-  assert.equal(body.data.browser.channel, 'chrome');
+  assert.equal(['chrome', 'msedge', 'chromium'].includes(body.data.browser.channel), true);
+});
+
+test('browser status reports separate profiles and JSON by default', () => {
+  const result = runCli(['browser', 'status']);
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, true);
+  assert.equal(body.meta.command, 'browser status');
+  assert.notEqual(body.data.browsers.chrome.profilePath, body.data.browsers.edge.profilePath);
+  assert.match(body.data.browsers.chrome.profilePath, /browser-profiles[\\/]chrome$/);
+  assert.match(body.data.browsers.edge.profilePath, /browser-profiles[\\/]edge$/);
+});
+
+test('browser install requires explicit confirmation in non-interactive mode', () => {
+  const result = runCli(['browser', 'install', 'chromium']);
+
+  assert.equal(result.status, 16, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, false);
+  assert.equal(body.error.code, 'BROWSER_INSTALL_CONFIRM_REQUIRED');
 });
 
 test('auth status reports missing profile as logged out', () => {
-  const result = runCli(['auth', 'status', '--json']);
+  const result = runCli(['auth', 'status']);
 
   assert.equal(result.status, 0, result.stderr);
   const body = JSON.parse(result.stdout);
@@ -98,6 +119,39 @@ test('auth login opens configured target with browser profile', () => {
   assert.equal(body.data.closed, true);
   assert.equal(body.data.url, 'https://www1.szu.edu.cn/board/');
   assert.equal(body.data.profilePath.includes('szu-cli-test-'), true);
+});
+
+test('auth logout clears the persistent browser profile', () => {
+  const home = mkdtempSync(join(tmpdir(), 'szu-auth-logout-'));
+  const profilePath = join(home, 'browser-profile');
+  mkdirSync(profilePath, { recursive: true });
+
+  const result = spawnSync(process.execPath, [cliPath, 'auth', 'logout', '--json'], {
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      SZU_CLI_HOME: home
+    }
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, true);
+  assert.equal(body.meta.command, 'auth logout');
+  assert.equal(body.data.loggedOut, true);
+  assert.equal(body.data.profileExisted, true);
+  assert.equal(existsSync(profilePath), false);
+  rmSync(home, { recursive: true, force: true });
+});
+
+test('auth status returns structured JSON for invalid options', () => {
+  const result = runCli(['auth', 'status', '--invalid', '--json']);
+
+  assert.equal(result.status, 1);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, false);
+  assert.equal(body.error.code, 'UNKNOWN_ERROR');
+  assert.equal(body.meta.command, 'auth status');
 });
 
 test('unknown command returns structured JSON error', () => {

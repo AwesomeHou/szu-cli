@@ -1,0 +1,24 @@
+{
+  "runtime": {
+    "type": "node",
+    "version": "20"
+  },
+  "init": {
+    "darwin": "npm install -g szu-cli@0.2.2",
+    "linux": "npm install -g szu-cli@0.2.2",
+    "win32": "npm install -g szu-cli@0.2.2"
+  },
+  "auth": "szu-cli auth login",
+  "unAuth": {
+    "darwin": "szu-cli auth logout",
+    "linux": "szu-cli auth logout",
+    "win32": "szu-cli.cmd auth logout"
+  },
+  "status": {
+    "darwin": "szu-cli auth status",
+    "linux": "szu-cli auth status",
+    "win32": "szu-cli.cmd auth status"
+  },
+  "statusMatch": "\"loggedIn\"\\s*:\\s*true",
+  "authUrlDomain": "szu.edu.cn"
+}

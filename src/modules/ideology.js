@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 
 import { classifyAuthPage } from './auth-detector.js';
+import { assertBrowserAvailable } from './browser.js';
 import { getLaunchOptions } from './browser-options.js';
 import { resolveEhallEntry, sanitizeEhallSourceUrl } from './ehall-entry.js';
 import { buildIdeologySummaryPayload } from './ideology-parser.js';
@@ -109,6 +110,7 @@ async function loadIdeologyApi(options) {
     throw error;
   }
 
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,

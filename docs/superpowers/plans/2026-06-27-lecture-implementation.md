@@ -43,7 +43,7 @@ existing JSON envelope and error mapping.
 - Modify: `docs/cli-contract.md`
 - Modify: `docs/roadmap.md`
 - Modify: `docs/skill-integration.md`
-- Modify: `skills/szu-campus/SKILL.md`
+- Modify: `skills/szu-cli-skill/SKILL.md`
 
 - [ ] Document the four commands, availability states, read-only boundary, progress fields, and identity exclusions.
 - [ ] Run `npm test`.

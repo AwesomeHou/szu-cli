@@ -12,12 +12,12 @@ The implementation reuses the existing Playwright persistent profile. It does no
 ## Commands
 
 ```text
-szu-cli growth status --json [--url <entryUrl>] [--headed]
-szu-cli growth summary --json [--url <entryUrl>] [--headed]
-szu-cli growth list --json [--term <termId>] [--year <academicYear>] [--url <entryUrl>] [--headed]
+szu-cli growth status [--url <entryUrl>] [--headed]
+szu-cli growth summary [--url <entryUrl>] [--headed]
+szu-cli growth list [--term <termId>] [--year <academicYear>] [--url <entryUrl>] [--headed]
 
-szu-cli ideology status --json [--url <entryUrl>] [--headed]
-szu-cli ideology summary --json [--url <entryUrl>] [--headed]
+szu-cli ideology status [--url <entryUrl>] [--headed]
+szu-cli ideology summary [--url <entryUrl>] [--headed]
 ```
 
 `--term` and `--year` are mutually exclusive. Without either filter, `growth list` returns all available periods in chronological order.
@@ -55,19 +55,19 @@ The adapter may obtain the current student identifier from an authenticated resp
 
 ```json
 {
-  "cumulative": {
-    "gpa": 3.66,
-    "majorRank": 12,
-    "rankedStudentCount": 60,
-    "rankPercent": 20,
-    "earnedCredits": 120,
-    "selectedCredits": 124
-  },
-  "latestTerm": {
-    "id": "2025-2026-2",
-    "name": "2025-2026学年第二学期"
-  },
-  "sourceUrl": "https://ehall.szu.edu.cn/..."
+ "cumulative": {
+ "gpa": 3.66,
+ "majorRank": 12,
+ "rankedStudentCount": 60,
+ "rankPercent": 20,
+ "earnedCredits": 120,
+ "selectedCredits": 124
+ },
+ "latestTerm": {
+ "id": "2025-2026-2",
+ "name": "2025-2026学年第二学期"
+ },
+ "sourceUrl": "https://ehall.szu.edu.cn/..."
 }
 ```
 
@@ -79,16 +79,16 @@ Each item represents either a term or an academic year:
 
 ```json
 {
-  "periodType": "term",
-  "periodId": "2025-2026-2",
-  "periodName": "2025-2026学年第二学期",
-  "gpa": 3.66,
-  "majorRank": 12,
-  "rankedStudentCount": 60,
-  "rankPercent": 20,
-  "rankBand": null,
-  "earnedCredits": 24,
-  "selectedCredits": 26
+ "periodType": "term",
+ "periodId": "2025-2026-2",
+ "periodName": "2025-2026学年第二学期",
+ "gpa": 3.66,
+ "majorRank": 12,
+ "rankedStudentCount": 60,
+ "rankPercent": 20,
+ "rankBand": null,
+ "earnedCredits": 24,
+ "selectedCredits": 26
 }
 ```
 
@@ -106,14 +106,14 @@ The page makes an initial metadata request before the data request. The adapter 
 
 ```json
 {
-  "earnedCredits": 2,
-  "qualified": true,
-  "registered": true,
-  "activeStudent": true,
-  "grade": "2023",
-  "major": "交通工程",
-  "department": "交通运输学院",
-  "sourceUrl": "https://ehall.szu.edu.cn/..."
+ "earnedCredits": 2,
+ "qualified": true,
+ "registered": true,
+ "activeStudent": true,
+ "grade": "2023",
+ "major": "交通工程",
+ "department": "交通运输学院",
+ "sourceUrl": "https://ehall.szu.edu.cn/..."
 }
 ```
 
@@ -132,11 +132,11 @@ Every result uses the existing JSON envelope and includes:
 
 ```json
 {
-  "meta": {
-    "command": "growth list",
-    "gateway": "direct",
-    "backend": "playwright"
-  }
+ "meta": {
+ "command": "growth list",
+ "gateway": "direct",
+ "backend": "playwright"
+ }
 }
 ```
 
@@ -150,7 +150,7 @@ Add:
 - `src/modules/ideology.js`: browser and API orchestration.
 - `src/modules/ideology-parser.js`: pure request builders and output normalization.
 
-Update `src/main.js`, public documentation, and the bundled `szu-campus` skill.
+Update `src/main.js`, public documentation, and the bundled `szu-cli-skill` Skill.
 
 The shared resolver is intentionally narrow. Existing eHall modules do not migrate to it in this change.
 

@@ -22,19 +22,19 @@ Test `validateEhallEntryUrl`, `findPortalAppEntry`, and `buildKnownEhallEntry` w
 
 ```js
 assert.equal(
-  validateEhallEntryUrl(
-    'https://ehall.szu.edu.cn/jwapp/sys/czjl/*default/index.do#/czjl',
-    '/jwapp/sys/czjl/'
-  ).hostname,
-  'ehall.szu.edu.cn'
+ validateEhallEntryUrl(
+ 'https://ehall.szu.edu.cn/jwapp/sys/czjl/*default/index.do#/czjl',
+ '/jwapp/sys/czjl/'
+ ).hostname,
+ 'ehall.szu.edu.cn'
 );
 assert.equal(
-  findPortalAppEntry(portalFixture, { names: ['成长记录'], appPath: '/jwapp/sys/czjl/' }),
-  'https://ehall.szu.edu.cn/jwapp/sys/czjl/*default/index.do?...'
+ findPortalAppEntry(portalFixture, { names: ['成长记录'], appPath: '/jwapp/sys/czjl/' }),
+ 'https://ehall.szu.edu.cn/jwapp/sys/czjl/*default/index.do?...'
 );
 assert.throws(
-  () => validateEhallEntryUrl('https://example.com/', '/jwapp/sys/czjl/'),
-  /Unexpected eHall application URL/
+ () => validateEhallEntryUrl('https://example.com/', '/jwapp/sys/czjl/'),
+ /Unexpected eHall application URL/
 );
 ```
 
@@ -84,14 +84,14 @@ Include `cxyxkxnxq`, cumulative `cxxscjtj`, period `cxxscjtj` responses, and thr
 
 ```json
 {
-  "XH": "2023000000",
-  "XM": "测试用户",
-  "XNXQDM": "2025-2026-2",
-  "XNXQMC": "2025-2026学年第二学期",
-  "GPA": "3.75",
-  "PM": "8",
-  "CYPMRS": "80",
-  "PMBFB": "10"
+ "XH": "2023000000",
+ "XM": "测试用户",
+ "XNXQDM": "2025-2026-2",
+ "XNXQMC": "2025-2026学年第二学期",
+ "GPA": "3.75",
+ "PM": "8",
+ "CYPMRS": "80",
+ "PMBFB": "10"
 }
 ```
 
@@ -101,10 +101,10 @@ Test:
 
 ```js
 assert.deepEqual(parseGrowthTerms(fixture.cxyxkxnxq)[0], {
-  id: '2025-2026-1',
-  name: '2025-2026学年第一学期',
-  academicYear: '2025-2026',
-  semester: '1'
+ id: '2025-2026-1',
+ name: '2025-2026学年第一学期',
+ academicYear: '2025-2026',
+ semester: '1'
 });
 assert.equal(buildGrowthSummaryPayload(fixture, { sourceUrl: 'mock' }).cumulative.gpa, 3.75);
 assert.equal(buildGrowthListPayload(fixture, { sourceUrl: 'mock' }).items[0].periodType, 'term');
@@ -160,11 +160,11 @@ Expected: all growth parser tests pass.
 Use `SZU_BROWSER_BACKEND=mock` and `SZU_MOCK_GROWTH_API_JSON`. Cover:
 
 ```js
-runGrowth(['growth', 'status', '--json']);
-runGrowth(['growth', 'summary', '--json']);
-runGrowth(['growth', 'list', '--json']);
-runGrowth(['growth', 'list', '--term', '2025-2026-2', '--json']);
-runGrowth(['growth', 'list', '--year', '2025-2026', '--json']);
+runGrowth(['growth', 'status', '']);
+runGrowth(['growth', 'summary', '']);
+runGrowth(['growth', 'list', '']);
+runGrowth(['growth', 'list', '--term', '2025-2026-2', '']);
+runGrowth(['growth', 'list', '--year', '2025-2026', '']);
 ```
 
 Assert `--term` with `--year` fails, CAS returns `LOGIN_REQUIRED`, 403 returns `PERMISSION_DENIED`, missing APIs return `PAGE_CHANGED`, and serialized data has no `XH` or `XM`.
@@ -204,15 +204,15 @@ Add:
 
 ```js
 if (domain === 'growth' && (action === 'status' || action === 'summary' || action === 'list')) {
-  // Dispatch and write the existing success/error envelope.
+ // Dispatch and write the existing success/error envelope.
 }
 ```
 
-Parse `--term`, `--year`, `--url`, `--headed`, and `--json`. Throw:
+Parse `--term`, `--year`, `--url`, `--headed`, and ``. Throw:
 
 ```js
 if (options.term && options.year) {
-  throw new Error('--term and --year cannot be used together.');
+ throw new Error('--term and --year cannot be used together.');
 }
 ```
 
@@ -244,15 +244,15 @@ Assert:
 
 ```js
 assert.deepEqual(buildIdeologySummaryPayload(fixture, { sourceUrl: 'mock' }), {
-  available: true,
-  earnedCredits: 2,
-  qualified: true,
-  registered: true,
-  activeStudent: true,
-  grade: '2023',
-  major: '交通工程',
-  department: '交通运输学院',
-  sourceUrl: 'mock'
+ available: true,
+ earnedCredits: 2,
+ qualified: true,
+ registered: true,
+ activeStudent: true,
+ grade: '2023',
+ major: '交通工程',
+ department: '交通运输学院',
+ sourceUrl: 'mock'
 });
 ```
 
@@ -302,7 +302,7 @@ export async function getIdeologyStatus(options = {}) {}
 export async function getIdeologySummary(options = {}) {}
 ```
 
-The live module opens the resolved app, obtains the authenticated identifier in memory, and calls only `modules/cxtj/cxxshdtjlb.do`. Add `ideology` dispatch and `--url`, `--headed`, `--json` parsing in `src/main.js`.
+The live module opens the resolved app, obtains the authenticated identifier in memory, and calls only `modules/cxtj/cxxshdtjlb.do`. Add `ideology` dispatch and `--url`, `--headed`, `` parsing in `src/main.js`.
 
 - [ ] **Step 7: Run ideology tests and verify GREEN**
 
@@ -322,7 +322,7 @@ Expected: all ideology tests pass.
 - Modify: `docs/cli-contract.md`
 - Modify: `docs/roadmap.md`
 - Modify: `src/README.md`
-- Modify: `skills/szu-campus/SKILL.md`
+- Modify: `skills/szu-cli-skill/SKILL.md`
 
 - [ ] **Step 1: Document commands and output contracts**
 
@@ -354,11 +354,11 @@ Expected: zero failures and all Markdown files pass checks.
 Run:
 
 ```powershell
-szu-cli growth status --json
-szu-cli growth summary --json
-szu-cli growth list --json
-szu-cli ideology status --json
-szu-cli ideology summary --json
+szu-cli growth status
+szu-cli growth summary
+szu-cli growth list
+szu-cli ideology status
+szu-cli ideology summary
 ```
 
 Inspect only normalized output. Confirm no student name or student number appears.

@@ -1,8 +1,8 @@
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
-const source = resolve('skills/szu-campus');
-const target = resolve('scratch/skillhub-szu-campus');
+const source = resolve('skills/szu-cli-skill');
+const target = resolve('scratch/skillhub-szu-cli-skill');
 const metadata = JSON.parse(await readFile('scripts/skillhub-metadata.json', 'utf8'));
 
 await rm(target, { recursive: true, force: true });

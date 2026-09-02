@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 
 import { classifyAuthPage } from './auth-detector.js';
+import { assertBrowserAvailable } from './browser.js';
 import { getLaunchOptions } from './browser-options.js';
 import {
   buildLectureItemPayload,
@@ -56,7 +57,7 @@ export async function getLectureItem(target, options = {}) {
   if (!row) {
     const error = new Error(`Lecture not found: ${target}.`);
     error.code = 'LECTURE_NOT_FOUND';
-    error.hint = 'Run `szu-cli lecture list --availability all --json` to obtain a lecture id.';
+    error.hint = 'Run `szu-cli lecture list --availability all` to obtain a lecture id.';
     throw error;
   }
   const classrooms = loaded.classroomsByLecture?.[String(target)];
@@ -131,6 +132,7 @@ async function loadLectureApi(kind, options) {
     throw error;
   }
 
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,

@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 
 import { classifyAuthPage } from './auth-detector.js';
+import { assertBrowserAvailable } from './browser.js';
 import { getLaunchOptions } from './browser-options.js';
 import { getProfilePath } from './paths.js';
 import {
@@ -134,6 +135,7 @@ async function loadProgramApi(options = {}) {
     throw error;
   }
 
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,
@@ -225,6 +227,7 @@ async function withProgramPage(options, callback) {
     throw error;
   }
 
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,
@@ -291,7 +294,7 @@ function assertProgramItemFound(api, target) {
   }
   const error = new Error(`Program was not found: ${target}.`);
   error.code = 'PROGRAM_NOT_FOUND';
-  error.hint = 'Run `szu-cli program list --json` to get a valid id or planCode.';
+  error.hint = 'Run `szu-cli program list` to get a valid id or planCode.';
   throw error;
 }
 

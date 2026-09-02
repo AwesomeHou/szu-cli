@@ -1,13 +1,14 @@
 import process from 'node:process';
 
 import { getProfilePath, getSzuHome } from './paths.js';
-import { getLaunchOptions } from './browser-options.js';
+import { getBrowserStatus } from './browser.js';
 
 const MIN_NODE_MAJOR = 20;
 
 export async function getDoctorReport({ packageInfo }) {
   const nodeMajor = Number.parseInt(process.versions.node.split('.')[0], 10);
   const playwrightInstalled = await hasPlaywright();
+  const browserStatus = getBrowserStatus();
 
   return {
     cli: {
@@ -27,13 +28,14 @@ export async function getDoctorReport({ packageInfo }) {
       path: getSzuHome()
     },
     profile: {
-      path: getProfilePath()
+      path: getProfilePath({ persist: false })
     },
     playwright: {
       installed: playwrightInstalled
     },
     browser: {
-      channel: getLaunchOptions().channel ?? 'chromium',
+      ...browserStatus,
+      channel: browserStatus.selected.channel ?? 'chromium',
       profileMode: 'persistent'
     }
   };

@@ -15,7 +15,7 @@ export async function installGlobal(options = {}) {
     'add',
     skillSource,
     '--skill',
-    'szu-campus',
+    'szu-cli-skill',
     '--yes',
     '--global'
   ]);
@@ -42,9 +42,12 @@ function getCommand(command) {
 function runExternalCommand(command, args) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
-      stdio: 'inherit',
+      stdio: ['ignore', 'pipe', 'pipe'],
       windowsHide: false
     });
+
+    child.stdout.on('data', (chunk) => process.stderr.write(chunk));
+    child.stderr.on('data', (chunk) => process.stderr.write(chunk));
 
     child.once('error', (cause) => {
       const error = new Error(`Failed to run ${command}: ${cause.message}`);

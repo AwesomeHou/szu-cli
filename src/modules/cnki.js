@@ -2,6 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
 import { getLaunchOptions } from './browser-options.js';
+import { assertBrowserAvailable } from './browser.js';
 import { buildCnkiItemPayload, buildCnkiSearchPayload, formatCnkiSearchExports, parseCnkiSearchMeta } from './cnki-parser.js';
 import { getProfilePath } from './paths.js';
 
@@ -460,6 +461,7 @@ function mockData() {
 }
 
 async function launchContext(options, launchOverrides = {}) {
+  assertBrowserAvailable();
   const { chromium } = await importPlaywright();
   return chromium.launchPersistentContext(
     getProfilePath(),

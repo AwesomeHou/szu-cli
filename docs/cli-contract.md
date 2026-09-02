@@ -12,84 +12,94 @@ szu-cli <domain> <action> [flags]
 
 ```bash
 szu-cli install
-szu-cli doctor --json
-szu-cli auth status --json
-szu-cli skill path --json
-szu-cli skill install --target codex --json
-szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json
-szu-cli skill install --target workbuddy --json
-szu-cli skill install --target claudecode --json
-szu-cli notice list --limit 10 --json
-szu-cli notice list --page 2 --pages 1 --limit 10 --json
-szu-cli notice search 奖学金 --json
-szu-cli notice search 奖学金 --type title --range 6m --json
-szu-cli notice view 577444 --json
-szu-cli notice download 577444 --dir downloads --json
-szu-cli course status --json
-szu-cli course list --json
-szu-cli course list --week 17 --weekday 2 --json
-szu-cli course today --json
-szu-cli course today --date 2026-06-23 --json
-szu-cli program status --json
-szu-cli program list --json --limit 5
-szu-cli program item <id-or-planCode> --json
-szu-cli timetable status --json
-szu-cli timetable classes --json --limit 5
-szu-cli timetable view 20250101100101 --json
-szu-cli grade status --json
-szu-cli grade list --json
-szu-cli grade list --term 2025-2026-1 --json
-szu-cli growth status --json
-szu-cli growth summary --json
-szu-cli growth list --json
-szu-cli growth list --term 2025-2026-2 --json
-szu-cli growth list --year 2025-2026 --json
-szu-cli ideology status --json
-szu-cli ideology summary --json
-szu-cli completion status --json
-szu-cli completion summary --json
-szu-cli completion modules --json
-szu-cli completion courses --module <moduleCode> --json
-szu-cli lecture status --json
-szu-cli lecture list --json
-szu-cli lecture list --availability open --json
-szu-cli lecture item <id> --json
-szu-cli lecture progress --json
-szu-cli sports status --json
-szu-cli sports campuses --json
-szu-cli sports venues --campus 粤海校区 --json
-szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --json
-szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --field 一楼健身房 --dry-run --json
-szu-cli sports cancel --order <orderNo> --dry-run --json
-szu-cli electricity status --json
-szu-cli electricity buildings --json
-szu-cli electricity query --building 红豆斋 --room 838 --json
-szu-cli library status --json
-szu-cli library search 交通设计 --page 2 --json
-szu-cli library search --title 交通设计 --author 刘立新 --json
-szu-cli library item 3706432 --json
-szu-cli cnki search 交通设计 --headed --json
-szu-cli cnki search 交通设计 --headed --year 2026 --type 期刊 --json
-szu-cli cnki search 交通设计 --headed --format gbt7714 --json
-szu-cli cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
-szu-cli cnki item <url> --headed --json
-szu-cli cnki download <url> --headed --dir downloads --json
-szu-cli wanfang search 交通设计 --headed --json
-szu-cli wanfang search 交通设计 --headed --year 2026 --type 期刊 --json
-szu-cli wanfang search 交通设计 --headed --format markdown --json
-szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
-szu-cli wanfang item <url> --headed --json
-szu-cli wanfang download <url> --headed --dir downloads --json
+szu-cli doctor
+szu-cli browser status
+szu-cli browser use chrome
+szu-cli browser install chromium --yes
+szu-cli auth status
+szu-cli auth logout
+szu-cli skill path
+szu-cli skill install --target codex
+szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill
+szu-cli skill install --target workbuddy
+szu-cli skill install --target claudecode
+szu-cli notice list --limit 10
+szu-cli notice list --page 2 --pages 1 --limit 10
+szu-cli notice search 奖学金
+szu-cli notice search 奖学金 --type title --range 6m
+szu-cli notice view 577444
+szu-cli notice download 577444 --dir downloads
+szu-cli course status
+szu-cli course list
+szu-cli course list --week 17 --weekday 2
+szu-cli course today
+szu-cli course today --date 2026-06-23
+szu-cli program status
+szu-cli program list --limit 5
+szu-cli program item <id-or-planCode>
+szu-cli timetable status
+szu-cli timetable classes --limit 5
+szu-cli timetable view 20250101100101
+szu-cli grade status
+szu-cli grade list
+szu-cli grade list --term 2025-2026-1
+szu-cli growth status
+szu-cli growth summary
+szu-cli growth list
+szu-cli growth list --term 2025-2026-2
+szu-cli growth list --year 2025-2026
+szu-cli ideology status
+szu-cli ideology summary
+szu-cli completion status
+szu-cli completion summary
+szu-cli completion modules
+szu-cli completion courses --module <moduleCode>
+szu-cli lecture status
+szu-cli lecture list
+szu-cli lecture list --availability open
+szu-cli lecture item <id>
+szu-cli lecture progress
+szu-cli sports status
+szu-cli sports campuses
+szu-cli sports venues --campus 粤海校区
+szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08
+szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --field 一楼健身房 --dry-run
+szu-cli sports cancel --order <orderNo> --dry-run
+szu-cli electricity status
+szu-cli electricity buildings
+szu-cli electricity query --building 红豆斋 --room 838
+szu-cli library status
+szu-cli library search 交通设计 --page 2
+szu-cli library search --title 交通设计 --author 刘立新
+szu-cli library item 3706432
+szu-cli cnki search 交通设计 --headed
+szu-cli cnki search 交通设计 --headed --year 2026 --type 期刊
+szu-cli cnki search 交通设计 --headed --format gbt7714
+szu-cli cnki search --title 优化 --abstract 交通 --abstract 调度 --headed
+szu-cli cnki item <url> --headed
+szu-cli cnki download <url> --headed --dir downloads
+szu-cli wanfang search 交通设计 --headed
+szu-cli wanfang search 交通设计 --headed --year 2026 --type 期刊
+szu-cli wanfang search 交通设计 --headed --format markdown
+szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed
+szu-cli wanfang item <url> --headed
+szu-cli wanfang download <url> --headed --dir downloads
 ```
-
 `szu-cli install` 是无 action 的安装引导命令；其他业务命令遵循上述 `<domain> <action>` 形式。
+
+所有命令默认输出 JSON。旧版本中的 `--json` 参数仍被接受，但现在是兼容性 no-op；未来可通过输出选项扩展其他格式。
 
 ## 常用参数
 
-- `--json`：输出机器可读 JSON，所有 agent-facing 命令都支持。
 - `--headed`：浏览器后端命令使用可见浏览器窗口。
 - `--url <entryUrl>`：覆盖默认入口 URL，主要用于调试。
 - `auth login --no-wait`：打开登录浏览器后立即返回；默认会等待窗口关闭并清理本次浏览器进程。
+- `browser status`：查看可用浏览器、当前选择和对应的 CLI profile。
+- `browser use <chrome|edge|chromium>`：选择浏览器；浏览器必须已安装。
+- `browser install chromium --yes`：在用户明确确认后安装 Playwright Chromium，下载进度输出到 stderr。
+- `auth logout`：清理当前浏览器对应的 CLI 专用 profile；重复执行安全。
+
+浏览器后端当前支持 Google Chrome、Microsoft Edge 和 Playwright Chromium；Safari、Firefox 及其他浏览器不会被直接复用。
 
 ## JSON 包装结构
 
@@ -107,6 +117,8 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
+
+字段以当前 CLI 实际返回为准；业务响应默认写入 stdout，诊断和安装进度写入 stderr。
 失败：
 
 ```json
@@ -128,9 +140,14 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 ## 错误码
 
 - `BACKEND_UNAVAILABLE`：浏览器后端无法启动。
+- `BROWSER_UNAVAILABLE`：当前选择的浏览器未安装或无法使用。
+- `BROWSER_INSTALL_CONFIRM_REQUIRED`：安装 Playwright Chromium 需要明确确认。
+- `BROWSER_INSTALL_CANCELLED`：用户取消了 Chromium 安装。
+- `BROWSER_INSTALL_FAILED`：Playwright Chromium 安装失败。
+- `BROWSER_SELECTION_INVALID`：浏览器选择不是 chrome、edge 或 chromium。
+- `AUTH_LOGOUT_FAILED`：无法清理 CLI 专用浏览器登录 profile。
 - `LOGIN_REQUIRED`：目标服务需要登录。
-- `WEBVPN_LOGIN_REQUIRED`：需要 WebVPN，但 WebVPN 尚未登录。
-- `NETWORK_REQUIRED`：直接校园网和 WebVPN 路径都不可用。
+- `NETWORK_REQUIRED`：目标服务需要校园网络，或当前网络无法访问目标服务。
 - `PERMISSION_DENIED`：当前账号无权访问。
 - `PAGE_CHANGED`：页面结构与预期不一致。
 - `RATE_LIMITED`：远端服务疑似限制请求。
@@ -161,8 +178,14 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 - `1`：通用失败。
 - `2`：命令或参数无效。
 - `10`：浏览器后端不可用。
+- `14`：无法清理浏览器登录 profile。
+- `15`：浏览器不可用。
+- `16`：安装 Chromium 缺少明确确认。
+- `17`：用户取消 Chromium 安装。
+- `18`：Chromium 安装失败。
+- `19`：浏览器选择无效。
 - `11`：需要登录。
-- `12`：需要网络或 WebVPN。
+- `12`：需要校园网络或目标服务网络不可达。
 - `13`：无权访问。
 - `20`：页面结构变化。
 - `21`：随包 skill 缺失。
@@ -184,14 +207,14 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 
 ## Skill 输出 Schema
 
-`szu-cli skill path --json` 返回随包 skill 路径，不执行安装：
+`szu-cli skill path` 返回随包 skill 路径，不执行安装：
 
 ```json
 {
   "ok": true,
   "data": {
-    "name": "szu-campus",
-    "sourcePath": "C:/Users/name/AppData/Roaming/npm/node_modules/szu-cli/skills/szu-campus"
+    "name": "szu-cli-skill",
+    "sourcePath": "C:/Users/name/AppData/Roaming/npm/node_modules/szu-cli/skills/szu-cli-skill"
   },
   "meta": {
     "command": "skill path",
@@ -201,17 +224,17 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`szu-cli skill install --target codex --json` 会把随包 skill 复制到 Codex 可见的个人 skill 目录。`target` 默认是 `codex`，使用 `--dir <path>` 可覆盖目标根目录，也可以省略 `--target codex`。
+`szu-cli skill install --target codex` 会把随包 skill 复制到 Codex 可见的个人 skill 目录。`target` 默认是 `codex`，使用 `--dir <path>` 可覆盖目标根目录，也可以省略 `--target codex`。
 
 ```json
 {
   "ok": true,
   "data": {
     "target": "codex",
-    "name": "szu-campus",
+    "name": "szu-cli-skill",
     "installed": true,
-    "sourcePath": ".../skills/szu-campus",
-    "installedPath": "C:/Users/name/.agents/skills/szu-campus"
+    "sourcePath": ".../skills/szu-cli-skill",
+    "installedPath": "C:/Users/name/.agents/skills/szu-cli-skill"
   },
   "meta": {
     "command": "skill install",
@@ -221,16 +244,16 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill --json` 会生成 AI IDE 可引用的便携目录。目录内包含 `SKILL.md` 和同内容的 `AGENTS.md`。
+`szu-cli skill install --target ai-ide --dest ./SZU-Campus.skill` 会生成 AI IDE 可引用的便携目录。目录内包含 `SKILL.md` 和同内容的 `AGENTS.md`。
 
 ```json
 {
   "ok": true,
   "data": {
     "target": "ai-ide",
-    "name": "szu-campus",
+    "name": "szu-cli-skill",
     "installed": true,
-    "sourcePath": ".../skills/szu-campus",
+    "sourcePath": ".../skills/szu-cli-skill",
     "installedPath": "./SZU-Campus.skill"
   },
   "meta": {
@@ -241,17 +264,17 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`szu-cli skill install --target workbuddy --json` 和 `szu-cli skill install --target claudecode --json` 会安装到对应工具的默认 skill 根目录。
+`szu-cli skill install --target workbuddy` 和 `szu-cli skill install --target claudecode` 会安装到对应工具的默认 skill 根目录。
 
 ```json
 {
   "ok": true,
   "data": {
     "target": "workbuddy",
-    "name": "szu-campus",
+    "name": "szu-cli-skill",
     "installed": true,
-    "sourcePath": ".../skills/szu-campus",
-    "installedPath": "C:/Users/name/.workbuddy/skills/szu-campus"
+    "sourcePath": ".../skills/szu-cli-skill",
+    "installedPath": "C:/Users/name/.workbuddy/skills/szu-cli-skill"
   },
   "meta": {
     "command": "skill install",
@@ -266,12 +289,12 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 - JSON key 使用 `camelCase`。
 - 列表始终使用数组，即使为空。
 - 日期尽量使用 ISO 8601。
-- 使用 `--json` 时，不要向 stdout 打印警告文本。
+- 不要向 stdout 打印警告文本；stdout 保持为单个 JSON 结果。
 - 常规输出不得暴露 cookies、tokens、完整学号、手机号或私人身份信息。
 
 ## 公文通详情 Schema
 
-`szu-cli notice view <id|url> --json` 返回：
+`szu-cli notice view <id|url>` 返回：
 
 ```json
 {
@@ -318,7 +341,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 
 ## 公文通下载 Schema
 
-`szu-cli notice download <id|url> --dir <path> --json` 会打开已登录的公文详情页，并在页面中点击附件链接完成下载。使用 `--index <n>` 选择附件，默认 `1`；使用 `--output <filename>` 可指定保存文件名。
+`szu-cli notice download <id|url> --dir <path>` 会打开已登录的公文详情页，并在页面中点击附件链接完成下载。使用 `--index <n>` 选择附件，默认 `1`；使用 `--output <filename>` 可指定保存文件名。
 
 ```json
 {
@@ -342,7 +365,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 
 ## 我的课表列表 Schema
 
-`szu-cli course list --json` 返回当前 eHall 我的课表，不暴露姓名或学号。
+`szu-cli course list` 返回当前 eHall 我的课表，不暴露姓名或学号。
 
 ```json
 {
@@ -385,11 +408,11 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`szu-cli course list --json` 可用 `--term <termId>`、`--week <n>` 和 `--weekday <1-7>` 过滤当前已读取课表，其中星期一为 `1`、星期日为 `7`。`szu-cli course today --json` 返回同样的课程 item 结构，但按本机日期和当前教学周过滤；使用 `--date YYYY-MM-DD` 可查询指定日期。`szu-cli course status --json` 只检查访问状态，返回 `loggedIn`、`reason`、`term` 和 `sourceUrl`。
+`szu-cli course list` 可用 `--term <termId>`、`--week <n>` 和 `--weekday <1-7>` 过滤当前已读取课表，其中星期一为 `1`、星期日为 `7`。`szu-cli course today` 返回同样的课程 item 结构，但按本机日期和当前教学周过滤；使用 `--date YYYY-MM-DD` 可查询指定日期。`szu-cli course status` 只检查访问状态，返回 `loggedIn`、`reason`、`term` 和 `sourceUrl`。
 
 ## 培养方案 Schema
 
-`szu-cli program list --json` 返回已发布的全校培养方案摘要。可用 `--keyword`、`--grade`、`--department`、`--major`、`--page` 和 `--limit` 缩小结果范围。
+`szu-cli program list` 返回已发布的全校培养方案摘要。可用 `--keyword`、`--grade`、`--department`、`--major`、`--page` 和 `--limit` 缩小结果范围。
 
 ```json
 {
@@ -429,9 +452,9 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`szu-cli program status --json` 只检查访问状态，返回 `loggedIn`、`reason`、`total` 和 `sourceUrl`。
+`szu-cli program status` 只检查访问状态，返回 `loggedIn`、`reason`、`total` 和 `sourceUrl`。
 
-`szu-cli program item <id-or-planCode> --json` 返回一个已发布培养方案详情。参数使用 `program list` 返回的 `id` 或 `planCode`。
+`szu-cli program item <id-or-planCode>` 返回一个已发布培养方案详情。参数使用 `program list` 返回的 `id` 或 `planCode`。
 
 ```json
 {
@@ -499,7 +522,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 
 ## 全校班级课表 Schema
 
-`szu-cli timetable classes --json` 返回全校班级课表查询中的班级列表。可用 `--keyword`、`--grade`、`--department`、`--major`、`--page` 和 `--limit` 查找 `classCode`。
+`szu-cli timetable classes` 返回全校班级课表查询中的班级列表。可用 `--keyword`、`--grade`、`--department`、`--major`、`--page` 和 `--limit` 查找 `classCode`。
 
 ```json
 {
@@ -534,13 +557,13 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`szu-cli timetable view <classCode> --json` 返回指定班级的周课表。课程 item 结构与 `course list` 一致，并额外包含 `class` 对象和班级级别的 `extraItems`。
+`szu-cli timetable view <classCode>` 返回指定班级的周课表。课程 item 结构与 `course list` 一致，并额外包含 `class` 对象和班级级别的 `extraItems`。
 
-`szu-cli timetable status --json` 只检查访问状态，返回 `loggedIn`、`reason`、`term`、`total` 和 `sourceUrl`。
+`szu-cli timetable status` 只检查访问状态，返回 `loggedIn`、`reason`、`term`、`total` 和 `sourceUrl`。
 
 ## 成绩列表 Schema
 
-`szu-cli grade list --json` 返回 eHall 成绩查询记录，不暴露姓名或学号。
+`szu-cli grade list` 返回 eHall 成绩查询记录，不暴露姓名或学号。
 
 使用 `--term <termId>` 过滤单个学期，例如 `--term 2025-2026-1`。
 
@@ -588,11 +611,11 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`szu-cli grade status --json` 只检查访问状态，返回 `loggedIn`、`reason`、`total`、`terms` 和 `sourceUrl`。
+`szu-cli grade status` 只检查访问状态，返回 `loggedIn`、`reason`、`total`、`terms` 和 `sourceUrl`。
 
 ## 成长记录 Schema
 
-`szu-cli growth summary --json` 返回累计 GPA、专业排名、排名人数、相对排名和学分汇总。`szu-cli growth list --json` 返回学期和学年汇总。使用 `--term <termId>` 或 `--year <academicYear>` 过滤，两者互斥。
+`szu-cli growth summary` 返回累计 GPA、专业排名、排名人数、相对排名和学分汇总。`szu-cli growth list` 返回学期和学年汇总。使用 `--term <termId>` 或 `--year <academicYear>` 过滤，两者互斥。
 
 ```json
 {
@@ -635,7 +658,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 
 ## 思政学分 Schema
 
-`szu-cli ideology summary --json` 读取思政与社会实践学分汇总：
+`szu-cli ideology summary` 读取思政与社会实践学分汇总：
 
 ```json
 {
@@ -665,7 +688,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 
 学业完成页面打开后会计算培养方案进度。命令会等待进度 API 报告计算完成。默认超时时间为 180 秒，可用 `--timeout <seconds>` 修改。
 
-`szu-cli completion summary --json` 返回培养方案层面的学分汇总。`completion modules --json` 额外返回模块行：
+`szu-cli completion summary` 返回培养方案层面的学分汇总。`completion modules` 额外返回模块行：
 
 ```json
 {
@@ -714,13 +737,13 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-把返回的 `moduleCode` 传给 `szu-cli completion courses --module <moduleCode> --json`。结果包含该模块下的全部课程，`status` 可能为 `completed`、`selected`、`not-taken` 或 `unknown`，并包含学分、类别、性质、考核方式、成绩、学期、替代课程和备注等信息。`not-taken` 表示培养方案候选课程，不保证当前开课或可选。
+把返回的 `moduleCode` 传给 `szu-cli completion courses --module <moduleCode>`。结果包含该模块下的全部课程，`status` 可能为 `completed`、`selected`、`not-taken` 或 `unknown`，并包含学分、类别、性质、考核方式、成绩、学期、替代课程和备注等信息。`not-taken` 表示培养方案候选课程，不保证当前开课或可选。
 
 计算超时返回 `CALCULATION_TIMEOUT`，并在 `error.details` 中包含 `completed`、`total`、`percent` 和 `timeoutSeconds`。未知模块代码返回 `MODULE_NOT_FOUND`。
 
 ## 创新领航讲座 Schema
 
-`szu-cli lecture list --json` 默认只返回报名窗口已开启，且教室详情显示仍有余量的讲座：
+`szu-cli lecture list` 默认只返回报名窗口已开启，且教室详情显示仍有余量的讲座：
 
 ```json
 {
@@ -771,7 +794,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 
 ## 体育场馆预约 Schema
 
-`szu-cli sports bookings --json` 默认返回“我的预约”最近 3 条记录；可用 `--limit <n>` 调整数量。`szu-cli sports campuses --json` 返回体育场馆预约页可见校区。`sports venues --campus <校区> --json` 返回该校区可见场馆。`sports dates --campus <校区> --venue <场馆> --json` 返回该场馆当前开放预约的日期。`sports slots --campus <校区> --venue <场馆> --json` 会按开放日期分组返回日期和对应时段；加 `--date YYYY-MM-DD` 时只返回指定日期的时段状态。
+`szu-cli sports bookings` 默认返回“我的预约”最近 3 条记录；可用 `--limit <n>` 调整数量。`szu-cli sports campuses` 返回体育场馆预约页可见校区。`sports venues --campus <校区>` 返回该校区可见场馆。`sports dates --campus <校区> --venue <场馆>` 返回该场馆当前开放预约的日期。`sports slots --campus <校区> --venue <场馆>` 会按开放日期分组返回日期和对应时段；加 `--date YYYY-MM-DD` 时只返回指定日期的时段状态。
 
 ```json
 {
@@ -805,10 +828,10 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`sports bookings` 的记录字段包含 `actions`、`orderNo`、`timeRange`、`bookedAt`、`campus`、`venue`、`field`、`project`、`status`、`orderType` 和 `note`，不输出姓名、学号、学院等身份字段。`sports reserve` 必须通过 `--field` 指定唯一场地；`--dry-run --json` 返回包含场地的完整目标且不点击“提交预约”。真实提交必须显式传入 `--confirm`；当前 live MVP 不自动支付、不跳转支付页、不取消支付。预约成功后 CLI 只返回 `payment.required` 和手动支付提醒，不输出支付链接。`sports cancel --order <orderNo> --dry-run --json` 会验证订单存在但不取消；真实取消必须显式传入 `--confirm`。
+`sports bookings` 的记录字段包含 `actions`、`orderNo`、`timeRange`、`bookedAt`、`campus`、`venue`、`field`、`project`、`status`、`orderType` 和 `note`，不输出姓名、学号、学院等身份字段。`sports reserve` 必须通过 `--field` 指定唯一场地；`--dry-run` 返回包含场地的完整目标且不点击“提交预约”。真实提交必须显式传入 `--confirm`；当前 live MVP 不自动支付、不跳转支付页、不取消支付。预约成功后 CLI 只返回 `payment.required` 和手动支付提醒，不输出支付链接。`sports cancel --order <orderNo> --dry-run` 会验证订单存在但不取消；真实取消必须显式传入 `--confirm`。
 ## 电费 Schema
 
-`szu-cli electricity buildings --json` 返回 SIMS 电费查询页中的可用校区和楼栋。该命令需要校园内网访问。
+`szu-cli electricity buildings` 返回 SIMS 电费查询页中的可用校区和楼栋。该命令需要校园内网访问。
 
 ```json
 {
@@ -836,7 +859,7 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`szu-cli electricity query --campus <name> --building <name> --room <room> --json` 查询用电记录，并返回日期范围内找到的最新剩余电量。默认查询最近 7 天。使用 `--from YYYY-MM-DD --to YYYY-MM-DD` 可覆盖范围。`--campus` 可省略；当 `--building` 能唯一匹配一个楼栋时，CLI 会自动补全校区。校区和楼栋支持唯一的部分匹配。
+`szu-cli electricity query --campus <name> --building <name> --room <room>` 查询用电记录，并返回日期范围内找到的最新剩余电量。默认查询最近 7 天。使用 `--from YYYY-MM-DD --to YYYY-MM-DD` 可覆盖范围。`--campus` 可省略；当 `--building` 能唯一匹配一个楼栋时，CLI 会自动补全校区。校区和楼栋支持唯一的部分匹配。
 
 ```json
 {
@@ -869,11 +892,11 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`szu-cli electricity status --json` 只检查内网系统是否可达，返回 `available`、`campusCount` 和 `sourceUrl`。系统不可达时返回 `NETWORK_REQUIRED`。
+`szu-cli electricity status` 只检查内网系统是否可达，返回 `available`、`campusCount` 和 `sourceUrl`。系统不可达时返回 `NETWORK_REQUIRED`。
 
 ## 图书馆馆藏搜索 Schema
 
-`szu-cli library search <keyword> --json` 搜索深大 OPAC 馆藏。它使用持久化浏览器 profile，因此 OPAC 已登录时可以记录检索历史。使用 `--limit <n>` 限制返回行数，默认 `10`；使用 `--page <n>` 翻页。
+`szu-cli library search <keyword>` 搜索深大 OPAC 馆藏。它使用持久化浏览器 profile，因此 OPAC 已登录时可以记录检索历史。使用 `--limit <n>` 限制返回行数，默认 `10`；使用 `--page <n>` 翻页。
 
 ```json
 {
@@ -909,12 +932,12 @@ szu-cli wanfang download <url> --headed --dir downloads --json
 }
 ```
 
-`szu-cli library status --json` 检查 OPAC 可达性和登录状态，返回 `available`、`loggedIn`、`historyRecorded` 和 `sourceUrl`。
+`szu-cli library status` 检查 OPAC 可达性和登录状态，返回 `available`、`loggedIn`、`historyRecorded` 和 `sourceUrl`。
 
 同一个 `library search` 命令支持 OPAC 高级检索字段。如果提供位置参数关键词，则使用快速检索；如果提供字段参数，则使用高级检索。支持的字段包括 `--title`、`--author`、`--subject`、`--publisher`、`--isbn`、`--issn`、`--call-number`、`--classification`、`--doc-type`、`--language`、`--location`、`--sort` 和 `--order`。
 
 ```bash
-szu-cli library search --title 交通设计 --author 刘立新 --doc-type 普通图书 --location 南馆 --json
+szu-cli library search --title 交通设计 --author 刘立新 --doc-type 普通图书 --location 南馆
 ```
 
 高级检索输出保持相同 item 结构，并增加 `advanced` 对象：
@@ -941,7 +964,7 @@ szu-cli library search --title 交通设计 --author 刘立新 --doc-type 普通
 }
 ```
 
-`szu-cli library item <id|url> --json` 返回一条馆藏详情及副本级馆藏信息。
+`szu-cli library item <id|url>` 返回一条馆藏详情及副本级馆藏信息。
 
 ```json
 {
@@ -982,7 +1005,7 @@ szu-cli library search --title 交通设计 --author 刘立新 --doc-type 普通
 
 ## 学术数据库元数据检索 Schema
 
-`szu-cli cnki search <keyword> --headed --json` 和 `szu-cli wanfang search <keyword> --headed --json` 通过深大图书馆校内通道执行只读元数据检索。
+`szu-cli cnki search <keyword> --headed` 和 `szu-cli wanfang search <keyword> --headed` 通过深大图书馆校内通道执行只读元数据检索。
 
 这些 MVP 命令需要 `--headed`。CNKI 和万方也支持由用户发起的单条 PDF/全文下载命令，该命令只点击可见下载按钮。使用 `--limit <n>` 限制返回行数，默认 `10`。使用 `--year <yyyy>` 和 `--type <类型>` 可对已返回元数据做结果层过滤；这不是远端站点高级筛选。
 
@@ -991,7 +1014,7 @@ szu-cli library search --title 交通设计 --author 刘立新 --doc-type 普通
 CNKI 还支持一个基于字段参数的高级检索 MVP：
 
 ```bash
-szu-cli cnki search --title 优化 --abstract 交通 --abstract 调度 --headed --json
+szu-cli cnki search --title 优化 --abstract 交通 --abstract 调度 --headed
 ```
 
 该命令映射为 CNKI 高级检索条件：篇名 = 优化 AND 摘要 = 交通 AND 摘要 = 调度。`--abstract` 可重复。该 MVP 针对学术论文工作流默认使用 学术期刊 数据库范围（`YSTT4HG0`）。输出保持相同 item 结构，并额外包含可选 `advanced` 对象：
@@ -1045,7 +1068,7 @@ szu-cli cnki search --title 优化 --abstract 交通 --abstract 调度 --headed 
 万方支持类似的字段化元数据检索 MVP：
 
 ```bash
-szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed --json
+szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --headed
 ```
 
 该命令映射为万方期刊检索条件：题名 = 优化 AND 关键词 = 交通 AND 摘要 = 调度。万方支持的字段参数包括 `--title`、`--author`、`--keyword` 和 `--abstract`。该 MVP 默认使用 学术期刊 期刊范围。输出使用相同 item 结构和 `advanced` 对象结构，但字段标签和代码使用万方体系：
@@ -1065,9 +1088,9 @@ szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --heade
 }
 ```
 
-`szu-cli cnki status --headed --json` 和 `szu-cli wanfang status --headed --json` 检查可达性和校园授权状态，不返回结果行。
+`szu-cli cnki status --headed` 和 `szu-cli wanfang status --headed` 检查可达性和校园授权状态，不返回结果行。
 
-`szu-cli cnki item <url> --headed --json` 和 `szu-cli wanfang item <url> --headed --json` 打开一个详情页并返回只读文献元数据。它们不会下载 PDF、CAJ、原文或附件。
+`szu-cli cnki item <url> --headed` 和 `szu-cli wanfang item <url> --headed` 打开一个详情页并返回只读文献元数据。它们不会下载 PDF、CAJ、原文或附件。
 
 ```json
 {
@@ -1100,7 +1123,7 @@ szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --heade
 }
 ```
 
-`szu-cli cnki download <url> --headed --dir <path> --json` 和 `szu-cli wanfang download <url> --headed --dir <path> --json` 打开一个详情页，并在浏览器中点击可见 PDF/全文下载按钮。使用 `--output <filename>` 可指定保存文件名。它们不支持批量下载、隐藏下载 URL 构造、验证码绕过、CAJ 转换或 CNKI 非 PDF 下载。
+`szu-cli cnki download <url> --headed --dir <path>` 和 `szu-cli wanfang download <url> --headed --dir <path>` 打开一个详情页，并在浏览器中点击可见 PDF/全文下载按钮。使用 `--output <filename>` 可指定保存文件名。它们不支持批量下载、隐藏下载 URL 构造、验证码绕过、CAJ 转换或 CNKI 非 PDF 下载。
 
 ```json
 {
@@ -1120,3 +1143,4 @@ szu-cli wanfang search --title 优化 --keyword 交通 --abstract 调度 --heade
   }
 }
 ```
+

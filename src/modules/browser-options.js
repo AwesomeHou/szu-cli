@@ -1,11 +1,17 @@
+import { getSelectedBrowser } from './browser.js';
+
 export function getLaunchOptions(options = {}) {
   const platform = options.platform ?? process.platform;
   const env = options.env ?? process.env;
   const headless = options.headless ?? false;
-  const channel = env.SZU_BROWSER_CHANNEL ?? (platform === 'win32' ? 'chrome' : null);
+  const browser = getSelectedBrowser({
+    platform,
+    env,
+    persist: options.persist ?? true
+  });
 
   return {
-    ...(channel ? { channel } : {}),
+    ...(browser.channel ? { channel: browser.channel } : {}),
     headless
   };
 }

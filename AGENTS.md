@@ -46,7 +46,7 @@ Adapters: understand each campus web page
 - `src/`: CLI implementation.
 - `tests/`: unit and CLI contract tests.
 - `examples/`: redacted examples only.
-- `skills/szu-campus/`: optional agent skill that documents CLI usage.
+- `skills/szu-cli-skill/`: optional agent skill that documents CLI usage.
 - `scratch/`: local investigation notes, ignored by Git.
 
 ## Engineering Rules

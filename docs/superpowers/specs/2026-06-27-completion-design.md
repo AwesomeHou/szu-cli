@@ -15,10 +15,10 @@ The CLI does not claim that a not-taken curriculum course is offered this term o
 ## Commands
 
 ```text
-szu-cli completion status --json [--timeout <seconds>] [--url <entryUrl>] [--headed]
-szu-cli completion summary --json [--timeout <seconds>] [--url <entryUrl>] [--headed]
-szu-cli completion modules --json [--timeout <seconds>] [--url <entryUrl>] [--headed]
-szu-cli completion courses --module <moduleCode> --json [--timeout <seconds>] [--url <entryUrl>] [--headed]
+szu-cli completion status [--timeout <seconds>] [--url <entryUrl>] [--headed]
+szu-cli completion summary [--timeout <seconds>] [--url <entryUrl>] [--headed]
+szu-cli completion modules [--timeout <seconds>] [--url <entryUrl>] [--headed]
+szu-cli completion courses --module <moduleCode> [--timeout <seconds>] [--url <entryUrl>] [--headed]
 ```
 
 The default timeout is 180 seconds. `--timeout` must be a positive integer.
@@ -41,13 +41,13 @@ If calculation does not finish before the configured timeout, return:
 
 ```json
 {
-  "code": "CALCULATION_TIMEOUT",
-  "details": {
-    "completed": 0,
-    "total": 1,
-    "percent": 0,
-    "timeoutSeconds": 180
-  }
+ "code": "CALCULATION_TIMEOUT",
+ "details": {
+ "completed": 0,
+ "total": 1,
+ "percent": 0,
+ "timeoutSeconds": 180
+ }
 }
 ```
 
@@ -68,23 +68,23 @@ The browser page itself starts the calculation. The CLI does not call state-chan
 
 ```json
 {
-  "plan": {
-    "planCode": "plan-code",
-    "planName": "2023级智慧交通主修培养方案",
-    "requiredCredits": 150,
-    "completedCredits": 90,
-    "selectedCredits": 100,
-    "actualCompletedCredits": 90,
-    "outsidePlanCredits": 2,
-    "remainingCredits": 60
-  },
-  "calculation": {
-    "state": "completed",
-    "completed": 1,
-    "total": 1,
-    "percent": 100
-  },
-  "sourceUrl": "https://ehall.szu.edu.cn/jwapp/sys/xywccx/*default/index.do#/xywccx"
+ "plan": {
+ "planCode": "plan-code",
+ "planName": "2023级智慧交通主修培养方案",
+ "requiredCredits": 150,
+ "completedCredits": 90,
+ "selectedCredits": 100,
+ "actualCompletedCredits": 90,
+ "outsidePlanCredits": 2,
+ "remainingCredits": 60
+ },
+ "calculation": {
+ "state": "completed",
+ "completed": 1,
+ "total": 1,
+ "percent": 100
+ },
+ "sourceUrl": "https://ehall.szu.edu.cn/jwapp/sys/xywccx/*default/index.do#/xywccx"
 }
 ```
 
@@ -94,18 +94,18 @@ Each module item contains:
 
 ```json
 {
-  "moduleCode": "module-code",
-  "parentModuleCode": null,
-  "moduleName": "公共基础课程",
-  "moduleTypeCode": "01",
-  "courseCategoryCode": "01",
-  "requiredCredits": 20,
-  "completedCredits": 16,
-  "selectedCredits": 18,
-  "remainingCredits": 4,
-  "requiredCourseCount": 10,
-  "completedCourseCount": 8,
-  "passed": false
+ "moduleCode": "module-code",
+ "parentModuleCode": null,
+ "moduleName": "公共基础课程",
+ "moduleTypeCode": "01",
+ "courseCategoryCode": "01",
+ "requiredCredits": 20,
+ "completedCredits": 16,
+ "selectedCredits": 18,
+ "remainingCredits": 4,
+ "requiredCourseCount": 10,
+ "completedCourseCount": 8,
+ "passed": false
 }
 ```
 
@@ -117,34 +117,34 @@ The payload also includes the plan summary and calculation state.
 
 ```json
 {
-  "module": {
-    "moduleCode": "module-code",
-    "moduleName": "公共基础课程",
-    "requiredCredits": 20,
-    "completedCredits": 16,
-    "remainingCredits": 4
-  },
-  "items": [
-    {
-      "courseCode": "course-code",
-      "courseName": "课程名称",
-      "credit": 2,
-      "category": "公共选修课",
-      "nature": "选修",
-      "examType": "考试",
-      "status": "completed",
-      "passed": true,
-      "selected": false,
-      "score": "A",
-      "termId": "2025-2026-1",
-      "termName": "2025-2026学年第一学期",
-      "substituteCourse": null,
-      "sameCourseCount": 1,
-      "note": null
-    }
-  ],
-  "candidateMeaning": "not-taken curriculum course; current offering and enrollment eligibility are not guaranteed",
-  "sourceUrl": "https://ehall.szu.edu.cn/jwapp/sys/xywccx/*default/index.do#/xywccx"
+ "module": {
+ "moduleCode": "module-code",
+ "moduleName": "公共基础课程",
+ "requiredCredits": 20,
+ "completedCredits": 16,
+ "remainingCredits": 4
+ },
+ "items": [
+ {
+ "courseCode": "course-code",
+ "courseName": "课程名称",
+ "credit": 2,
+ "category": "公共选修课",
+ "nature": "选修",
+ "examType": "考试",
+ "status": "completed",
+ "passed": true,
+ "selected": false,
+ "score": "A",
+ "termId": "2025-2026-1",
+ "termName": "2025-2026学年第一学期",
+ "substituteCourse": null,
+ "sameCourseCount": 1,
+ "note": null
+ }
+ ],
+ "candidateMeaning": "not-taken curriculum course; current offering and enrollment eligibility are not guaranteed",
+ "sourceUrl": "https://ehall.szu.edu.cn/jwapp/sys/xywccx/*default/index.do#/xywccx"
 }
 ```
 
@@ -187,7 +187,7 @@ Add:
 - `tests/cli-completion.test.js`
 - `tests/fixtures/completion-api.json`
 
-Update CLI routing, error mapping, public documentation, roadmap, source index, and bundled `szu-campus` skill.
+Update CLI routing, error mapping, public documentation, roadmap, source index, and bundled `szu-cli-skill` Skill.
 
 ## Verification
 

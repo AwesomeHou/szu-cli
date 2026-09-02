@@ -3,6 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
 import { classifyAuthPage } from './auth-detector.js';
+import { assertBrowserAvailable } from './browser.js';
 import { getLaunchOptions } from './browser-options.js';
 import { getProfilePath } from './paths.js';
 import { filterNotices, paginateNotices, parseNoticeListHtml } from './notice-parser.js';
@@ -104,6 +105,7 @@ export async function downloadNoticeAttachment(target, options = {}) {
     throwLoginRequired('Browser profile does not exist.', 'Run `szu-cli auth login --url https://www1.szu.edu.cn/board/` first.');
   }
 
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,
@@ -188,7 +190,7 @@ function selectAttachment(attachments, index = 1) {
   if (!attachment) {
     const error = new Error(`Attachment #${index} was not found.`);
     error.code = 'PAGE_CHANGED';
-    error.hint = 'Run `szu-cli notice view <id> --json` to inspect available attachments.';
+    error.hint = 'Run `szu-cli notice view <id>` to inspect available attachments.';
     throw error;
   }
   return attachment;
@@ -266,6 +268,7 @@ async function loadNoticeSearchHtml(options) {
     throwLoginRequired('Browser profile does not exist.', 'Run `szu-cli auth login --url https://www1.szu.edu.cn/board/` first.');
   }
 
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,
@@ -343,6 +346,7 @@ async function loadPageHtml(url, options) {
     throw error;
   }
 
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,

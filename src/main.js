@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
 import { normalizeAcademicFormat } from './modules/academic-format.js';
-import { loginWithBrowserProfile, getAuthStatus } from './modules/auth.js';
+import { getAuthStatus, loginWithBrowserProfile, logoutBrowserProfile } from './modules/auth.js';
 import { downloadCnkiPdf, getCnkiItem, getCnkiStatus, searchCnki } from './modules/cnki.js';
 import {
   getCompletionCourses,
@@ -15,6 +15,7 @@ import { getElectricityBuildings, getElectricityStatus, queryElectricity } from 
 import { getGradeList, getGradeStatus } from './modules/grade.js';
 import { getGrowthList, getGrowthStatus, getGrowthSummary } from './modules/growth.js';
 import { getIdeologyStatus, getIdeologySummary } from './modules/ideology.js';
+import { getBrowserStatus, installManagedChromium, selectBrowser } from './modules/browser.js';
 import {
   getLectureItem,
   getLectureList,
@@ -49,7 +50,6 @@ export async function run(argv) {
   }
 
   const [domain, action] = argv;
-  const json = argv.includes('--json');
 
   if (domain === 'install') {
     try {
@@ -71,6 +71,21 @@ export async function run(argv) {
     return;
   }
 
+  if (domain === 'browser' && ['status', 'use', 'install'].includes(action)) {
+    try {
+      const options = parseBrowserOptions(action, argv.slice(2));
+      const data = action === 'status'
+        ? getBrowserStatus()
+        : action === 'use'
+          ? selectBrowser(options.browser)
+          : await installManagedChromium(options);
+      writeJson(successEnvelope(data, { command: `browser ${action}` }));
+    } catch (error) {
+      handleKnownError(error, `browser ${action}`);
+    }
+    return;
+  }
+
   if (domain === 'skill' && (action === 'path' || action === 'install')) {
     try {
       const options = parseSkillOptions(action, argv.slice(2));
@@ -84,15 +99,17 @@ export async function run(argv) {
     return;
   }
 
-  if (domain === 'auth' && action === 'status') {
-    const data = await getAuthStatus(parseStatusOptions(argv.slice(2)));
-    writeJson(successEnvelope(data, { command: 'auth status' }));
-    return;
-  }
-
-  if (domain === 'auth' && action === 'login') {
-    const data = await loginWithBrowserProfile(parseLoginOptions(argv.slice(2)));
-    writeJson(successEnvelope(data, { command: 'auth login' }));
+  if (domain === 'auth' && ['status', 'login', 'logout'].includes(action)) {
+    try {
+      const data = action === 'status'
+        ? await getAuthStatus(parseStatusOptions(argv.slice(2)))
+        : action === 'login'
+          ? await loginWithBrowserProfile(parseLoginOptions(argv.slice(2)))
+          : await logoutBrowserProfile();
+      writeJson(successEnvelope(data, { command: `auth ${action}` }));
+    } catch (error) {
+      handleKnownError(error, `auth ${action}`);
+    }
     return;
   }
 
@@ -392,14 +409,10 @@ export async function run(argv) {
   const error = {
     code: 'UNSUPPORTED_ACTION',
     message: `Unsupported command: ${argv.join(' ') || '(empty)'}`,
-    hint: 'Try `szu-cli doctor --json`.'
+    hint: 'Try `szu-cli doctor`.'
   };
 
-  if (json) {
-    writeJson(errorEnvelope(error, { command: [domain, action].filter(Boolean).join(' ') || 'unknown' }));
-  } else {
-    process.stderr.write(`${error.message}\n${error.hint}\n`);
-  }
+  writeJson(errorEnvelope(error, { command: [domain, action].filter(Boolean).join(' ') || 'unknown' }));
   process.exitCode = 2;
 }
 
@@ -647,6 +660,40 @@ function parseInstallOptions(argv) {
       throw new Error(`Unknown option: ${arg}`);
     }
   }
+}
+
+function parseBrowserOptions(action, argv) {
+  const args = [...argv];
+  const options = {
+    browser: action === 'install' ? 'chromium' : null,
+    yes: false
+  };
+
+  if (action === 'use' || action === 'install') {
+    if (args[0] && !args[0].startsWith('--')) {
+      options.browser = args.shift();
+    }
+  }
+
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === '--json') {
+      continue;
+    }
+    if (arg === '--yes' && action === 'install') {
+      options.yes = true;
+      continue;
+    }
+    throw new Error(`Unknown option: ${arg}`);
+  }
+
+  if (action === 'install' && options.browser !== 'chromium') {
+    throw new Error('Only Playwright Chromium can be installed by szu-cli. Install Chrome or Edge through their official installers.');
+  }
+  if (action === 'use' && !options.browser) {
+    throw new Error('browser use requires chrome, edge, or chromium.');
+  }
+  return options;
 }
 
 function parseGradeOptions(argv) {
@@ -1584,7 +1631,13 @@ function handleKnownError(error, command) {
     SPORTS_CANCEL_UNVERIFIED: 36,
     RATE_LIMITED: 30,
     DOWNLOAD_UNAVAILABLE: 31,
-    HEADED_REQUIRED: 2
+    HEADED_REQUIRED: 2,
+    AUTH_LOGOUT_FAILED: 14,
+    BROWSER_UNAVAILABLE: 15,
+    BROWSER_INSTALL_CONFIRM_REQUIRED: 16,
+    BROWSER_INSTALL_CANCELLED: 17,
+    BROWSER_INSTALL_FAILED: 18,
+    BROWSER_SELECTION_INVALID: 19
   };
 
   writeJson(errorEnvelope({

@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 
 import { classifyAuthPage } from './auth-detector.js';
+import { assertBrowserAvailable } from './browser.js';
 import { getLaunchOptions } from './browser-options.js';
 import { getProfilePath } from './paths.js';
 import {
@@ -51,7 +52,7 @@ export async function getTimetableView(classCode, options = {}) {
   if (!classInfo) {
     const error = new Error(`Class was not found: ${classCode}.`);
     error.code = 'CLASS_NOT_FOUND';
-    error.hint = 'Run `szu-cli timetable classes --json` to get a valid classCode.';
+    error.hint = 'Run `szu-cli timetable classes` to get a valid classCode.';
     throw error;
   }
   return buildTimetableViewPayload(api, { classInfo, classCode, sourceUrl });
@@ -184,6 +185,7 @@ async function withTimetablePage(options, callback) {
     throw error;
   }
 
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,

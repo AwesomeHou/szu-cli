@@ -1,4 +1,5 @@
 import { getLaunchOptions } from './browser-options.js';
+import { assertBrowserAvailable } from './browser.js';
 import {
   buildLibraryItemPayload,
   buildLibrarySearchPayload,
@@ -180,6 +181,7 @@ function buildItemUrl(target) {
 }
 
 async function launchLibraryContext(options) {
+  assertBrowserAvailable();
   const { chromium } = await importPlaywright();
   return chromium.launchPersistentContext(
     getProfilePath(),

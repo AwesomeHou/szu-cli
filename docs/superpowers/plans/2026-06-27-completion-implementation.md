@@ -80,10 +80,10 @@ Expected: all parser tests pass.
 Cover:
 
 ```text
-completion status --json
-completion summary --json
-completion modules --json
-completion courses --module module-01 --json
+completion status
+completion summary
+completion modules
+completion courses --module module-01
 completion courses without --module
 completion courses with unknown module
 completion summary --timeout 30
@@ -112,7 +112,7 @@ getCompletionModules
 getCompletionCourses
 ```
 
-Parse `--module`, `--timeout`, `--url`, `--headed`, and `--json`. Default timeout is 180 seconds. Require `--module` only for `courses`.
+Parse `--module`, `--timeout`, `--url`, `--headed`, and ``. Default timeout is 180 seconds. Require `--module` only for `courses`.
 
 - [ ] **Step 4: Extend structured errors**
 
@@ -157,7 +157,7 @@ The live module must:
 
 - [ ] **Step 4: Validate required API shapes**
 
-Missing final summary or module data returns `PAGE_CHANGED`. Missing module returns `MODULE_NOT_FOUND` with a hint to run `completion modules --json`.
+Missing final summary or module data returns `PAGE_CHANGED`. Missing module returns `MODULE_NOT_FOUND` with a hint to run `completion modules `.
 
 ### Task 4: Documentation And Verification
 
@@ -167,7 +167,7 @@ Missing final summary or module data returns `PAGE_CHANGED`. Missing module retu
 - Modify: `docs/cli-contract.md`
 - Modify: `docs/roadmap.md`
 - Modify: `src/README.md`
-- Modify: `skills/szu-campus/SKILL.md`
+- Modify: `skills/szu-cli-skill/SKILL.md`
 
 - [ ] **Step 1: Document all four commands**
 
@@ -189,10 +189,10 @@ npm run docs:check
 - [ ] **Step 4: Run live smoke**
 
 ```powershell
-szu-cli completion status --json
-szu-cli completion summary --json
-szu-cli completion modules --json
-szu-cli completion courses --module <moduleCode> --json
+szu-cli completion status
+szu-cli completion summary
+szu-cli completion modules
+szu-cli completion courses --module <moduleCode>
 ```
 
 Inspect normalized shapes only. Confirm no student identity, internal IDs, or dynamic entry context appears.

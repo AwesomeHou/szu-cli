@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 
 import { classifyAuthPage } from './auth-detector.js';
+import { assertBrowserAvailable } from './browser.js';
 import { getLaunchOptions } from './browser-options.js';
 import { buildGradePayload, filterGradePayloadByTerm } from './grade-parser.js';
 import { getProfilePath } from './paths.js';
@@ -115,6 +116,7 @@ async function loadGradeApi(options = {}) {
     throw error;
   }
 
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,

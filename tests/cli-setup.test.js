@@ -15,8 +15,8 @@ test('skill path prints bundled skill location', () => {
   const body = JSON.parse(result.stdout);
   assert.equal(body.ok, true);
   assert.equal(body.meta.command, 'skill path');
-  assert.equal(body.data.name, 'szu-campus');
-  assert.match(body.data.sourcePath, /skills[\\/]szu-campus$/);
+  assert.equal(body.data.name, 'szu-cli-skill');
+  assert.match(body.data.sourcePath, /skills[\\/]szu-cli-skill$/);
   assert.equal(existsSync(join(body.data.sourcePath, 'SKILL.md')), true);
 });
 
@@ -35,14 +35,14 @@ test('skill install copies bundled skill to explicit directory', () => {
   assert.equal(body.ok, true);
   assert.equal(body.meta.command, 'skill install');
   assert.equal(body.data.target, 'codex');
-  assert.equal(body.data.name, 'szu-campus');
+  assert.equal(body.data.name, 'szu-cli-skill');
   assert.equal(body.data.installed, true);
-  assert.equal(body.data.installedPath, join(targetRoot, 'szu-campus'));
-  assert.match(readFileSync(join(targetRoot, 'szu-campus', 'SKILL.md'), 'utf8'), /深圳大学校园事务 CLI Skill/);
-  assert.equal(existsSync(join(targetRoot, 'szu-campus', 'references', 'commands.md')), true);
-  assert.equal(existsSync(join(targetRoot, 'szu-campus', 'references', 'examples.md')), true);
-  assert.equal(existsSync(join(targetRoot, 'szu-campus', 'references', 'academic-databases.md')), true);
-  assert.equal(existsSync(join(targetRoot, 'szu-campus', 'agents', 'openai.yaml')), true);
+  assert.equal(body.data.installedPath, join(targetRoot, 'szu-cli-skill'));
+  assert.match(readFileSync(join(targetRoot, 'szu-cli-skill', 'SKILL.md'), 'utf8'), /深圳大学—校园事务Skill/);
+  assert.equal(existsSync(join(targetRoot, 'szu-cli-skill', 'references', 'commands.md')), true);
+  assert.equal(existsSync(join(targetRoot, 'szu-cli-skill', 'references', 'examples.md')), true);
+  assert.equal(existsSync(join(targetRoot, 'szu-cli-skill', 'references', 'academic-databases.md')), true);
+  assert.equal(existsSync(join(targetRoot, 'szu-cli-skill', 'agents', 'openai.yaml')), true);
   rmSync(targetRoot, { recursive: true, force: true });
 });
 
@@ -64,8 +64,8 @@ test('skill install creates portable AI IDE bundle', () => {
   assert.equal(body.ok, true);
   assert.equal(body.data.target, 'ai-ide');
   assert.equal(body.data.installedPath, targetDir);
-  assert.match(readFileSync(join(targetDir, 'SKILL.md'), 'utf8'), /深圳大学校园事务 CLI Skill/);
-  assert.match(readFileSync(join(targetDir, 'AGENTS.md'), 'utf8'), /深圳大学校园事务 CLI Skill/);
+  assert.match(readFileSync(join(targetDir, 'SKILL.md'), 'utf8'), /深圳大学—校园事务Skill/);
+  assert.match(readFileSync(join(targetDir, 'AGENTS.md'), 'utf8'), /深圳大学—校园事务Skill/);
   assert.equal(existsSync(join(targetDir, 'references', 'commands.md')), true);
   assert.equal(existsSync(join(targetDir, 'agents', 'openai.yaml')), true);
   rmSync(targetRoot, { recursive: true, force: true });
@@ -84,13 +84,13 @@ test('skill install supports WorkBuddy and Claude Code roots', () => {
       '--json'
     ], { cleanup: false });
 
-    const targetDir = join(targetRoot, 'szu-campus');
+    const targetDir = join(targetRoot, 'szu-cli-skill');
     assert.equal(result.status, 0, result.stderr);
     const body = JSON.parse(result.stdout);
     assert.equal(body.ok, true);
     assert.equal(body.data.target, target);
     assert.equal(body.data.installedPath, targetDir);
-    assert.match(readFileSync(join(targetDir, 'SKILL.md'), 'utf8'), /深圳大学校园事务 CLI Skill/);
+    assert.match(readFileSync(join(targetDir, 'SKILL.md'), 'utf8'), /深圳大学—校园事务Skill/);
     assert.equal(existsSync(join(targetDir, 'references', 'commands.md')), true);
     assert.equal(existsSync(join(targetDir, 'agents', 'openai.yaml')), true);
     rmSync(targetRoot, { recursive: true, force: true });

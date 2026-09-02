@@ -1,8 +1,9 @@
 import { existsSync } from 'node:fs';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, rm } from 'node:fs/promises';
 
 import { getProfilePath } from './paths.js';
 import { getLaunchOptions } from './browser-options.js';
+import { assertBrowserAvailable } from './browser.js';
 import { classifyAuthPage } from './auth-detector.js';
 
 const DEFAULT_AUTH_CHECK_URL = 'https://www1.szu.edu.cn/board/';
@@ -24,6 +25,7 @@ export async function loginWithBrowserProfile(options = {}) {
     };
   }
 
+  const browser = assertBrowserAvailable();
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(profilePath, getLaunchOptions({
     headless: options.headless ?? false
@@ -41,18 +43,40 @@ export async function loginWithBrowserProfile(options = {}) {
       closed: options.waitForClose !== false,
       url: finalUrl,
       profilePath,
+      browser: browser.id,
       backend: 'playwright',
       message: options.waitForClose === false
         ? 'Complete login in the opened browser window, then close it when finished.'
-        : 'Browser was closed. Rerun `szu-cli auth status --json` to verify login.'
+        : 'Browser was closed. Rerun `szu-cli auth status` to verify login.'
     };
   } finally {
     await context.close().catch(() => {});
   }
 }
 
-export async function getAuthStatus(options = {}) {
+export async function logoutBrowserProfile() {
   const profilePath = getProfilePath();
+  const profileExists = existsSync(profilePath);
+
+  try {
+    await rm(profilePath, { recursive: true, force: true });
+  } catch (cause) {
+    const error = new Error('Unable to clear the SZU browser login profile.');
+    error.code = 'AUTH_LOGOUT_FAILED';
+    error.hint = 'Close any szu-cli browser window and retry `szu-cli auth logout`.';
+    error.cause = cause;
+    throw error;
+  }
+
+  return {
+    loggedOut: true,
+    profileExisted: profileExists,
+    profilePath
+  };
+}
+
+export async function getAuthStatus(options = {}) {
+  const profilePath = getProfilePath({ persist: false });
   const profileExists = existsSync(profilePath);
 
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
@@ -97,10 +121,11 @@ export async function getAuthStatus(options = {}) {
 }
 
 async function checkAuthWithBrowser(options) {
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     options.profilePath,
-    getLaunchOptions({ headless: options.headless })
+    getLaunchOptions({ headless: options.headless, persist: false })
   );
 
   try {

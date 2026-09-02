@@ -1,10 +1,7 @@
-import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { getSelectedBrowser, getSzuHome } from './browser.js';
 
-export function getSzuHome() {
-  return process.env.SZU_CLI_HOME || join(homedir(), '.szu-cli');
-}
+export { getSzuHome } from './browser.js';
 
-export function getProfilePath() {
-  return join(getSzuHome(), 'browser-profile');
+export function getProfilePath(options = {}) {
+  return getSelectedBrowser(options).profilePath;
 }

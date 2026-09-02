@@ -27,7 +27,7 @@ test('installGlobal installs the CLI and skill globally through npm and npx', as
         'add',
         'https://github.com/AwesomeHou/szu-cli',
         '--skill',
-        'szu-campus',
+        'szu-cli-skill',
         '--yes',
         '--global'
       ]

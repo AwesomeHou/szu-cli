@@ -3,7 +3,7 @@ import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const SKILL_NAME = 'szu-campus';
+const SKILL_NAME = 'szu-cli-skill';
 
 export async function getSkillPath() {
   const sourcePath = bundledSkillPath();
@@ -70,7 +70,7 @@ function defaultSkillRoot(target) {
 }
 
 function bundledSkillPath() {
-  return fileURLToPath(new URL('../../skills/szu-campus', import.meta.url));
+  return fileURLToPath(new URL('../../skills/szu-cli-skill', import.meta.url));
 }
 
 async function assertSkillExists(sourcePath) {

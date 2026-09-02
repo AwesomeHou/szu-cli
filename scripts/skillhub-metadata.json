@@ -1,11 +1,14 @@
 {
-  "slug": "szu-campus",
-  "version": "0.2.1",
-  "displayName": "深圳大学校园事务 CLI",
-  "summary": "面向深圳大学校园事务的 agent skill，指导 agent 安全调用本地 szu-cli 完成校园查询与体育预约操作。",
+  "slug": "szu-cli-skill",
+  "version": "0.2.2",
+  "displayName": "深圳大学—校园事务Skill",
+  "displayNameEn": "Shenzhen University — Campus Services Skill",
+  "summary": "通过自然语言完成公文通、课表、成绩、电费、图书馆文献查询，健身房预约，知网论文下载......能力涵盖公文通、深圳大学网上办事大厅、深圳大学图书馆内的10+个模块。（深大学生自行制作，非官方，如有任何问题可在github.com/AwesomeHou/szu-cli 上进行反馈或通过电子邮件与我取得联系）",
+  "summaryEn": "Use natural language to query notices, timetables, grades, electricity balances, library literature, and CNKI papers, as well as reserve gym facilities. Covers 10+ modules across Shenzhen University notices, eHall, and the university library. Built by Shenzhen University students; unofficial. For issues, please provide feedback at github.com/AwesomeHou/szu-cli or contact me by email.",
   "tags": [
     "深圳大学",
     "校园事务",
+    "szu-cli-skill",
     "CLI",
     "agent",
     "szu-cli"

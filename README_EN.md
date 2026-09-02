@@ -9,6 +9,8 @@
 
 It provides stable commands and structured JSON output for common campus workflows, reuses a local persistent browser login profile, and never stores account passwords.
 
+The connector and Skill are student-made and unofficial. For issues, please provide feedback at [github.com/AwesomeHou/szu-cli](https://github.com/AwesomeHou/szu-cli) or contact the author by email.
+
 ## Installation and Quick Start
 
 Requires Node.js 20 or newer, with `npm`/`npx` available.
@@ -24,15 +26,15 @@ npx szu-cli@latest install
 This command:
 
 1. Installs `szu-cli@latest` globally through npm so that the `szu-cli` command is available directly.
-2. Runs `npx skills add` to install the `szu-campus` skill globally for the mainstream AI Agents detected in the current environment.
+2. Runs `npx skills add` to install the `szu-cli-skill` skill globally for the mainstream AI Agents detected in the current environment.
 
-See [Supported Agents](https://github.com/vercel-labs/skills/blob/main/README.md#supported-agents) for the supported agents and their project/global skill directories, including Codex, Claude Code, and Cursor. WorkBuddy users can search for `szu-campus` in the WorkBuddy skill store and install it directly.
+See [Supported Agents](https://github.com/vercel-labs/skills/blob/main/README.md#supported-agents) for the supported agents and their project/global skill directories, including Codex, Claude Code, and Cursor. WorkBuddy users can install “Shenzhen University Campus Services” from the Connector marketplace or search for `szu-cli-skill` in the Skill marketplace.
 
 Initialize the browser login profile:
 
 ```bash
 szu-cli auth login
-szu-cli auth status --json
+szu-cli auth status
 ```
 
 ### Quick Start (AI Agent)
@@ -48,7 +50,7 @@ npx szu-cli@latest install
 Step 2 — Check the environment:
 
 ```bash
-szu-cli doctor --json
+szu-cli doctor
 ```
 
 Step 3 — Log in:
@@ -60,17 +62,27 @@ szu-cli auth login
 Step 4 — Verify the login state:
 
 ```bash
-szu-cli auth status --json
+szu-cli auth status
 ```
 
-`auth login` opens a persistent browser profile. Complete login in the normal browser window; later commands reuse the session stored under `~/.szu-cli/browser-profile/`.
+`auth login` opens a persistent browser profile. Complete login in the normal browser window; later commands reuse the session stored under a browser-specific directory under `~/.szu-cli/browser-profiles/`.
 
-Windows uses the system Chrome channel by default. To use Edge instead:
+All commands output JSON by default; `--json` remains accepted for backward compatibility. The CLI prefers the user's selected or system-default Chrome/Edge and keeps separate CLI profiles for Chrome, Edge, and Chromium.
+
+The supported backends are Google Chrome, Microsoft Edge, and Playwright Chromium. Safari, Firefox, and other default browsers are not reused directly.
+
+Inspect browser availability, or install the recommended Playwright Chromium after explicit confirmation when no Chrome/Edge is available:
+
+```bash
+szu-cli browser status
+szu-cli browser install chromium --yes
+```
+
+To use Edge instead:
 
 ```powershell
-$env:SZU_BROWSER_CHANNEL='msedge'
+$env:SZU_BROWSER='edge'
 szu-cli auth login
-szu-cli auth status --json
 ```
 
 ### Install Only the CLI or Skill
@@ -84,24 +96,24 @@ npm install --global szu-cli
 Install only the skill:
 
 ```bash
-npx --yes skills add https://github.com/AwesomeHou/szu-cli --skill szu-campus --yes --global
+npx --yes skills add https://github.com/AwesomeHou/szu-cli --skill szu-cli-skill --yes --global
 ```
 
 ## Current Capabilities
 
 | Module | Implemented functionality | Example commands |
 |---|---|---|
-| Environment and authentication | Check the runtime, browser backend, and current login state | `szu-cli doctor --json`<br>`szu-cli auth status --json` |
-| Campus notices | List and search notices, then read body text and attachment metadata | `szu-cli notice list --limit 10 --json`<br>`szu-cli notice search 奖学金 --json` |
-| Personal timetable | Query the current-term timetable or today's classes | `szu-cli course list --json`<br>`szu-cli course today --json` |
-| Class timetables and programs | Query class timetables, training programs, and curriculum modules | `szu-cli timetable classes --limit 5 --json`<br>`szu-cli program list --limit 5 --json` |
-| Grades and academic progress | Query grades, GPA, ideology credits, and training-plan completion | `szu-cli grade list --json`<br>`szu-cli completion summary --json` |
-| Innovation lectures | Query registerable lectures, lecture details, and personal progress | `szu-cli lecture list --json`<br>`szu-cli lecture progress --json` |
-| Sports venues | Query venues and available slots, then preview reservations or cancellations | `szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --json`<br>`szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --field 一楼健身房 --dry-run --json` |
-| Dorm electricity | List supported buildings and query a room's remaining electricity | `szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838 --json` |
-| Library catalog | Search books and query locations, call numbers, and loan status | `szu-cli library search 交通设计 --json`<br>`szu-cli library item 3706432 --json` |
-| CNKI | Search article metadata and details in a visible browser | `szu-cli cnki search 交通设计 --headed --json` |
-| Wanfang | Search article metadata and details in a visible browser | `szu-cli wanfang search 交通设计 --headed --json` |
+| Environment and authentication | Check the runtime, browser backend, and current login state | `szu-cli doctor`<br>`szu-cli auth status` |
+| Campus notices | List and search notices, then read body text and attachment metadata | `szu-cli notice list --limit 10`<br>`szu-cli notice search 奖学金` |
+| Personal timetable | Query the current-term timetable or today's classes | `szu-cli course list`<br>`szu-cli course today` |
+| Class timetables and programs | Query class timetables, training programs, and curriculum modules | `szu-cli timetable classes --limit 5`<br>`szu-cli program list --limit 5` |
+| Grades and academic progress | Query grades, GPA, ideology credits, and training-plan completion | `szu-cli grade list`<br>`szu-cli completion summary` |
+| Innovation lectures | Query registerable lectures, lecture details, and personal progress | `szu-cli lecture list`<br>`szu-cli lecture progress` |
+| Sports venues | Query venues and available slots, then preview reservations or cancellations | `szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08`<br>`szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --field 一楼健身房 --dry-run` |
+| Dorm electricity | List supported buildings and query a room's remaining electricity | `szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838` |
+| Library catalog | Search books and query locations, call numbers, and loan status | `szu-cli library search 交通设计`<br>`szu-cli library item 3706432` |
+| CNKI | Search article metadata and details in a visible browser | `szu-cli cnki search 交通设计 --headed` |
+| Wanfang | Search article metadata and details in a visible browser | `szu-cli wanfang search 交通设计 --headed` |
 
 See the Chinese [README](README.md) and the [CLI Contract](docs/cli-contract.md) for more commands.
 
@@ -111,7 +123,7 @@ See the Chinese [README](README.md) and the [CLI Contract](docs/cli-contract.md)
 Agent or user
   -> szu-cli command contract
   -> campus service modules
-  -> direct / WebVPN gateway
+  -> direct campus access
   -> Playwright persistent browser profile
   -> Shenzhen University web systems
 ```
@@ -121,7 +133,7 @@ The skill only teaches agents when and how to call `szu-cli` safely. Login state
 ## Safety Boundaries
 
 - Never collect account passwords.
-- Never bypass login, CAPTCHA, WebVPN, access control, or rate limits.
+- Never bypass login, CAPTCHA, campus network restrictions, access control, or rate limits.
 - Prefer read-only capabilities by default.
 - Do not perform high-frequency scraping or bulk downloads.
 - State-changing commands must support `--dry-run`. Live `sports reserve` and `sports cancel` operations require explicit `--confirm`; automatic payment and payment cancellation are not supported.

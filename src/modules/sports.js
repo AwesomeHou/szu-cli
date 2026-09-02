@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 
 import { classifyAuthPage } from './auth-detector.js';
+import { assertBrowserAvailable } from './browser.js';
 import { getLaunchOptions } from './browser-options.js';
 import { getProfilePath } from './paths.js';
 import {
@@ -139,6 +140,7 @@ export async function cancelSportsBooking(options = {}) {
     };
   }
   const profilePath = getProfilePath();
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,
@@ -182,6 +184,7 @@ export async function cancelSportsBooking(options = {}) {
 async function submitSportsReservation(options, slots) {
   const dryRun = buildSportsReserveDryRunPayload(slots, options.slot, options.field);
   const profilePath = getProfilePath();
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,
@@ -273,6 +276,7 @@ async function loadSportsPage(options) {
     throw error;
   }
 
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,
@@ -362,6 +366,7 @@ async function loadSportsSlotsByDate(options) {
     throw error;
   }
 
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,
@@ -415,6 +420,7 @@ async function loadSportsBookingsPage(options) {
     error.hint = `Run \`szu-cli auth login --url ${SPORTS_URL}\` first.`;
     throw error;
   }
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,

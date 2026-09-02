@@ -1,4 +1,5 @@
 import { getLaunchOptions } from './browser-options.js';
+import { assertBrowserAvailable } from './browser.js';
 import {
   buildElectricityQueryPayload,
   normalizeCampusOptions,
@@ -143,7 +144,7 @@ async function gotoElectricity(page, url = ELECTRICITY_ENTRY_URL) {
   } catch (cause) {
     const error = new Error('SZU electricity intranet system is not reachable.');
     error.code = 'NETWORK_REQUIRED';
-    error.hint = 'Connect to the campus network first. WebVPN for this service is not implemented yet.';
+    error.hint = 'Connect to the campus network first, then retry the electricity query.';
     error.cause = cause;
     throw error;
   }
@@ -174,7 +175,7 @@ async function resolveQueryOptions(options = {}) {
       ? `Could not find electricity building: ${options.building}.`
       : `Electricity building is ambiguous: ${options.building}.`);
     error.code = 'UNKNOWN_ERROR';
-    error.hint = 'Run `szu-cli electricity buildings --json` and use the exact campus/building names.';
+    error.hint = 'Run `szu-cli electricity buildings` and use the exact campus/building names.';
     throw error;
   }
 
@@ -196,6 +197,7 @@ function normalizeText(value) {
 }
 
 async function launchContext(options) {
+  assertBrowserAvailable();
   const { chromium } = await importPlaywright();
   const browser = await chromium.launch(getLaunchOptions({ headless: options.headless ?? true }));
   const context = await browser.newContext();
@@ -223,7 +225,7 @@ function mockBuildings() {
   if (process.env.SZU_MOCK_ELECTRICITY_NETWORK === 'down') {
     const error = new Error('SZU electricity intranet system is not reachable.');
     error.code = 'NETWORK_REQUIRED';
-    error.hint = 'Connect to the campus network first. WebVPN for this service is not implemented yet.';
+    error.hint = 'Connect to the campus network first, then retry the electricity query.';
     throw error;
   }
 

@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 
 import { classifyAuthPage } from './auth-detector.js';
+import { assertBrowserAvailable } from './browser.js';
 import { getLaunchOptions } from './browser-options.js';
 import {
   buildCompletionContextForm,
@@ -133,6 +134,7 @@ async function loadCompletionApi(options, mode, moduleCode = null) {
     throw error;
   }
 
+  assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
   const context = await chromium.launchPersistentContext(
     profilePath,
@@ -311,7 +313,7 @@ function calculationTimeout(progress, timeoutSeconds) {
 function moduleNotFound(moduleCode) {
   const error = new Error(`Academic Completion module was not found: ${moduleCode}.`);
   error.code = 'MODULE_NOT_FOUND';
-  error.hint = 'Run `szu-cli completion modules --json` to get a valid moduleCode.';
+  error.hint = 'Run `szu-cli completion modules` to get a valid moduleCode.';
   return error;
 }
 
