@@ -1,0 +1,7 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "wanfang.command-item-one", "argvPrefix": ["szu-cli", "wanfang", "item"], "argvContains": ["gcjs202404001"], "min": 1, "max": 1 }, { "rule": "wanfang.command-download-one", "argvPrefix": ["szu-cli", "wanfang", "download"], "argvContains": ["gcjs202404001", "--headed"], "min": 1, "max": 1 }], "sequences": [{ "rule": "wanfang.item-before-download", "steps": [{ "argvPrefix": ["szu-cli", "wanfang", "item"] }, { "argvPrefix": ["szu-cli", "wanfang", "download"] }] }] },
+  "result": { "requiredMetaCommand": "wanfang download", "requiredBackend": "mock" },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.meta-command", "result.required-backend", "wanfang.command-item-one", "wanfang.command-download-one", "wanfang.item-before-download"]
+}

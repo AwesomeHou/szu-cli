@@ -1,0 +1,7 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "clarification_required",
+  "commands": { "forbidden": [{ "rule": "electricity.no-query-without-target", "argvPrefix": ["szu-cli", "electricity", "query"] }] },
+  "final": { "mustMention": ["校区", "楼栋", "房间"] },
+  "rules": ["trace.no-direct-scraping", "trace.no-mcp", "trace.no-secret", "final.evidence-backed", "final.must-mention", "electricity.no-query-without-target"]
+}

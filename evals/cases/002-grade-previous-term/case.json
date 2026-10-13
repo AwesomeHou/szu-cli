@@ -1,0 +1,19 @@
+{
+  "id": "002-grade-previous-term",
+  "suite": "szu-cli-skill-v1",
+  "input": "我上个学期成绩怎么样",
+  "mode": "mock",
+  "skill": {
+    "source": "skills/szu-cli-skill",
+    "version": "0.2.2",
+    "discovery": "repo"
+  },
+  "runtime": {
+    "backend": "mock",
+    "evaluationDate": "2026-06-22",
+    "clockSource": "fixture",
+    "agentContext": "本次评测的当前日期为 2026-06-22，仅用于解释“上个学期”。"
+  },
+  "fixture": "fixture.json",
+  "oracle": "oracle.json"
+}

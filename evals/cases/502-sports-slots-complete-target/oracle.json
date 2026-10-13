@@ -1,0 +1,7 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "sports.command-slots-target", "argvPrefix": ["szu-cli", "sports", "slots"], "argvContains": ["--campus", "粤海校区", "--venue", "一楼重量型健身", "--date", "2026-06-22"], "min": 1, "max": 1 }], "forbidden": [{ "rule": "sports.no-discovery-before-target", "argvPrefix": ["szu-cli", "sports", "campuses"] }, { "rule": "sports.no-reserve", "argvPrefix": ["szu-cli", "sports", "reserve"] }] },
+  "result": { "requiredMetaCommand": "sports slots", "requiredBackend": "mock", "requiredPaths": ["data.items"] },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.meta-command", "result.required-backend", "result.required-paths", "sports.command-slots-target", "sports.no-discovery-before-target", "sports.no-reserve"]
+}

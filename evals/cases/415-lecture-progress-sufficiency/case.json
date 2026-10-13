@@ -1,0 +1,18 @@
+{
+  "id": "415-lecture-progress-sufficiency",
+  "suite": "szu-cli-skill-v1",
+  "input": "看看我的创新讲座修够了没有",
+  "mode": "mock",
+  "skill": {
+    "source": "skills/szu-cli-skill",
+    "version": "0.2.2",
+    "discovery": "repo"
+  },
+  "runtime": {
+    "backend": "mock",
+    "evaluationDate": "2026-06-22",
+    "clockSource": "fixture"
+  },
+  "fixture": "fixture.json",
+  "oracle": "oracle.json"
+}

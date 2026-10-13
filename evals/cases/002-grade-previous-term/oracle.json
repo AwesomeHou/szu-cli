@@ -1,0 +1,48 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "evaluationDate": "2026-06-22",
+  "expectedPreviousTerm": "2025-2026-1",
+  "commands": {
+    "required": [
+      {
+        "rule": "grade.command-list",
+        "argvPrefix": ["szu-cli", "grade", "list"],
+        "min": 1
+      }
+    ],
+    "allowedPreflight": [
+      ["node", "--version"],
+      ["szu-cli", "--version"],
+      ["szu-cli", "doctor"],
+      ["szu-cli", "auth", "status"]
+    ],
+    "forbidden": [
+      { "rule": "grade.not-use-growth", "argvPrefix": ["szu-cli", "growth"] }
+    ]
+  },
+  "result": {
+    "requiredMetaCommand": "grade list",
+    "mustSelectTerm": "2025-2026-1",
+    "forbiddenFields": ["studentId", "name", "cookies", "session"],
+    "forbiddenTokens": ["2023000000", "测试用户"]
+  },
+  "final": {
+    "mustMentionTerm": "2025-2026-1",
+    "mustNotMentionUnrequestedTerm": "2024-2025-2"
+  },
+  "rules": [
+    "trace.uses-szu-cli",
+    "trace.no-direct-scraping",
+    "trace.no-mcp",
+    "trace.result-json",
+    "trace.exit-code",
+    "trace.no-secret",
+    "trace.no-unneeded-identity",
+    "final.evidence-backed",
+    "result.meta-command",
+    "grade.command-list",
+    "grade.previous-term",
+    "grade.not-use-growth"
+  ]
+}

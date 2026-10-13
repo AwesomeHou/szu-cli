@@ -1,0 +1,56 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": {
+    "required": [
+      {
+        "rule": "lecture.command-progress",
+        "argvPrefix": ["szu-cli", "lecture", "progress"],
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "allowedPreflight": [
+      ["node", "--version"],
+      ["szu-cli", "--version"],
+      ["szu-cli", "doctor"],
+      ["szu-cli", "auth", "status"]
+    ],
+    "forbidden": [
+      { "rule": "lecture.not-use-list", "argvPrefix": ["szu-cli", "lecture", "list"] }
+    ]
+  },
+  "result": {
+    "requiredMetaCommand": "lecture progress",
+    "requiredPaths": [
+      "data.percentage",
+      "data.offline.completed",
+      "data.offline.required",
+      "data.offline.remaining",
+      "data.offline.passed",
+      "data.online.completed",
+      "data.online.required",
+      "data.online.remaining",
+      "data.online.passed"
+    ],
+    "forbiddenTokens": ["2023000000", "测试用户"]
+  },
+  "final": {
+    "mustMention": ["100", "修够"]
+  },
+  "rules": [
+    "trace.uses-szu-cli",
+    "trace.no-direct-scraping",
+    "trace.no-mcp",
+    "trace.result-json",
+    "trace.exit-code",
+    "trace.no-secret",
+    "trace.no-unneeded-identity",
+    "final.evidence-backed",
+    "result.meta-command",
+    "result.required-paths",
+    "final.must-mention",
+    "lecture.command-progress",
+    "lecture.not-use-list"
+  ]
+}

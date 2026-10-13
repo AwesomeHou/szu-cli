@@ -40,6 +40,10 @@ screenshots/
 captures/
 fixtures/private/
 
+# Skill eval runtime artifacts
+evals/runs/*
+!evals/runs/.gitkeep
+
 # OS and editor files
 .DS_Store
 Thumbs.db

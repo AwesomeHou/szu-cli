@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Skill Eval Case",
+  "type": "object",
+  "required": ["id", "suite", "input", "mode", "skill", "runtime", "fixture", "oracle"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[0-9]{3}-[a-z0-9-]+$" },
+    "suite": { "type": "string" },
+    "input": { "type": "string", "minLength": 1 },
+    "mode": { "enum": ["mock", "no-tool"] },
+    "skill": {
+      "type": "object",
+      "required": ["source", "version", "discovery"],
+      "properties": {
+        "source": { "type": "string" },
+        "version": { "type": "string" },
+        "discovery": { "const": "repo" }
+      },
+      "additionalProperties": false
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["backend", "evaluationDate"],
+      "properties": {
+        "backend": { "enum": ["mock", "none"] },
+        "evaluationDate": { "type": "string", "format": "date" },
+        "clockSource": { "type": "string" },
+        "agentContext": { "type": "string" },
+        "stopAfter": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "fixture": { "type": ["string", "null"] },
+    "oracle": { "type": "string" }
+  },
+  "additionalProperties": false
+}

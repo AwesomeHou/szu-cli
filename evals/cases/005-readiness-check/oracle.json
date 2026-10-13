@@ -1,0 +1,13 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": {
+    "required": [
+      { "rule": "readiness.command-doctor", "argvPrefix": ["szu-cli", "doctor"], "min": 1, "max": 1 },
+      { "rule": "readiness.command-auth-status", "argvPrefix": ["szu-cli", "auth", "status"], "min": 1, "max": 1 }
+    ],
+    "sequences": [{ "rule": "readiness.doctor-before-auth", "steps": [{ "argvPrefix": ["szu-cli", "doctor"] }, { "argvPrefix": ["szu-cli", "auth", "status"] }] }]
+  },
+  "result": { "requiredBackend": "mock" },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.required-backend", "readiness.command-doctor", "readiness.command-auth-status", "readiness.doctor-before-auth"]
+}

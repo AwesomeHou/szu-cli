@@ -1,0 +1,5 @@
+{
+  "backend": "szu-cli-mock",
+  "env": { "SZU_BROWSER_BACKEND": "mock", "SZU_MOCK_AUTH_LOGGED_IN": "true", "SZU_MOCK_AUTH_PROFILE_EXISTS": "true", "SZU_MOCK_PROGRAM_TEXT": "全校方案查询 培养方案 个人中心 安全退出" },
+  "envFiles": { "SZU_MOCK_PROGRAM_API_JSON": "../../../tests/fixtures/program-api.json" }
+}

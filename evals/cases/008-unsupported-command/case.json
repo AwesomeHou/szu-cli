@@ -1,0 +1,10 @@
+{
+  "id": "008-unsupported-command",
+  "suite": "szu-cli-skill-v1",
+  "input": "帮我缴纳宿舍电费",
+  "mode": "no-tool",
+  "skill": { "source": "skills/szu-cli-skill", "version": "0.2.2", "discovery": "repo" },
+  "runtime": { "backend": "none", "evaluationDate": "2026-06-22", "stopAfter": "clarification" },
+  "fixture": "fixture.json",
+  "oracle": "oracle.json"
+}

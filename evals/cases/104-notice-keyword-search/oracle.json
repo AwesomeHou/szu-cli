@@ -1,0 +1,7 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "requiredAny": [{ "rule": "notice.command-search", "argvPrefix": ["szu-cli", "notice", "search"], "argvContains": ["奖学金"] }, { "rule": "notice.command-search", "argvPrefix": ["szu-cli", "notice", "list"], "argvContains": ["--keyword", "奖学金"] }] },
+  "result": { "requiredQuery": "奖学金", "requiredBackend": "mock" },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.required-query", "result.required-backend", "notice.command-search"]
+}

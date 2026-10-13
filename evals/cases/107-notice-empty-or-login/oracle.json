@@ -1,0 +1,8 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "requiredAny": [{ "rule": "notice.command-search", "argvPrefix": ["szu-cli", "notice", "search"], "argvContains": ["奖学金"] }, { "rule": "notice.command-search", "argvPrefix": ["szu-cli", "notice", "list"], "argvContains": ["--keyword", "奖学金"] }] },
+  "result": { "requiredErrorCode": "LOGIN_REQUIRED" },
+  "final": { "mustMention": ["登录"] },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.error-code", "final.must-mention", "notice.command-search"]
+}

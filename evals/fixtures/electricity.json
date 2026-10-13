@@ -1,0 +1,4 @@
+{
+  "campuses": [{ "name": "深大新斋区", "client": "192.168.84.87", "buildings": [{ "name": "红豆斋", "id": "18120" }] }],
+  "query": { "records": [{ "index": 1, "room": "838", "remainingKwh": 338.88, "totalUsedKwh": 21424.6, "totalPurchasedKwh": 21763.49, "recordedAt": "2026-01-02 23:59:01" }] }
+}

@@ -1,0 +1,8 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "auth.command-status", "argvPrefix": ["szu-cli", "auth", "status"], "min": 1, "max": 1 }], "forbidden": [{ "rule": "auth.no-login", "argvPrefix": ["szu-cli", "auth", "login"] }] },
+  "result": { "requiredMetaCommand": "auth status", "requiredBackend": "mock" },
+  "final": { "mustMention": ["登录"] },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.meta-command", "result.required-backend", "final.must-mention", "auth.command-status", "auth.no-login"]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "603-electricity-missing-ambiguous",
+  "suite": "szu-cli-skill-v1",
+  "input": "查我的宿舍电费",
+  "mode": "no-tool",
+  "skill": { "source": "skills/szu-cli-skill", "version": "0.2.2", "discovery": "repo" },
+  "runtime": { "backend": "none", "evaluationDate": "2026-06-22", "stopAfter": "clarification" },
+  "fixture": "fixture.json",
+  "oracle": "oracle.json"
+}

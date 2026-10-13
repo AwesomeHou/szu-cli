@@ -1,0 +1,10 @@
+{
+  "id": "213-timetable-class-not-found",
+  "suite": "szu-cli-skill-v1",
+  "input": "查看班级 missing-class 的课表",
+  "mode": "mock",
+  "skill": { "source": "skills/szu-cli-skill", "version": "0.2.2", "discovery": "repo" },
+  "runtime": { "backend": "mock", "evaluationDate": "2026-06-22" },
+  "fixture": "fixture.json",
+  "oracle": "oracle.json"
+}

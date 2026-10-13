@@ -1,0 +1,5 @@
+{
+  "backend": "szu-cli-mock",
+  "env": { "SZU_BROWSER_BACKEND": "mock", "SZU_MOCK_AUTH_LOGGED_IN": "true", "SZU_MOCK_AUTH_PROFILE_EXISTS": "true", "SZU_MOCK_CNKI_PDF_TEXT": "%PDF-1.4 redacted mock" },
+  "envFiles": { "SZU_MOCK_CNKI_JSON": "../../fixtures/cnki.json" }
+}

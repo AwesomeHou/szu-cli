@@ -1,0 +1,5 @@
+{
+  "backend": "szu-cli-mock",
+  "env": { "SZU_BROWSER_BACKEND": "mock", "SZU_MOCK_AUTH_LOGGED_IN": "true", "SZU_MOCK_AUTH_PROFILE_EXISTS": "true" },
+  "envFiles": { "SZU_MOCK_WANFANG_JSON": "../../fixtures/wanfang.json" }
+}

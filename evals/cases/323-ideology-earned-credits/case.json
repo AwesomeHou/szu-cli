@@ -1,0 +1,17 @@
+{
+  "id": "323-ideology-earned-credits",
+  "suite": "szu-cli-skill-v1",
+  "input": "看看我思政学分有多少了",
+  "mode": "mock",
+  "skill": {
+    "source": "skills/szu-cli-skill",
+    "version": "0.2.2",
+    "discovery": "repo"
+  },
+  "runtime": {
+    "backend": "mock",
+    "evaluationDate": "2026-06-22"
+  },
+  "fixture": "fixture.json",
+  "oracle": "oracle.json"
+}

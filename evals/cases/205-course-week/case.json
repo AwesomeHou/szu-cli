@@ -1,0 +1,19 @@
+{
+  "id": "205-course-week",
+  "suite": "szu-cli-skill-v1",
+  "input": "我这周课表怎么样",
+  "mode": "mock",
+  "skill": {
+    "source": "skills/szu-cli-skill",
+    "version": "0.2.2",
+    "discovery": "repo"
+  },
+  "runtime": {
+    "backend": "mock",
+    "evaluationDate": "2026-06-22",
+    "clockSource": "fixture",
+    "agentContext": "本次评测的当前日期为 2026-06-22，仅用于解释“这周”。"
+  },
+  "fixture": "fixture.json",
+  "oracle": "oracle.json"
+}

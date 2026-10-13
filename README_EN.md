@@ -9,7 +9,7 @@
 
 It provides stable commands and structured JSON output for common campus workflows, reuses a local persistent browser login profile, and never stores account passwords.
 
-The connector and Skill are student-made and unofficial. For issues, please provide feedback at [github.com/AwesomeHou/szu-cli](https://github.com/AwesomeHou/szu-cli) or contact the author by email.
+The connector and Skill are made by Shenzhen University students and are unofficial. If you have any issues, please provide feedback at [github.com/AwesomeHou/szu-cli](https://github.com/AwesomeHou/szu-cli) or contact me by email.
 
 ## Installation and Quick Start
 

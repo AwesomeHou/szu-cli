@@ -1,0 +1,7 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "library.command-advanced-search", "argvPrefix": ["szu-cli", "library", "search"], "argvContains": ["--title", "交通设计", "--author", "刘立新"], "min": 1, "max": 1 }, { "rule": "library.command-item", "argvPrefix": ["szu-cli", "library", "item", "3706432"], "min": 1, "max": 1 }], "sequences": [{ "rule": "library.search-before-item", "steps": [{ "argvPrefix": ["szu-cli", "library", "search"] }, { "argvPrefix": ["szu-cli", "library", "item"] }] }] },
+  "result": { "requiredMetaCommand": "library item", "requiredBackend": "mock", "requiredPaths": ["data.copies[].location"] },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.meta-command", "result.required-backend", "result.required-paths", "library.command-advanced-search", "library.command-item", "library.search-before-item"]
+}

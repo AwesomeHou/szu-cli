@@ -21,6 +21,7 @@ assert(meta.source === 'szu-cli', 'connector source must be szu-cli');
 assert(/^[a-z0-9-]+$/.test(meta.source), 'connector source must use kebab-case');
 assert(meta.type === 'cli', 'connector type must be cli');
 assert(meta.version === packageInfo.version, 'connector version must match package.json');
+assert(meta.minWorkbuddyVersion === '4.22.12', 'minimum WorkBuddy version must be declared');
 assert(Array.isArray(meta.examples_zh) && meta.examples_zh.length >= 2, 'Chinese examples are required');
 assert(Array.isArray(meta.examples_en) && meta.examples_en.length >= 2, 'English examples are required');
 
@@ -35,10 +36,14 @@ for (const platform of ['darwin', 'linux', 'win32']) {
   assert(cli.unAuth?.[platform], `unAuth.${platform} is required`);
   assert(cli.init[platform].includes(`szu-cli@${packageInfo.version}`), `init.${platform} is out of sync`);
 }
-assert(cli.auth?.includes('auth login'), 'auth login command is required');
+const authCommands = typeof cli.auth === 'string' ? [cli.auth] : Object.values(cli.auth ?? {});
+assert(authCommands.length > 0 && authCommands.every((command) => command.includes('auth login')), 'auth login command is required');
+assert(typeof cli.auth === 'object' && ['darwin', 'linux', 'win32'].every((platform) => cli.auth[platform]), 'auth must cover all platforms');
+assert(authCommands.every((command) => command.includes('--workbuddy')), 'WorkBuddy auth mode is required');
 assert(Object.values(cli.status).every((command) => command.includes('auth status')), 'status commands are out of sync');
 assert(Object.values(cli.unAuth).every((command) => command.includes('auth logout')), 'unAuth commands are out of sync');
 assert(cli.statusMatch || cli.statusMatchJson, 'statusMatch or statusMatchJson is required');
+assert(cli.authWaitForExit === true && cli.authSuppressBrowser === true, 'WorkBuddy auth lifecycle flags are required');
 
 const skillText = await readFile(join(skillRoot, 'SKILL.md'), 'utf8');
 const frontmatter = skillText.match(/^---\r?\n([\s\S]*?)\r?\n---/);

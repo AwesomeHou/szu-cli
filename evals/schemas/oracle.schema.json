@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Skill Eval L0 Oracle",
+  "type": "object",
+  "required": ["ruleset", "outcome", "commands", "result", "final", "rules"],
+  "properties": {
+    "ruleset": { "const": "l0-v1" },
+    "outcome": { "enum": ["success", "clarification_required"] },
+    "evaluationDate": { "type": "string", "format": "date" },
+    "expectedPreviousTerm": { "type": "string" },
+    "commands": { "type": "object" },
+    "result": { "type": "object" },
+    "final": { "type": "object" },
+    "rules": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false
+}

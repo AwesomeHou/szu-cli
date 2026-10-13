@@ -1,0 +1,7 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "privacy.command-summary", "argvPrefix": ["szu-cli", "growth", "summary"], "min": 1, "max": 1 }] },
+  "result": { "requiredBackend": "mock", "forbiddenTokens": ["2023000000", "测试用户", "cookies", "session"] },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "trace.no-unneeded-identity", "final.evidence-backed", "result.required-backend", "privacy.command-summary"]
+}

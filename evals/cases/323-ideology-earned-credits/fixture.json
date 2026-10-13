@@ -1,0 +1,16 @@
+{
+  "backend": "szu-cli-mock",
+  "env": {
+    "SZU_BROWSER_BACKEND": "mock",
+    "SZU_MOCK_AUTH_URL": "https://www1.szu.edu.cn/board/",
+    "SZU_MOCK_AUTH_TITLE": "校园公文通—深圳大学内部网",
+    "SZU_MOCK_AUTH_TEXT": "个人中心 注销 公文通",
+    "SZU_MOCK_AUTH_LOGGED_IN": "true",
+    "SZU_MOCK_AUTH_PROFILE_EXISTS": "true",
+    "SZU_MOCK_IDEOLOGY_TITLE": "思政与社会实践",
+    "SZU_MOCK_IDEOLOGY_TEXT": "思政与社会实践 学分汇总"
+  },
+  "envFiles": {
+    "SZU_MOCK_IDEOLOGY_API_JSON": "../../../tests/fixtures/ideology-api.json"
+  }
+}

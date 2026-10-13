@@ -21,7 +21,7 @@ export function writeJson(payload) {
 function withDefaults(meta) {
   return {
     gateway: 'auto',
-    backend: 'playwright',
+    backend: process.env.SZU_BROWSER_BACKEND === 'mock' ? 'mock' : 'playwright',
     ...meta
   };
 }

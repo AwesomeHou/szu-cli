@@ -1,0 +1,8 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "sports.command-unavailable-reserve", "argvPrefix": ["szu-cli", "sports", "reserve"], "argvContains": ["--field", "不存在场地", "--dry-run"], "min": 1, "max": 1 }] },
+  "result": { "requiredErrorCode": "SPORTS_FIELD_UNAVAILABLE" },
+  "final": { "mustMention": ["不可用"] },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.error-code", "final.must-mention", "sports.command-unavailable-reserve"]
+}

@@ -1,0 +1,5 @@
+{
+  "status": { "available": true, "authorized": true, "institution": "深圳大学", "requiresHeaded": true, "sourceUrl": "https://c.wanfangdata.com.cn/periodical" },
+  "search": { "keyword": "交通设计", "total": 1, "authorized": true, "institution": "深圳大学", "items": [{ "index": 1, "title": "基于BIM技术的市政交通设计及应用", "authors": ["王老师"], "source": "工程技术研究", "publishedAt": "2024-04-15", "year": "2024", "type": "期刊", "downloadCount": 5, "url": "https://d.wanfangdata.com.cn/periodical/gcjs202404001", "rawText": "基于BIM技术的市政交通设计及应用 王老师 工程技术研究 2024" }], "sourceUrl": "https://s.wanfangdata.com.cn/periodical?q=交通设计" },
+  "item": { "provider": "wanfang", "title": "基于BIM技术的市政交通设计及应用", "authors": ["王老师"], "institutions": ["深圳大学土木与交通工程学院"], "source": "工程技术研究", "publishedAt": "2024-04-15", "year": "2024", "type": "期刊", "abstract": "分析BIM技术在市政交通设计中的应用路径。", "keywords": ["BIM", "市政交通"], "doi": "10.5678/wanfang.gcjs.2024.04.001", "sourceUrl": "https://d.wanfangdata.com.cn/periodical/gcjs202404001" }
+}

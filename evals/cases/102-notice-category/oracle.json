@@ -1,0 +1,7 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "notice.command-category", "argvPrefix": ["szu-cli", "notice", "list"], "argvContains": ["--category", "科研", "--limit", "5"], "min": 1, "max": 1 }] },
+  "result": { "requiredMetaCommand": "notice list", "requiredBackend": "mock" },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.meta-command", "result.required-backend", "notice.command-category"]
+}

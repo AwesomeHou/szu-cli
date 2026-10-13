@@ -1,0 +1,7 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "clarification_required",
+  "commands": { "forbidden": [{ "rule": "unsupported.no-cli", "argvPrefix": ["szu-cli"], "argvNotContains": ["--version"] }] },
+  "final": { "mustMention": ["不支持"] },
+  "rules": ["trace.no-direct-scraping", "trace.no-mcp", "trace.no-secret", "final.evidence-backed", "unsupported.no-cli", "final.must-mention"]
+}

@@ -33,6 +33,8 @@
 - `HEADED_REQUIRED`：在同一学术数据库命令中添加 `--headed` 后重试。
 - `UNSUPPORTED_ACTION`：说明当前 CLI 尚不支持该命令。
 - `UNKNOWN_ERROR`：保留原始错误提示并停止；不要猜测结果或循环重试。
+- 若原始提示包含 `browserType.launchPersistentContext` 和 `Target page, context or browser has been closed`，先检查是否仍有上一条 `szu-cli` 命令在运行。若有，等待并读取该进程结果后再决定下一步；同一 profile 上不能并行启动命令。
+  没有运行中的命令时，仍按本条规则停止并报告。
 
 ## 重试规则
 

@@ -1,0 +1,5 @@
+{
+  "status": { "available": true, "authorized": true, "institution": "深圳大学", "requiresHeaded": true, "sourceUrl": "https://kns.cnki.net/kns8s/?classid=YSTT4HG0" },
+  "search": { "keyword": "交通设计", "total": 1, "authorized": true, "institution": "深圳大学", "items": [{ "index": 1, "title": "城市道路交通拥堵溯源分析方法", "authors": ["杨晓光"], "source": "公路交通科技", "publishedAt": "2024-05-15", "year": "2024", "type": "期刊", "downloadCount": 8, "url": "https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&filename=GLJK202405002", "rawText": "城市道路交通拥堵溯源分析方法 杨晓光 公路交通科技 2024" }], "sourceUrl": "https://kns.cnki.net/kns8s/search?kw=交通设计" },
+  "item": { "provider": "cnki", "title": "城市道路交通拥堵溯源分析方法", "authors": ["杨晓光"], "institutions": ["同济大学交通运输工程学院"], "source": "公路交通科技", "publishedAt": "2024-05-15", "year": "2024", "type": "期刊", "abstract": "系统梳理城市道路交通拥堵溯源分析方法。", "keywords": ["城市道路", "交通拥堵"], "doi": "10.1234/cnki.glkj.2024.05.002", "fund": "国家自然科学基金项目", "classification": "U491", "sourceUrl": "https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&filename=GLJK202405002" }
+}

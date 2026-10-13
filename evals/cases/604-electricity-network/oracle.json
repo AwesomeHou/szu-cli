@@ -1,0 +1,8 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "electricity.command-network-query", "argvPrefix": ["szu-cli", "electricity", "query"], "argvContains": ["--campus", "深大新斋区", "--building", "红豆斋", "--room", "838"], "min": 1, "max": 1 }] },
+  "result": { "requiredErrorCode": "NETWORK_REQUIRED" },
+  "final": { "mustMention": ["网络"] },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.error-code", "final.must-mention", "electricity.command-network-query"]
+}

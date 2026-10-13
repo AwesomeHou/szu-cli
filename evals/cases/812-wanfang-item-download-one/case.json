@@ -1,0 +1,10 @@
+{
+  "id": "812-wanfang-item-download-one",
+  "suite": "szu-cli-skill-v1",
+  "input": "查看并下载这篇万方论文：https://d.wanfangdata.com.cn/periodical/gcjs202404001",
+  "mode": "mock",
+  "skill": { "source": "skills/szu-cli-skill", "version": "0.2.2", "discovery": "repo" },
+  "runtime": { "backend": "mock", "evaluationDate": "2026-06-22" },
+  "fixture": "fixture.json",
+  "oracle": "oracle.json"
+}

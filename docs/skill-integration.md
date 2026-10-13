@@ -63,8 +63,8 @@ szu-cli skill install --target codex
 skill 可以声明最低 CLI 版本：
 
 ```text
-Skill Version: 0.2.2
-Requires: szu-cli >= 0.2.2
+Skill Version: 0.2.3
+Requires: szu-cli >= 0.2.3
 ```
 
 ## Skill 能否安装 CLI
@@ -100,6 +100,8 @@ CLI 默认输出 JSON。浏览器选择优先级为用户选择、已保存选�
 ```bash
 szu-cli auth login
 ```
+
+WorkBuddy 连接器使用 `szu-cli auth login --workbuddy`。该模式由 CLI 自己打开并管理登录浏览器，在登录完成后将认证状态持久化到对应的独立 browser profile。
 
 然后调用只读命令：
 

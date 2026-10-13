@@ -1,0 +1,17 @@
+{
+  "id": "334-completion-remaining-credits",
+  "suite": "szu-cli-skill-v1",
+  "input": "我还差多少学分",
+  "mode": "mock",
+  "skill": {
+    "source": "skills/szu-cli-skill",
+    "version": "0.2.2",
+    "discovery": "repo"
+  },
+  "runtime": {
+    "backend": "mock",
+    "evaluationDate": "2026-06-22"
+  },
+  "fixture": "fixture.json",
+  "oracle": "oracle.json"
+}

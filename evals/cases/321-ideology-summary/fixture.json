@@ -1,0 +1,5 @@
+{
+  "backend": "szu-cli-mock",
+  "env": { "SZU_BROWSER_BACKEND": "mock", "SZU_MOCK_AUTH_LOGGED_IN": "true", "SZU_MOCK_AUTH_PROFILE_EXISTS": "true", "SZU_MOCK_IDEOLOGY_TITLE": "思政与社会实践", "SZU_MOCK_IDEOLOGY_TEXT": "思政与社会实践 学分汇总" },
+  "envFiles": { "SZU_MOCK_IDEOLOGY_API_JSON": "../../../tests/fixtures/ideology-api.json" }
+}

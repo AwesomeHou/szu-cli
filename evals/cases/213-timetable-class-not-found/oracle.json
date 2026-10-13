@@ -1,0 +1,8 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "timetable.command-invalid-view", "argvPrefix": ["szu-cli", "timetable", "view", "missing-class"], "min": 1, "max": 1 }] },
+  "result": { "requiredErrorCode": "CLASS_NOT_FOUND" },
+  "final": { "mustMention": ["班级"] },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.error-code", "final.must-mention", "timetable.command-invalid-view"]
+}

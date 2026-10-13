@@ -13,8 +13,9 @@
 | “帮我查一本叫交通设计的馆藏书” | `szu-cli library search 交通设计` | 详情再用返回的 id 调 `library item`。 |
 | “今晚八点粤海一楼重量健身能约吗” | `szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date <YYYY-MM-DD>` | 先查日期和时段，不把可预约当成已预约。 |
 | “帮我预览预约今晚 20:00 的健身房” | `szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date <YYYY-MM-DD> --slot 20:00-21:00 --field 一楼健身房 --dry-run` | 真实预约必须用户明确要求 `--confirm`。 |
+| “帮我预约今天下午 3 点的健身房” | 先询问校区、场馆和具体场地 | 信息不全时不调用 `sports campuses`、`sports venues` 或 `sports dates`；确认目标后直接查询该日期的可用时段。 |
 | “取消刚才那条健身房预约” | `szu-cli sports bookings`，再 `szu-cli sports cancel --order <orderNo> --dry-run` | 先确认订单号；真实取消必须用户明确要求 `--confirm`。 |
 | “我还差哪些学分，哪些课能补” | `szu-cli completion modules`，再 `szu-cli completion courses --module <moduleCode>` | 以模块为单位看已修和未修课程。 |
-| “查一下绩点和排名” | `szu-cli growth summary` | 不要从成绩表自行重算。 |
+| “查一下全部学年的 GPA 和排名” | `szu-cli growth summary` | 使用累计 GPA；若最新学期尚无成绩，CLI 会回退到最近有排名数据的学期，按 `rankingTerm` 说明排名对应的学期。不要用学年 GPA 代替累计 GPA。 |
 | “查宿舍电费，楼栋不确定” | `szu-cli electricity buildings` | 先列楼栋，再用 `electricity query` 精确查询。 |
 

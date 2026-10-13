@@ -157,20 +157,20 @@ async function loadGrowthApi(options, mode) {
       throw pageChanged('Missing authenticated Growth Record student context.');
     }
     const terms = parseGrowthTerms(captured.cxyxkxnxq);
-    const latestTerm = terms.at(-1)?.id;
-    if (!latestTerm || !captured.cxxscjtj) {
+    if (terms.length === 0 || !captured.cxxscjtj) {
       throw pageChanged('Missing Growth Record summary data.');
     }
 
-    const cumulativeRank = await postJson(
+    const { rank: cumulativeRank, term: rankingTerm } = await loadCumulativeRank(
       page,
-      `${GROWTH_MODULE_URL}/cxxsjdpm.do`,
-      buildGrowthRankForm(studentId, { termId: latestTerm, periodType: 'cumulative' })
+      studentId,
+      terms
     );
     const api = {
       cxyxkxnxq: captured.cxyxkxnxq,
       cumulativeStats: captured.cxxscjtj,
-      cumulativeRank
+      cumulativeRank,
+      rankingTerm
     };
     if (mode === 'list') {
       api.periods = await loadGrowthPeriods(page, studentId, terms, options);
@@ -183,6 +183,20 @@ async function loadGrowthApi(options, mode) {
   } finally {
     await context.close();
   }
+}
+
+async function loadCumulativeRank(page, studentId, terms) {
+  for (const term of [...terms].reverse()) {
+    const rank = await postJson(
+      page,
+      `${GROWTH_MODULE_URL}/cxxsjdpm.do`,
+      buildGrowthRankForm(studentId, { termId: term.id, periodType: 'term' })
+    );
+    if (rank?.datas?.cxxsjdpm?.rows?.length) {
+      return { rank, term };
+    }
+  }
+  return { rank: { datas: { cxxsjdpm: { rows: [] } } }, term: null };
 }
 
 async function loadGrowthPeriods(page, studentId, terms, options) {

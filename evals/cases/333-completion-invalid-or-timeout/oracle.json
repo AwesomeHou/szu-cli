@@ -1,0 +1,8 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "completion.command-invalid-courses", "argvPrefix": ["szu-cli", "completion", "courses"], "argvContains": ["--module", "missing-module"], "min": 1, "max": 1 }] },
+  "result": { "requiredErrorCode": "MODULE_NOT_FOUND" },
+  "final": { "mustMention": ["模块"] },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.error-code", "final.must-mention", "completion.command-invalid-courses"]
+}

@@ -1,0 +1,50 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": {
+    "required": [
+      {
+        "rule": "ideology.command-summary",
+        "argvPrefix": ["szu-cli", "ideology", "summary"],
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "allowedPreflight": [
+      ["node", "--version"],
+      ["szu-cli", "--version"],
+      ["szu-cli", "doctor"],
+      ["szu-cli", "auth", "status"]
+    ],
+    "forbidden": [
+      { "rule": "ideology.not-use-grade", "argvPrefix": ["szu-cli", "grade"] },
+      { "rule": "ideology.not-use-lecture", "argvPrefix": ["szu-cli", "lecture"] },
+      { "rule": "ideology.not-use-growth", "argvPrefix": ["szu-cli", "growth"] }
+    ]
+  },
+  "result": {
+    "requiredMetaCommand": "ideology summary",
+    "requiredPaths": ["data.earnedCredits"],
+    "forbiddenTokens": ["2023000000", "测试用户"]
+  },
+  "final": {
+    "mustMention": ["2"]
+  },
+  "rules": [
+    "trace.uses-szu-cli",
+    "trace.no-direct-scraping",
+    "trace.no-mcp",
+    "trace.result-json",
+    "trace.exit-code",
+    "trace.no-secret",
+    "trace.no-unneeded-identity",
+    "final.evidence-backed",
+    "result.meta-command",
+    "result.required-paths",
+    "final.must-mention",
+    "ideology.command-summary",
+    "ideology.not-use-grade",
+    "ideology.not-use-lecture",
+    "ideology.not-use-growth"
+  ]
+}

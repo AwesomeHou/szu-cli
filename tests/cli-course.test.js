@@ -58,6 +58,7 @@ test('course today returns only matching weekday courses', () => {
   assert.equal(result.status, 0, result.stderr);
   const body = JSON.parse(result.stdout);
   assert.equal(body.ok, true);
+  assert.equal(body.meta.backend, 'mock');
   assert.equal(body.meta.command, 'course today');
   assert.equal(body.data.date, '2026-06-22');
   assert.deepEqual(body.data.items.map((item) => item.courseName), ['图像处理']);

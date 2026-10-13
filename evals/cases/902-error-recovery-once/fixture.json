@@ -1,0 +1,4 @@
+{
+  "backend": "szu-cli-mock",
+  "env": { "SZU_BROWSER_BACKEND": "mock", "SZU_MOCK_AUTH_LOGGED_IN": "false", "SZU_MOCK_AUTH_PROFILE_EXISTS": "true", "SZU_MOCK_AUTH_TITLE": "统一身份认证", "SZU_MOCK_AUTH_TEXT": "账号登录 密码", "SZU_MOCK_GRADE_URL": "https://authserver.szu.edu.cn/authserver/login", "SZU_MOCK_GRADE_TITLE": "统一身份认证", "SZU_MOCK_GRADE_TEXT": "账号登录 密码" }
+}

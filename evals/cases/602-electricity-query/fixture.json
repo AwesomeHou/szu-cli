@@ -1,0 +1,5 @@
+{
+  "backend": "szu-cli-mock",
+  "env": { "SZU_BROWSER_BACKEND": "mock", "SZU_MOCK_AUTH_LOGGED_IN": "true", "SZU_MOCK_AUTH_PROFILE_EXISTS": "true", "SZU_MOCK_TODAY": "2026-06-22T12:00:00+08:00" },
+  "envFiles": { "SZU_MOCK_ELECTRICITY_JSON": "../../fixtures/electricity.json" }
+}

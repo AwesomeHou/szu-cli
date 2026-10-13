@@ -1,0 +1,1 @@
+{ "backend": "szu-cli-mock", "env": { "SZU_BROWSER_BACKEND": "mock" } }

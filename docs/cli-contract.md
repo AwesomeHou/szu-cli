@@ -94,6 +94,7 @@ szu-cli wanfang download <url> --headed --dir downloads
 - `--headed`：浏览器后端命令使用可见浏览器窗口。
 - `--url <entryUrl>`：覆盖默认入口 URL，主要用于调试。
 - `auth login --no-wait`：打开登录浏览器后立即返回；默认会等待窗口关闭并清理本次浏览器进程。
+- `auth login --workbuddy`：供 WorkBuddy 连接器使用；CLI 自行打开并管理登录浏览器，在 stderr 及时输出认证 URL，并等待登录完成。
 - `browser status`：查看可用浏览器、当前选择和对应的 CLI profile。
 - `browser use <chrome|edge|chromium>`：选择浏览器；浏览器必须已安装。
 - `browser install chromium --yes`：在用户明确确认后安装 Playwright Chromium，下载进度输出到 stderr。
@@ -119,6 +120,9 @@ szu-cli wanfang download <url> --headed --dir downloads
 
 
 字段以当前 CLI 实际返回为准；业务响应默认写入 stdout，诊断和安装进度写入 stderr。
+
+`meta.backend` 表示本次 CLI 进程使用的执行后端：未设置 mock 环境时为 `playwright`，设置 `SZU_BROWSER_BACKEND=mock` 时为 `mock`。成功和失败响应都遵循这一规则。
+
 失败：
 
 ```json
@@ -146,6 +150,7 @@ szu-cli wanfang download <url> --headed --dir downloads
 - `BROWSER_INSTALL_FAILED`：Playwright Chromium 安装失败。
 - `BROWSER_SELECTION_INVALID`：浏览器选择不是 chrome、edge 或 chromium。
 - `AUTH_LOGOUT_FAILED`：无法清理 CLI 专用浏览器登录 profile。
+- `AUTH_LOGIN_TIMEOUT`：WorkBuddy 登录流程在限定时间内没有完成。
 - `LOGIN_REQUIRED`：目标服务需要登录。
 - `NETWORK_REQUIRED`：目标服务需要校园网络，或当前网络无法访问目标服务。
 - `PERMISSION_DENIED`：当前账号无权访问。
@@ -175,6 +180,7 @@ szu-cli wanfang download <url> --headed --dir downloads
 ## 退出码
 
 - `0`：成功。
+- `39`：WorkBuddy 登录超时。
 - `1`：通用失败。
 - `2`：命令或参数无效。
 - `10`：浏览器后端不可用。
@@ -615,7 +621,7 @@ szu-cli wanfang download <url> --headed --dir downloads
 
 ## 成长记录 Schema
 
-`szu-cli growth summary` 返回累计 GPA、专业排名、排名人数、相对排名和学分汇总。`szu-cli growth list` 返回学期和学年汇总。使用 `--term <termId>` 或 `--year <academicYear>` 过滤，两者互斥。
+`szu-cli growth summary` 返回全部成绩累计 GPA、专业排名、排名人数、相对排名和学分汇总。`rankingTerm` 表示排名数据对应的最近有成绩学期；若最新学期尚无排名数据，会向前查找。`latestTerm` 仍表示系统列出的最新学期。`szu-cli growth list` 返回学期和学年汇总。使用 `--term <termId>` 或 `--year <academicYear>` 过滤，两者互斥。
 
 ```json
 {

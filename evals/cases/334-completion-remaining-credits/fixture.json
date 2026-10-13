@@ -1,0 +1,16 @@
+{
+  "backend": "szu-cli-mock",
+  "env": {
+    "SZU_BROWSER_BACKEND": "mock",
+    "SZU_MOCK_AUTH_URL": "https://www1.szu.edu.cn/board/",
+    "SZU_MOCK_AUTH_TITLE": "校园公文通—深圳大学内部网",
+    "SZU_MOCK_AUTH_TEXT": "个人中心 注销 公文通",
+    "SZU_MOCK_AUTH_LOGGED_IN": "true",
+    "SZU_MOCK_AUTH_PROFILE_EXISTS": "true",
+    "SZU_MOCK_COMPLETION_TITLE": "学业完成查询",
+    "SZU_MOCK_COMPLETION_TEXT": "学业完成查询 培养方案完成情况"
+  },
+  "envFiles": {
+    "SZU_MOCK_COMPLETION_API_JSON": "../../../tests/fixtures/completion-api.json"
+  }
+}

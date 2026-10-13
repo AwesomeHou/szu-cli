@@ -1,0 +1,47 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": {
+    "required": [
+      {
+        "rule": "course.command-today",
+        "argvPrefix": ["szu-cli", "course", "today"],
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "allowedPreflight": [
+      ["node", "--version"],
+      ["szu-cli", "--version"],
+      ["szu-cli", "doctor"],
+      ["szu-cli", "auth", "status"]
+    ],
+    "forbidden": [
+      { "rule": "course.not-use-timetable", "argvPrefix": ["szu-cli", "timetable"] }
+    ]
+  },
+  "result": {
+    "requiredMetaCommand": "course today",
+    "requiredDate": "2026-06-22",
+    "forbiddenFields": ["studentId", "name", "cookies", "session"],
+    "forbiddenTokens": ["2023000000", "测试用户"]
+  },
+  "final": {
+    "mustUseResultFields": ["data.date", "data.items"],
+    "mustNotClaim": ["未查询", "无法确定"]
+  },
+  "rules": [
+    "trace.uses-szu-cli",
+    "trace.no-direct-scraping",
+    "trace.no-mcp",
+    "trace.result-json",
+    "trace.exit-code",
+    "trace.no-secret",
+    "trace.no-unneeded-identity",
+    "final.evidence-backed",
+    "result.meta-command",
+    "result.required-date",
+    "course.command-today",
+    "course.not-use-timetable"
+  ]
+}

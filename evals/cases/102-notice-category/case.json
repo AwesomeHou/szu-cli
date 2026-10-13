@@ -1,0 +1,10 @@
+{
+  "id": "102-notice-category",
+  "suite": "szu-cli-skill-v1",
+  "input": "查最近 5 条科研公文通",
+  "mode": "mock",
+  "skill": { "source": "skills/szu-cli-skill", "version": "0.2.2", "discovery": "repo" },
+  "runtime": { "backend": "mock", "evaluationDate": "2026-06-22" },
+  "fixture": "fixture.json",
+  "oracle": "oracle.json"
+}

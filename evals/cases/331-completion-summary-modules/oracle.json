@@ -1,0 +1,7 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "requiredAny": [{ "rule": "completion.command-summary-or-modules", "argvPrefix": ["szu-cli", "completion", "summary"] }, { "rule": "completion.command-summary-or-modules", "argvPrefix": ["szu-cli", "completion", "modules"] }] },
+  "result": { "requiredBackend": "mock" },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "trace.no-unneeded-identity", "final.evidence-backed", "result.required-backend", "completion.command-summary-or-modules"]
+}

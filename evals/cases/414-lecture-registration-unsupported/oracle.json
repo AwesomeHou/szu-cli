@@ -1,0 +1,7 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "clarification_required",
+  "commands": {},
+  "final": { "mustMention": ["不支持"], "mustNotMention": ["报名成功", "已报名", "提交成功"] },
+  "rules": ["trace.no-direct-scraping", "trace.no-mcp", "trace.no-secret", "final.evidence-backed", "final.must-mention", "lecture.no-registration-action"]
+}

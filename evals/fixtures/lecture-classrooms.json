@@ -1,0 +1,4 @@
+{
+  "open": { "code": 0, "count": 1, "data": [{ "campus": "粤海校区", "building": "致理楼（L3）", "roomNumber": "1201", "seatNum": 100, "reservedSeats": 98, "remainSeats": 2, "chooseStatus": "可报名" }] },
+  "full": { "code": 0, "count": 1, "data": [{ "campus": "粤海校区", "building": "致理楼（L3）", "roomNumber": "1202", "seatNum": 100, "reservedSeats": 100, "remainSeats": 0, "chooseStatus": "已报满" }] }
+}

@@ -1,0 +1,7 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "sports.command-reserve-confirm", "argvPrefix": ["szu-cli", "sports", "reserve"], "argvContains": ["--campus", "粤海校区", "--venue", "一楼重量型健身", "--date", "2026-06-22", "--field", "一楼健身房", "--confirm"], "min": 1, "max": 1 }], "forbidden": [{ "rule": "sports.no-duplicate-confirm", "argvPrefix": ["szu-cli", "sports", "reserve"], "argvContains": ["--confirm"], "min": 2 }] },
+  "result": { "requiredMetaCommand": "sports reserve", "requiredBackend": "mock", "requiredPaths": ["data.submitted"] },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.meta-command", "result.required-backend", "result.required-paths", "sports.command-reserve-confirm", "sports.no-duplicate-confirm"]
+}

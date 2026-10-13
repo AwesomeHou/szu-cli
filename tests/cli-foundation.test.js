@@ -70,6 +70,7 @@ test('auth status reports missing profile as logged out', () => {
   const body = JSON.parse(result.stdout);
   assert.equal(body.ok, true);
   assert.equal(body.meta.command, 'auth status');
+  assert.equal(body.meta.backend, 'playwright');
   assert.deepEqual(body.data, {
     loggedIn: false,
     reason: 'profile-missing',
@@ -86,16 +87,39 @@ test('auth status can report checked page through mock backend', () => {
       SZU_BROWSER_BACKEND: 'mock',
       SZU_MOCK_AUTH_URL: 'https://www1.szu.edu.cn/board/',
       SZU_MOCK_AUTH_TITLE: '校园公文通—深圳大学内部网',
-      SZU_MOCK_AUTH_TEXT: '侯燊 个人中心｜注销 ｜说明 首 页 ｜ 公文通'
+      SZU_MOCK_AUTH_TEXT: '侯燊 个人中心｜注销 ｜说明 首 页 ｜ 公文通',
+      SZU_MOCK_AUTH_LOGGED_IN: 'true',
+      SZU_MOCK_AUTH_PROFILE_EXISTS: 'true'
     }
   });
 
   assert.equal(result.status, 0, result.stderr);
   const body = JSON.parse(result.stdout);
   assert.equal(body.ok, true);
+  assert.equal(body.meta.backend, 'mock');
   assert.equal(body.data.loggedIn, true);
-  assert.equal(body.data.reason, 'szu-user-menu');
+  assert.equal(body.data.reason, 'mock-configured');
+  assert.equal(body.data.authSource, 'fixture');
+  assert.equal(body.data.profileExists, true);
   assert.equal(body.data.finalUrl, 'https://www1.szu.edu.cn/board/');
+});
+
+test('mock auth status does not infer login from page text without a profile or explicit fixture state', () => {
+  const result = runCli(['auth', 'status', '--json'], {
+    env: {
+      SZU_BROWSER_BACKEND: 'mock',
+      SZU_MOCK_AUTH_URL: 'https://www1.szu.edu.cn/board/',
+      SZU_MOCK_AUTH_TITLE: '校园公文通—深圳大学内部网',
+      SZU_MOCK_AUTH_TEXT: '个人中心｜注销 ｜公文通'
+    }
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.meta.backend, 'mock');
+  assert.equal(body.data.loggedIn, false);
+  assert.equal(body.data.reason, 'profile-missing');
+  assert.equal(body.data.profileExists, false);
 });
 
 test('auth login opens configured target with browser profile', () => {
@@ -119,6 +143,26 @@ test('auth login opens configured target with browser profile', () => {
   assert.equal(body.data.closed, true);
   assert.equal(body.data.url, 'https://www1.szu.edu.cn/board/');
   assert.equal(body.data.profilePath.includes('szu-cli-test-'), true);
+});
+
+test('WorkBuddy auth emits a plain HTTPS login URL on stderr', () => {
+  const result = runCli([
+    'auth',
+    'login',
+    '--workbuddy',
+    '--url',
+    'https://authserver.szu.edu.cn/authserver/login'
+  ], {
+    env: {
+      SZU_BROWSER_BACKEND: 'mock'
+    }
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stderr, /\shttps:\/\/authserver\.szu\.edu\.cn\/authserver\/login\s/);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, true);
+  assert.equal(body.meta.command, 'auth login');
 });
 
 test('auth logout clears the persistent browser profile', () => {

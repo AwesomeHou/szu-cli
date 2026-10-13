@@ -1,6 +1,6 @@
 {
   "name": "szu-cli",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "private": false,
   "description": "Agent-friendly CLI for Shenzhen University web services.",
   "type": "module",
@@ -18,6 +18,8 @@
   ],
   "scripts": {
     "docs:check": "node scripts/check-docs.mjs",
+    "eval": "node evals/harness/run.mjs",
+    "eval:l0": "node evals/harness/evaluate-l0.mjs",
     "skill:skillhub:prepare": "node scripts/prepare-skillhub.mjs",
     "workbuddy:check": "node scripts/check-workbuddy.mjs",
     "workbuddy:prepare": "node scripts/prepare-workbuddy.mjs",

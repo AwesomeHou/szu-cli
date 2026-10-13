@@ -1,0 +1,20 @@
+{
+  "id": "004-sports-clarify-target",
+  "suite": "szu-cli-skill-v1",
+  "input": "帮我预约今天下午3点的健身房",
+  "mode": "no-tool",
+  "skill": {
+    "source": "skills/szu-cli-skill",
+    "version": "0.2.2",
+    "discovery": "repo"
+  },
+  "runtime": {
+    "backend": "none",
+    "evaluationDate": "2026-06-22",
+    "clockSource": "fixture",
+    "stopAfter": "clarification",
+    "agentContext": "本次评测的当前日期为 2026-06-22，仅用于解释“今天”。"
+  },
+  "fixture": "fixture.json",
+  "oracle": "oracle.json"
+}

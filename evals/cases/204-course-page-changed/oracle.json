@@ -1,0 +1,8 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "course.command-error", "argvPrefix": ["szu-cli", "course", "list"], "min": 1, "max": 1 }] },
+  "result": { "requiredErrorCode": "PERMISSION_DENIED" },
+  "final": { "mustMentionAny": ["权限", "拒绝"] },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.error-code", "final.must-mention", "course.command-error"]
+}

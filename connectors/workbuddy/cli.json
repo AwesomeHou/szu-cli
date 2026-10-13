@@ -4,11 +4,15 @@
     "version": "20"
   },
   "init": {
-    "darwin": "npm install -g szu-cli@0.2.2",
-    "linux": "npm install -g szu-cli@0.2.2",
-    "win32": "npm install -g szu-cli@0.2.2"
+    "darwin": "npm install -g szu-cli@0.2.3",
+    "linux": "npm install -g szu-cli@0.2.3",
+    "win32": "npm install -g szu-cli@0.2.3"
   },
-  "auth": "szu-cli auth login",
+  "auth": {
+    "darwin": "szu-cli auth login --workbuddy",
+    "linux": "szu-cli auth login --workbuddy",
+    "win32": "szu-cli.cmd auth login --workbuddy"
+  },
   "unAuth": {
     "darwin": "szu-cli auth logout",
     "linux": "szu-cli auth logout",
@@ -20,5 +24,7 @@
     "win32": "szu-cli.cmd auth status"
   },
   "statusMatch": "\"loggedIn\"\\s*:\\s*true",
+  "authWaitForExit": true,
+  "authSuppressBrowser": true,
   "authUrlDomain": "szu.edu.cn"
 }

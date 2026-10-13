@@ -1,0 +1,17 @@
+{
+  "id": "705-library-location",
+  "suite": "szu-cli-skill-v1",
+  "input": "交通设计这本文献在图书馆哪里",
+  "mode": "mock",
+  "skill": {
+    "source": "skills/szu-cli-skill",
+    "version": "0.2.2",
+    "discovery": "repo"
+  },
+  "runtime": {
+    "backend": "mock",
+    "evaluationDate": "2026-06-22"
+  },
+  "fixture": "fixture.json",
+  "oracle": "oracle.json"
+}

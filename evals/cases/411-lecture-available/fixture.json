@@ -1,0 +1,5 @@
+{
+  "backend": "szu-cli-mock",
+  "env": { "SZU_BROWSER_BACKEND": "mock", "SZU_MOCK_AUTH_LOGGED_IN": "true", "SZU_MOCK_AUTH_PROFILE_EXISTS": "true", "SZU_MOCK_NOW": "2026-06-27T12:00:00+08:00", "SZU_MOCK_LECTURE_TITLE": "创新领航讲座", "SZU_MOCK_LECTURE_TEXT": "讲座报名 学习进度 查看报名信息" },
+  "envFiles": { "SZU_MOCK_LECTURE_LIST_JSON": "../../fixtures/lecture-list.json", "SZU_MOCK_LECTURE_CLASSROOMS_JSON": "../../fixtures/lecture-classrooms.json" }
+}

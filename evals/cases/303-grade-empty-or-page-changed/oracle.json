@@ -1,0 +1,7 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "grade.command-empty-term", "argvPrefix": ["szu-cli", "grade", "list"], "argvContains": ["--term", "2099-2099-1"], "min": 1, "max": 1 }] },
+  "result": { "requiredMetaCommand": "grade list", "requiredBackend": "mock", "requiredPaths": ["data.items"] },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.meta-command", "result.required-backend", "result.required-paths", "grade.command-empty-term"]
+}

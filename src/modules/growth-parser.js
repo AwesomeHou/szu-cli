@@ -45,6 +45,7 @@ export function buildGrowthSummaryPayload(api, options = {}) {
   return {
     cumulative: normalizeMetrics(stats, rank),
     latestTerm: terms.at(-1) ?? null,
+    rankingTerm: api.rankingTerm ?? null,
     sourceUrl: options.sourceUrl
   };
 }

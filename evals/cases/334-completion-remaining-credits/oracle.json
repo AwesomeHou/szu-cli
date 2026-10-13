@@ -1,0 +1,52 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": {
+    "required": [
+      {
+        "rule": "completion.command-summary",
+        "argvPrefix": ["szu-cli", "completion", "summary"],
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "allowedPreflight": [
+      ["node", "--version"],
+      ["szu-cli", "--version"],
+      ["szu-cli", "doctor"],
+      ["szu-cli", "auth", "status"]
+    ],
+    "forbidden": [
+      { "rule": "completion.not-use-grade", "argvPrefix": ["szu-cli", "grade"] },
+      { "rule": "completion.not-use-growth", "argvPrefix": ["szu-cli", "growth"] },
+      { "rule": "completion.not-use-modules", "argvPrefix": ["szu-cli", "completion", "modules"] },
+      { "rule": "completion.not-use-courses", "argvPrefix": ["szu-cli", "completion", "courses"] }
+    ]
+  },
+  "result": {
+    "requiredMetaCommand": "completion summary",
+    "requiredPaths": ["data.plan.requiredCredits", "data.plan.completedCredits", "data.plan.remainingCredits"],
+    "forbiddenTokens": ["2023000000", "测试用户"]
+  },
+  "final": {
+    "mustMention": ["60"]
+  },
+  "rules": [
+    "trace.uses-szu-cli",
+    "trace.no-direct-scraping",
+    "trace.no-mcp",
+    "trace.result-json",
+    "trace.exit-code",
+    "trace.no-secret",
+    "trace.no-unneeded-identity",
+    "final.evidence-backed",
+    "result.meta-command",
+    "result.required-paths",
+    "final.must-mention",
+    "completion.command-summary",
+    "completion.not-use-grade",
+    "completion.not-use-growth",
+    "completion.not-use-modules",
+    "completion.not-use-courses"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": {
+    "requiredAny": [
+      {
+        "rule": "notice.command-search-or-list",
+        "argvPrefix": ["szu-cli", "notice", "search"],
+        "argvContains": ["奖学金"],
+        "min": 1
+      },
+      {
+        "rule": "notice.command-search-or-list",
+        "argvPrefix": ["szu-cli", "notice", "list"],
+        "argvContains": ["奖学金"],
+        "min": 1
+      }
+    ],
+    "allowedPreflight": [
+      ["node", "--version"],
+      ["szu-cli", "--version"],
+      ["szu-cli", "doctor"],
+      ["szu-cli", "auth", "status"]
+    ],
+    "forbidden": []
+  },
+  "result": {
+    "requiredQuery": "奖学金",
+    "requiredMatchingResult": "奖学金",
+    "forbiddenFields": ["studentId", "name", "cookies", "session"]
+  },
+  "final": {
+    "mustUseResultFields": ["data.items"],
+    "noRouteSpecificRequirement": true
+  },
+  "rules": [
+    "trace.uses-szu-cli",
+    "trace.no-direct-scraping",
+    "trace.no-mcp",
+    "trace.result-json",
+    "trace.exit-code",
+    "trace.no-secret",
+    "trace.no-unneeded-identity",
+    "final.evidence-backed",
+    "result.required-query",
+    "result.matching-item",
+    "notice.command-search-or-list",
+    "notice.query-preserved",
+    "notice.no-title-filter-requirement"
+  ]
+}

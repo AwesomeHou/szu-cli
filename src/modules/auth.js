@@ -8,6 +8,7 @@ import { classifyAuthPage } from './auth-detector.js';
 
 const DEFAULT_AUTH_CHECK_URL = 'https://www1.szu.edu.cn/board/';
 const LOGIN_HINT = 'Run `szu-cli auth login` and complete login in the opened browser.';
+const WORKBUDDY_LOGIN_TIMEOUT_MS = 5 * 60 * 1000;
 
 export async function loginWithBrowserProfile(options = {}) {
   const profilePath = getProfilePath();
@@ -16,6 +17,9 @@ export async function loginWithBrowserProfile(options = {}) {
   await mkdir(profilePath, { recursive: true });
 
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
+    if (options.workbuddy) {
+      emitAuthUrl(url);
+    }
     return {
       opened: true,
       closed: options.waitForClose !== false,
@@ -34,23 +38,76 @@ export async function loginWithBrowserProfile(options = {}) {
     const page = context.pages()[0] ?? await context.newPage();
     await page.goto(url, { waitUntil: 'domcontentloaded' });
     const finalUrl = page.url();
+    if (options.workbuddy) {
+      emitAuthUrl(finalUrl);
+    }
+
+    let loginOutcome = null;
     if (options.waitForClose !== false) {
-      await context.waitForEvent('close');
+      loginOutcome = options.workbuddy
+        ? await waitForLoginOrClose(page, context)
+        : await context.waitForEvent('close').then(() => 'closed');
     }
 
     return {
       opened: true,
-      closed: options.waitForClose !== false,
+      closed: loginOutcome === null || loginOutcome === 'closed' || loginOutcome === 'authenticated',
+      ...(loginOutcome === 'authenticated' ? { authenticated: true } : {}),
       url: finalUrl,
       profilePath,
       browser: browser.id,
       backend: 'playwright',
-      message: options.waitForClose === false
-        ? 'Complete login in the opened browser window, then close it when finished.'
-        : 'Browser was closed. Rerun `szu-cli auth status` to verify login.'
+      message: options.workbuddy && loginOutcome === 'authenticated'
+        ? 'Login completed and the browser profile is ready.'
+        : options.waitForClose === false
+          ? 'Complete login in the opened browser window, then close it when finished.'
+          : 'Browser was closed. Rerun `szu-cli auth status` to verify login.'
     };
   } finally {
     await context.close().catch(() => {});
+  }
+}
+
+async function waitForLoginOrClose(page, context) {
+  const deadline = Date.now() + WORKBUDDY_LOGIN_TIMEOUT_MS;
+  const contextClosed = context.waitForEvent('close').then(() => 'closed');
+
+  while (Date.now() < deadline) {
+    if (page.isClosed()) {
+      return 'closed';
+    }
+
+    const pageState = await readAuthPage(page);
+    if (classifyAuthPage(pageState).loggedIn) {
+      return 'authenticated';
+    }
+
+    const outcome = await Promise.race([
+      contextClosed,
+      new Promise((resolve) => setTimeout(() => resolve(null), 1000))
+    ]);
+    if (outcome === 'closed') {
+      return outcome;
+    }
+  }
+
+  const error = new Error('Login was not completed within 5 minutes.');
+  error.code = 'AUTH_LOGIN_TIMEOUT';
+  error.hint = 'Complete login in the opened browser window and retry the connection.';
+  throw error;
+}
+
+async function readAuthPage(page) {
+  return {
+    url: page.url(),
+    title: await page.title().catch(() => ''),
+    text: await page.locator('body').innerText({ timeout: 10000 }).catch(() => '')
+  };
+}
+
+function emitAuthUrl(url) {
+  if (/^https:\/\//i.test(url)) {
+    process.stderr.write(`Complete login at ${url}\n`);
   }
 }
 
@@ -80,15 +137,9 @@ export async function getAuthStatus(options = {}) {
   const profileExists = existsSync(profilePath);
 
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
-    const checked = classifyAuthPage({
-      url: process.env.SZU_MOCK_AUTH_URL ?? DEFAULT_AUTH_CHECK_URL,
-      title: process.env.SZU_MOCK_AUTH_TITLE ?? '',
-      text: process.env.SZU_MOCK_AUTH_TEXT ?? ''
-    });
-
+    const mockStatus = getMockAuthStatus(profileExists);
     return withLoginHint({
-      ...checked,
-      profileExists,
+      ...mockStatus,
       profilePath,
       checkedUrl: DEFAULT_AUTH_CHECK_URL,
       finalUrl: process.env.SZU_MOCK_AUTH_URL ?? DEFAULT_AUTH_CHECK_URL,
@@ -160,4 +211,61 @@ function withLoginHint(status) {
     ...status,
     hint: LOGIN_HINT
   };
+}
+
+function getMockAuthStatus(profileExists) {
+  const configuredProfileExists = readMockBoolean('SZU_MOCK_AUTH_PROFILE_EXISTS');
+  const configuredLoggedIn = readMockBoolean('SZU_MOCK_AUTH_LOGGED_IN');
+  const effectiveProfileExists = configuredProfileExists ?? profileExists;
+
+  if (configuredLoggedIn === true && effectiveProfileExists === false) {
+    const error = new Error('Mock auth state cannot be logged in when profileExists is false.');
+    error.code = 'MOCK_AUTH_STATE_INVALID';
+    throw error;
+  }
+
+  if (!effectiveProfileExists) {
+    return {
+      loggedIn: false,
+      reason: 'profile-missing',
+      profileExists: effectiveProfileExists
+    };
+  }
+
+  if (configuredLoggedIn !== null) {
+    return {
+      loggedIn: configuredLoggedIn,
+      reason: configuredLoggedIn ? 'mock-configured' : 'mock-configured-logged-out',
+      profileExists: effectiveProfileExists,
+      authSource: 'fixture'
+    };
+  }
+
+  return {
+    ...classifyAuthPage({
+      url: process.env.SZU_MOCK_AUTH_URL ?? DEFAULT_AUTH_CHECK_URL,
+      title: process.env.SZU_MOCK_AUTH_TITLE ?? '',
+      text: process.env.SZU_MOCK_AUTH_TEXT ?? ''
+    }),
+    profileExists: effectiveProfileExists
+  };
+}
+
+function readMockBoolean(name) {
+  const value = process.env[name];
+  if (value === undefined) {
+    return null;
+  }
+
+  if (/^(?:1|true|yes)$/i.test(value)) {
+    return true;
+  }
+
+  if (/^(?:0|false|no)$/i.test(value)) {
+    return false;
+  }
+
+  const error = new Error(`${name} must be true or false.`);
+  error.code = 'MOCK_AUTH_CONFIG_INVALID';
+  throw error;
 }

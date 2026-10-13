@@ -1,0 +1,8 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "ideology.command-summary-empty", "argvPrefix": ["szu-cli", "ideology", "summary"], "min": 1, "max": 1 }] },
+  "result": { "requiredMetaCommand": "ideology summary", "requiredBackend": "mock", "requiredPaths": ["data.available"] },
+  "final": { "mustMention": ["无法"] },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.meta-command", "result.required-backend", "result.required-paths", "final.must-mention", "ideology.command-summary-empty"]
+}

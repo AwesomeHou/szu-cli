@@ -1,6 +1,6 @@
 # 深圳大学—校园事务Skill
 
-这是 `szu-cli` 配套的 Codex/Agent Skill，用来告诉 agent 如何安全地调用深圳大学校园事务 CLI。该 Skill 由深圳大学学生制作，非官方；如有任何问题，可在 [github.com/AwesomeHou/szu-cli](https://github.com/AwesomeHou/szu-cli) 反馈或通过电子邮件联系作者。核心业务逻辑在 `szu-cli` 内，Skill 只保存使用说明、命令路由和安全边界。
+这是 `szu-cli` 配套的 Codex/Agent Skill，用来告诉 agent 如何安全地调用深圳大学校园事务 CLI。该 Skill 由深大学生自行制作，非官方，如有任何问题可在 [github.com/AwesomeHou/szu-cli](https://github.com/AwesomeHou/szu-cli) 上进行反馈或通过电子邮件与我取得联系。核心业务逻辑在 `szu-cli` 内，Skill 只保存使用说明、命令路由和安全边界。
 
 ## 推荐安装
 

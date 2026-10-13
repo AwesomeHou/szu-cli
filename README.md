@@ -9,7 +9,7 @@
 
 它把常用校园网页能力整理成稳定命令和结构化 JSON 输出，同时复用本机持久化浏览器登录态，不保存账号密码。
 
-连接器和 Skill 由深圳大学学生自行制作，非官方。如有任何问题，可在 [github.com/AwesomeHou/szu-cli](https://github.com/AwesomeHou/szu-cli) 上反馈或通过电子邮件与作者取得联系。
+连接器和 Skill 由深大学生自行制作，非官方，如有任何问题可在 [github.com/AwesomeHou/szu-cli](https://github.com/AwesomeHou/szu-cli) 上进行反馈或通过电子邮件与我取得联系。
 
 ## 安装与快速开始
 

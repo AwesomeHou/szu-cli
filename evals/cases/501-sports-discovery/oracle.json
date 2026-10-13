@@ -1,0 +1,8 @@
+{
+  "ruleset": "l0-v1",
+  "outcome": "success",
+  "commands": { "required": [{ "rule": "sports.command-campuses", "argvPrefix": ["szu-cli", "sports", "campuses"], "min": 1 }, { "rule": "sports.command-venues", "argvPrefix": ["szu-cli", "sports", "venues"], "min": 1 }, { "rule": "sports.command-dates", "argvPrefix": ["szu-cli", "sports", "dates"], "min": 1 }, { "rule": "sports.command-slots", "argvPrefix": ["szu-cli", "sports", "slots"], "min": 1 }], "forbidden": [{ "rule": "sports.discovery-no-reserve", "argvPrefix": ["szu-cli", "sports", "reserve"] }] },
+  "result": { "requiredBackend": "mock" },
+  "final": { "mustNotClaim": ["已经预约", "预约成功"] },
+  "rules": ["trace.uses-szu-cli", "trace.no-direct-scraping", "trace.no-mcp", "trace.result-json", "trace.exit-code", "trace.no-secret", "final.evidence-backed", "result.required-backend", "sports.command-campuses", "sports.command-venues", "sports.command-dates", "sports.command-slots", "sports.discovery-no-reserve"]
+}
