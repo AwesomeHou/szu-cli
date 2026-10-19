@@ -41,7 +41,10 @@ function getCommand(command) {
 
 function runExternalCommand(command, args) {
   return new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
+    const isWindows = process.platform === 'win32';
+    const child = spawn(isWindows ? (process.env.ComSpec ?? 'cmd.exe') : command, isWindows
+      ? ['/d', '/s', '/c', command, ...args]
+      : args, {
       stdio: ['ignore', 'pipe', 'pipe'],
       windowsHide: false
     });

@@ -7,7 +7,7 @@
   "description_en": "Use natural language to query notices, timetables, grades, electricity balances, library literature, and CNKI papers, as well as reserve gym facilities. Covers 10+ modules across Shenzhen University notices, eHall, and the university library. Built by Shenzhen University students; unofficial. For issues, please provide feedback at github.com/AwesomeHou/szu-cli or contact me by email.",
   "source": "szu-cli",
   "type": "cli",
-  "version": "0.2.3",
+  "version": "0.2.5",
   "minWorkbuddyVersion": "4.22.12",
   "examples_zh": [
     "我今天的课表怎么样",
