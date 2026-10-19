@@ -4,9 +4,9 @@
     "version": "20"
   },
   "init": {
-    "darwin": "npm install -g szu-cli@0.2.6",
-    "linux": "npm install -g szu-cli@0.2.6",
-    "win32": "npm install -g szu-cli@0.2.6"
+    "darwin": "npm install -g szu-cli@0.2.7",
+    "linux": "npm install -g szu-cli@0.2.7",
+    "win32": "npm install -g szu-cli@0.2.7"
   },
   "auth": {
     "darwin": "szu-cli auth login --workbuddy",

@@ -26,7 +26,7 @@ npx szu-cli@latest install
 This command:
 
 1. Installs `szu-cli@latest` globally through npm so that the `szu-cli` command is available directly.
-2. Runs `npx skills add` to install the `szu-cli-skill` skill globally for the mainstream AI Agents detected in the current environment.
+2. Runs `npx skills add` with the `skills/szu-cli-skill` directory bundled in the npm package to install the skill globally for mainstream AI Agents detected in the current environment.
 
 See [Supported Agents](https://github.com/vercel-labs/skills/blob/main/README.md#supported-agents) for the supported agents and their project/global skill directories, including Codex, Claude Code, and Cursor. WorkBuddy users can install “Shenzhen University Campus Services” from the Connector marketplace or search for `szu-cli-skill` in the Skill marketplace.
 

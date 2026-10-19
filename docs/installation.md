@@ -8,7 +8,7 @@
 npx szu-cli@latest install
 ```
 
-该命令会将 `szu-cli` 安装到 npm 全局路径，并调用 `npx skills add` 将 `szu-cli-skill` skill 全局安装到当前环境中可识别的主流 Agent。支持的 Agent 索引见 [Supported Agents](https://github.com/vercel-labs/skills/blob/main/README.md#supported-agents)。
+该命令会将 `szu-cli` 安装到 npm 全局路径，并将当前 npm 包内的 `skills/szu-cli-skill` 目录交给 `npx skills add`，全局安装到当前环境中可识别的主流 Agent。Skill 内容随 npm 包发布，不依赖 GitHub 分支同步。支持的 Agent 索引见 [Supported Agents](https://github.com/vercel-labs/skills/blob/main/README.md#supported-agents)。
 
 WorkBuddy 用户可以在连接器市场安装“深圳大学校园服务”，也可以在技能商店搜索 `szu-cli-skill` 安装 Skill。
 

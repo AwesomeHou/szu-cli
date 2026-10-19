@@ -1,11 +1,12 @@
 import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
-const SKILL_SOURCE = 'https://github.com/AwesomeHou/szu-cli';
+const BUNDLED_SKILL_SOURCE = fileURLToPath(new URL('../../skills/szu-cli-skill', import.meta.url));
 
 export async function installGlobal(options = {}) {
   const packageName = options.packageName ?? 'szu-cli';
   const packageVersion = options.packageVersion ?? 'latest';
-  const skillSource = options.skillSource ?? SKILL_SOURCE;
+  const skillSource = options.skillSource ?? BUNDLED_SKILL_SOURCE;
   const execute = options.execute ?? runExternalCommand;
 
   await execute(getCommand('npm'), ['install', '--global', `${packageName}@${packageVersion}`]);

@@ -1,14 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { fileURLToPath } from 'node:url';
 
 import { installGlobal } from '../src/modules/install.js';
 
-test('installGlobal installs the CLI and skill globally through npm and npx', async () => {
+test('installGlobal installs the CLI from npm and the bundled skill globally through skills', async () => {
   const calls = [];
   const result = await installGlobal({
     packageName: 'szu-cli',
     packageVersion: '0.2.0',
-    skillSource: 'https://github.com/AwesomeHou/szu-cli',
     execute: async (command, args) => {
       calls.push({ command, args });
     }
@@ -25,7 +25,7 @@ test('installGlobal installs the CLI and skill globally through npm and npx', as
         '--yes',
         'skills',
         'add',
-        'https://github.com/AwesomeHou/szu-cli',
+        fileURLToPath(new URL('../skills/szu-cli-skill', import.meta.url)),
         '--skill',
         'szu-cli-skill',
         '--yes',
@@ -37,4 +37,5 @@ test('installGlobal installs the CLI and skill globally through npm and npx', as
   assert.equal(result.cli.scope, 'global');
   assert.equal(result.skill.installed, true);
   assert.equal(result.skill.scope, 'global');
+  assert.equal(result.skill.source, fileURLToPath(new URL('../skills/szu-cli-skill', import.meta.url)));
 });

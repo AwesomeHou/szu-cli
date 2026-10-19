@@ -26,7 +26,7 @@ npx szu-cli@latest install
 > 该命令会完成两件事：
 >
 > 1. 将 `szu-cli@latest` 安装到 npm 全局路径，使 `szu-cli` 命令可以直接使用。
-> 2. 调用 `npx skills add`，把 `szu-cli-skill` skill 以全局方式安装到当前环境中可识别的主流 AI Agent。
+> 2. 从当前 npm 包自带的 `skills/szu-cli-skill` 安装文件，通过 `npx skills add` 将 Skill 全局安装到当前环境中可识别的主流 AI Agent。
 >
 > 支持的 Agent 及其项目级、全局 skill 目录请参阅 [Supported Agents](https://github.com/vercel-labs/skills/blob/main/README.md#supported-agents)，包括 Codex、Claude Code、Cursor 等。WorkBuddy 可以在连接器市场安装“深圳大学校园服务”，也可以搜索 `szu-cli-skill` 安装 Skill。
 

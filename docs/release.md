@@ -1,6 +1,6 @@
 # 发布检查
 
-npm 包同时发布 CLI 和随包 `szu-cli-skill` Skill。用户推荐运行 `npx szu-cli@latest install`，该命令会全局安装 CLI，并通过 `npx skills add` 将 Skill 安装到当前环境中可识别的主流 Agent。
+npm 包同时发布 CLI 和随包 `szu-cli-skill` Skill。用户推荐运行 `npx szu-cli@latest install`，该命令会全局安装 CLI，并通过 `npx skills add` 从当前 npm 包的 Skill 目录安装到当前环境中可识别的主流 Agent。发布后无需等待 GitHub 分支同步。
 
 ## 发布前检查
 
@@ -29,7 +29,7 @@ npm run workbuddy:check
 
 ## 当前发布状态
 
-- 本次待发布稳定版：`0.2.6`。
+- 本次待发布稳定版：`0.2.7`。
 - 预发布：只维护 `beta` 通道，当前版本为 `0.2.0-beta.1`。
 - `alpha` 仅作为历史版本保留，不再继续发布或维护。
 
@@ -39,7 +39,7 @@ npm run workbuddy:check
 
 ```bash
 npm pack
-npm install -g ./szu-cli-0.2.6.tgz
+npm install -g ./szu-cli-0.2.7.tgz
 ```
 
 验证：
@@ -79,7 +79,7 @@ npx szu-cli@beta install
 
 ## SkillHub / ClawHub
 
-`skills/szu-cli-skill` 单独上线 SkillHub 和 ClawHub 时，按正式 Skill 发布，版本号使用 `0.2.6`，不带 alpha/beta 后缀。
+`skills/szu-cli-skill` 单独上线 SkillHub 和 ClawHub 时，按正式 Skill 发布，版本号使用 `0.2.7`，不带 alpha/beta 后缀。
 
 仓库中的 `SKILL.md` 保持 Codex 标准 frontmatter。发布前生成临时 SkillHub 包，将市场元数据注入临时副本：
 
@@ -92,8 +92,8 @@ skillhub publish scratch/skillhub-szu-cli-skill
 ClawHub CLI 发布 skill 时展示名来自 `--name` 或目录名。发布时显式传中文展示名，并用 `--topics` 补充中文主题：
 
 ```bash
-clawhub skill publish skills/szu-cli-skill --slug szu-cli-skill --name "深圳大学—校园服务Skill" --version 0.2.6 --topics "深圳大学,校园事务,Skill,CLI,agent,szu-cli" --dry-run
-clawhub skill publish skills/szu-cli-skill --slug szu-cli-skill --name "深圳大学—校园服务Skill" --version 0.2.6 --topics "深圳大学,校园事务,Skill,CLI,agent,szu-cli"
+clawhub skill publish skills/szu-cli-skill --slug szu-cli-skill --name "深圳大学—校园服务Skill" --version 0.2.7 --topics "深圳大学,校园事务,Skill,CLI,agent,szu-cli" --dry-run
+clawhub skill publish skills/szu-cli-skill --slug szu-cli-skill --name "深圳大学—校园服务Skill" --version 0.2.7 --topics "深圳大学,校园事务,Skill,CLI,agent,szu-cli"
 ```
 
 ## WorkBuddy 连接器
@@ -109,7 +109,7 @@ npm run workbuddy:prepare
 
 ## 发布稳定版
 
-本次稳定版为 `0.2.6`。确认 npm 登录状态后执行：
+本次稳定版为 `0.2.7`。确认 npm 登录状态后执行：
 
 ```bash
 npm pkg get version
