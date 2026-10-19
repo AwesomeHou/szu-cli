@@ -5,7 +5,7 @@ display_name_en: Shenzhen University — Campus Services Skill
 description: 当用户需要通过本地 szu-cli 查询或操作深圳大学校园事务时使用，包括公文通、课表、成绩、电费、图书馆文献查询、健身房预约和知网论文下载等 10+ 个模块；深大学生自行制作，非官方，可在 github.com/AwesomeHou/szu-cli 反馈问题。
 description_zh: 通过自然语言完成公文通、课表、成绩、电费、图书馆文献查询，健身房预约，知网论文下载等操作，覆盖深圳大学校园服务的 10+ 个模块；深大学生自行制作，非官方，可在 github.com/AwesomeHou/szu-cli 反馈问题或通过电子邮件联系作者。
 description_en: Use natural language with the local szu-cli to query notices, timetables, grades, electricity balances, library literature, CNKI papers, and gym reservations across 10+ Shenzhen University campus modules. Built by Shenzhen University students; unofficial. Report issues at github.com/AwesomeHou/szu-cli or contact the author by email.
-version: 0.2.7
+version: 0.2.8
 author: Awesome
 license: MIT
 metadata:
@@ -61,16 +61,13 @@ szu-cli auth login
 
 ## 体育预约流程
 
-体育预约不是先探索校园选项，而是先确认用户要预约的唯一目标。开始任何 `sports` 命令前，必须确认：
+先读取 `references/user-profile.md`（若不存在或为空则按无画像处理）。不要一上来询问用户画像信息；只在处理具体请求时，从用户明确提供的信息中更新常用校区和体育场馆偏好。画像只保留这两项，不记录姓名、学号、专业、时间习惯或其他推断；不确定的偏好留空。用户纠正时立即更新。画像仅用于减少追问，不能代替本次预约的可用性查询或用户确认。
 
-- 校区，对应 `--campus`；
-- 场馆或预约项目，对应 `--venue`；
-- 具体场地，对应 `--field`；
-- 预约日期和目标时间。
+预约请求缺少校区时，只询问校区并停止；可使用画像中的常用校区作为建议，但若本次请求语境不明确，不要直接替用户选定。用户给出校区后，调用 `szu-cli sports venues --campus <校区>` 查看该校区真实可预约的场馆，再把名称、类别与用户的日常描述（如“健身房”“无氧重量型健身”）对应起来。
 
-如果任一信息缺失或表述不唯一，先向用户询问缺失信息并停止本轮操作，不要调用 `sports campuses`、`sports venues` 或 `sports dates` 来替用户猜测目标。只有用户明确要求浏览可用校区或场馆选项时，才使用这些发现命令。
+按名称、类别和用户描述选择最匹配的场馆：唯一且明确匹配时，告知用户采用的 CLI 场馆名称并继续；存在多个合理候选或匹配不确定时，列出 CLI 返回的候选名称并请用户选择，不要要求用户自己猜 CLI 精确词语。不要把“场馆/预约项目”与“具体场地”混为一谈。若未给出日期或目标时间，再只询问缺少的信息。
 
-目标信息齐全后，保留用户提供的校区、场馆和场地名称原文，直接使用 `sports slots --campus <name> --venue <name> --date <YYYY-MM-DD>` 获取该日期的可用时段；不要把 `sports campuses`、`sports venues` 或 `sports dates` 作为预约流程的默认前置步骤。确认目标时段可用后，先使用完整参数运行 `sports reserve ... --dry-run` 预览，再等待用户明确确认，才可以使用同一目标的 `--confirm` 执行真实预约。
+目标信息齐全后，使用 CLI 返回的准确校区和场馆名称运行 `sports slots --campus <name> --venue <name> --date <YYYY-MM-DD>`。根据结果选择用户要求的时段；如果用户尚未指定具体场地，使用返回/页面中可选的场地名称提出候选，不要自行挑选。随后先用完整参数运行 `sports reserve ... --dry-run` 预览，再等待用户明确确认，才可对同一目标使用 `--confirm` 执行预约。不得因画像或语义匹配跳过 dry-run 与确认。
 
 ## 成绩查询流程
 
@@ -101,6 +98,7 @@ szu-cli auth login
 - `@references/academic-databases.md`：知网、万方的元数据检索、引用导出、条目详情和单篇可见按钮下载规则。
 - `@references/errors.md`：结构化错误、重试限制与后续命令。
 - `@references/privacy-safety.md`：密码、Cookie、profile、下载、隐私数据和状态变更边界。
+- `@references/user-profile.md`：仅含常用校区和体育场馆偏好的精简用户画像。
 
 信息冲突时，以已安装 `szu-cli` 的实际行为和随 CLI 发布的 `docs/cli-contract.md` 为准。
 

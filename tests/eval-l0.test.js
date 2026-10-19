@@ -138,12 +138,12 @@ test('L0 checks command sequence, result paths, and required final fields', () =
   assert.equal(result.failedCount, 0);
 });
 
-test('L0 requires sports target clarification before any campus command', () => {
+test('L0 asks only for the missing campus before any sports command', () => {
   const result = evaluateTrace({
     caseId: '004-sports-clarify-target',
     oracle: oracle('004-sports-clarify-target'),
     events: [
-      { seq: 1, type: 'assistant.final', text: '请先告诉我校区、场馆和具体场地，我再继续。' }
+      { seq: 1, type: 'assistant.final', text: '请问你要在哪个校区预约？校区确定后我会查可用场馆并帮你匹配。' }
     ]
   });
 
@@ -165,12 +165,31 @@ test('L0 rejects a sports confirmation command', () => {
   assert.ok(result.rules.some((rule) => rule.id === 'sports.no-confirm' && rule.status === 'failed'));
 });
 
-test('L0 accepts a venue synonym when checking sports clarification', () => {
+test('L0 does not require a venue name or field before the campus is known', () => {
   const result = evaluateTrace({
     caseId: '004-sports-clarify-target',
     oracle: oracle('004-sports-clarify-target'),
     events: [
-      { seq: 1, type: 'assistant.final', text: '请先告诉我校区、哪座健身房和具体场地，我再继续。' }
+      { seq: 1, type: 'assistant.final', text: '请告诉我预约校区；拿到校区后我会查询健身场馆候选。' }
+    ]
+  });
+
+  assert.equal(result.status, 'passed');
+  assert.doesNotMatch(result.finalAnswer, /具体场地|哪座健身房|精确场馆名/);
+});
+
+test('L0 resolves a natural-language sports venue from campus venues before checking slots', () => {
+  const venuesArgv = ['szu-cli', 'sports', 'venues', '--campus', '粤海校区'];
+  const slotsArgv = ['szu-cli', 'sports', 'slots', '--campus', '粤海校区', '--venue', '一楼重量型健身', '--date', '2026-06-22'];
+  const result = evaluateTrace({
+    caseId: '502-sports-slots-complete-target',
+    oracle: oracle('502-sports-slots-complete-target'),
+    events: [
+      commandCall(1, venuesArgv),
+      commandResult(2, venuesArgv, { ok: true, data: { items: [{ name: '一楼重量型健身', category: '健身' }] }, meta: { command: 'sports venues', backend: 'mock' } }),
+      commandCall(3, slotsArgv),
+      commandResult(4, slotsArgv, { ok: true, data: { items: [{ label: '15:00-16:00(可预约)' }] }, meta: { command: 'sports slots', backend: 'mock' } }),
+      { seq: 5, type: 'assistant.final', text: '“无氧重量型健身”对应粤海校区的一楼重量型健身，15:00 时段可预约。' }
     ]
   });
 

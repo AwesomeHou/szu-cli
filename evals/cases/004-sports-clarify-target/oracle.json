@@ -17,7 +17,7 @@
     "maxBookingToolCalls": 0
   },
   "final": {
-    "mustAskFor": ["校区", "场馆", "场地"],
+    "mustAskFor": ["校区"],
     "mustNotClaim": ["预约成功", "已预约", "提交成功"],
     "mustStopAfterClarification": true
   },
