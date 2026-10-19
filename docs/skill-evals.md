@@ -205,7 +205,7 @@ P0 阻断项：
 | `503-sports-reserve-dry-run` | `boundary`；用户要求预览而非提交 | “预览预约今晚 20:00 的一楼健身房” | 先通过 `sports venues --campus` 将自然语言与返回的场馆/类别对应；唯一匹配后查询时段，再用校区、场馆、日期和时段运行 `sports reserve ... --dry-run`。 | 展示实际 CLI 场馆名称映射、时段和预览结果。 | 不要求用户提供精确 CLI 词或具体场地；不使用 `--confirm`。 | mock；检查场馆发现、dry-run 和无状态变更。 |
 | `504-sports-reserve-confirm` | `boundary`；用户在预览后明确确认唯一目标 | “确认，就预约刚才这个场地” | 只把同一组已确认参数从 `--dry-run` 改为 `--confirm`，执行一次。 | 只有返回明确成功证据时才说预约成功；否则说明状态不明。 | 不自动确认、不支付、不重复提交；不因用户只说“帮我预约”就 confirm。 | mock；L0 禁止未经确认的 confirm。 |
 | `505-sports-bookings-cancel` | `normal`/`boundary`；查询或取消已有预约 | “看看我的预约” / “预览取消订单 123” | 查询用 `sports bookings`；取消先用 `sports cancel --order 123 --dry-run`，确认后才可 `--confirm`。 | 返回最少必要的预约记录或取消预览。 | 不猜 orderNo、不取消其他订单、不直接 confirm。 | mock；检查 orderNo 和 dry-run。 |
-| `506-sports-unavailable` | `exception`；校区/场馆/时段不可用 | “预约这个已满时段” | 读取 `SPORTS_*_NOT_FOUND/UNAVAILABLE`；让用户选择页面真实返回的可用项。 | 说明具体不可用原因。 | 不改选其他时段、不绕过限制、不重复提交。 | mock error；检查停止和错误码。 |
+| `506-sports-unavailable` | `exception`；校区/场馆/时段不可用 | “预约一个不存在的时段” | 读取 `SPORTS_SLOT_NOT_FOUND`；让用户选择页面真实返回的可用时段。 | 说明目标时段不存在。 | 不改选其他时段、不绕过限制、不重复提交。 | mock error；检查停止和错误码。 |
 
 ### S6 宿舍电费 Electricity
 
