@@ -183,8 +183,6 @@ test('sports reserve dry-run does not submit', () => {
     '2026-07-08',
     '--slot',
     '20:00-21:00',
-    '--field',
-    '一楼健身房',
     '--dry-run',
     '--json'
   ]);
@@ -194,10 +192,33 @@ test('sports reserve dry-run does not submit', () => {
   assert.equal(body.data.submitted, false);
   assert.equal(body.data.requiresConfirmation, true);
   assert.equal(body.data.selected.label, '20:00-21:00');
-  assert.equal(body.data.field.name, '一楼健身房');
+  assert.equal(Object.hasOwn(body.data, 'field'), false);
 });
 
-test('sports reserve confirm validates the explicit field in mock backend', () => {
+test('sports reserve confirm works without a field in mock backend', () => {
+  const result = runSports([
+    'sports',
+    'reserve',
+    '--campus',
+    '粤海校区',
+    '--venue',
+    '一楼重量型健身',
+    '--date',
+    '2026-07-08',
+    '--slot',
+    '20:00-21:00',
+    '--confirm',
+    '--json'
+  ]);
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.data.submitted, true);
+  assert.equal(body.data.payment.required, true);
+  assert.equal(Object.hasOwn(body.data, 'field'), false);
+});
+
+test('sports reserve rejects the removed field option', () => {
   const result = runSports([
     'sports',
     'reserve',
@@ -211,15 +232,12 @@ test('sports reserve confirm validates the explicit field in mock backend', () =
     '20:00-21:00',
     '--field',
     '一楼健身房',
-    '--confirm',
+    '--dry-run',
     '--json'
   ]);
 
-  assert.equal(result.status, 0, result.stderr);
-  const body = JSON.parse(result.stdout);
-  assert.equal(body.data.submitted, true);
-  assert.equal(body.data.payment.required, true);
-  assert.equal(body.data.field.name, '一楼健身房');
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stdout}${result.stderr}`, /Unknown option: --field/);
 });
 
 test('sports cancel confirm is covered only by mock backend', () => {

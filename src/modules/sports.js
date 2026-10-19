@@ -108,14 +108,12 @@ export async function reserveSportsSlot(options = {}) {
   if (!options.dryRun && !options.confirm) {
     throwSportsError('SPORTS_CONFIRM_REQUIRED', 'Use --dry-run to preview or --confirm to submit a sports reservation.');
   }
-  requireOption(options.field, '--field');
   const slots = await getSportsSlots(options);
   if (options.dryRun) {
-    return buildSportsReserveDryRunPayload(slots, options.slot, options.field);
+    return buildSportsReserveDryRunPayload(slots, options.slot);
   }
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
-    resolveSportsField(loadMockSports(options).snapshot.fields ?? [], options.field);
-    return buildSportsReserveConfirmPayload(slots, options.slot, options.field);
+    return buildSportsReserveConfirmPayload(slots, options.slot);
   }
   return submitSportsReservation(options, slots);
 }
@@ -182,7 +180,7 @@ export async function cancelSportsBooking(options = {}) {
 }
 
 async function submitSportsReservation(options, slots) {
-  const dryRun = buildSportsReserveDryRunPayload(slots, options.slot, options.field);
+  const dryRun = buildSportsReserveDryRunPayload(slots, options.slot);
   const profilePath = getProfilePath();
   assertBrowserAvailable({ persist: false });
   const { chromium } = await importPlaywright();
@@ -196,10 +194,6 @@ async function submitSportsReservation(options, slots) {
     await settleSportsPage(page, options);
     await clickRequiredText(page, dryRun.selected.label, 'slot');
     await page.waitForTimeout(1000);
-    const afterSlotText = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
-    const field = resolveSportsField(parseSportsSnapshotFromText(afterSlotText).fields, options.field);
-    await clickRequiredText(page, field.label, 'field');
-    await page.waitForTimeout(500);
     const submit = page.getByText('提交预约', { exact: true }).first();
     if (!(await submit.count().catch(() => 0))) {
       throwPageChanged('submit button');
@@ -213,7 +207,7 @@ async function submitSportsReservation(options, slots) {
       error.details = { text: resultText.slice(0, 300), url: page.url() };
       throw error;
     }
-    return buildSportsReserveConfirmPayload(slots, options.slot, options.field, {
+    return buildSportsReserveConfirmPayload(slots, options.slot, {
       status: 'pending-payment',
       payment: {
         required: true,
@@ -497,17 +491,6 @@ export function isSportsCancellationConfirmed(text, orderNo) {
   const value = String(text ?? '');
   const booking = parseSportsBookingsFromText(value).find((item) => item.orderNo === orderNo);
   return /取消成功/.test(value) || Boolean(booking && /取消预约|预约作废|已取消/.test(`${booking.status ?? ''} ${booking.note ?? ''}`));
-}
-
-export function resolveSportsField(fields, requestedField) {
-  const field = fields.find((item) => item.name === requestedField || item.label === requestedField);
-  if (!field) {
-    throwSportsError('SPORTS_FIELD_NOT_FOUND', `Sports field not found: ${requestedField}.`);
-  }
-  if (field.remaining === 0) {
-    throwSportsError('SPORTS_FIELD_UNAVAILABLE', `Sports field is unavailable: ${requestedField}.`);
-  }
-  return field;
 }
 
 export async function findSportsCancelButton(page, orderNo) {

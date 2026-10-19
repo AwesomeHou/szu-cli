@@ -34,14 +34,14 @@ szu-cli auth logout
 | 讲座详情或学习进度 | `lecture item <id>`；`lecture progress` | 暴露原始私人进度记录；调用报名或取消报名接口 |
 | 我的体育预约 | `sports bookings`；需多于 3 条时加 `--limit <n>` | 暴露无关预约历史 |
 | 体育场馆可用情况 | `sports campuses`；`sports venues --campus <name>`；`sports dates --campus <name> --venue <name>`；`sports slots --campus <name> --venue <name>` | 将时段可用视作预约成功 |
-| 体育预约或取消的预览 | `sports reserve ... --field <field> --dry-run`；`sports cancel --order <orderNo> --dry-run` | 缺少唯一场地/订单号，或未获明确指令就运行 `--confirm`、支付或重复尝试 |
+| 体育预约或取消的预览 | `sports reserve ... --dry-run`；`sports cancel --order <orderNo> --dry-run` | 缺少校区、场馆、日期、时段或订单号，或未获明确指令就运行 `--confirm`、支付或重复尝试 |
 | 宿舍电费 | 楼栋不确定时用 `electricity buildings`，再 `electricity query --building <name> --room <room>`；校区可由 CLI 根据唯一楼栋匹配推断 | 猜测楼栋/房间或尝试缴费 |
 | 图书馆馆藏 | `library search ...`；详情用 `library item <id|url>` | 将检索行当作馆藏册详情 |
 | 知网、万方或文献检索 | 阅读 `academic-databases.md` | 在元数据/引用工作前直接下载 |
 
 ## 体育预约的固定顺序
 
-先读精简画像；不要主动询问画像。请求缺校区时，只询问校区并停止。用户给出校区后，先运行 `sports venues --campus <校区>`，用返回的场馆名称和类别匹配用户的自然语言描述。唯一明确匹配时说明采用项并继续；匹配不唯一时展示候选并请用户选择，不要要求用户提供 CLI 精确名称。用户描述的“健身房/重量训练”等可能是场馆或项目，不要误当成具体场地 `--field`。
+先读精简画像；不要主动询问画像。请求缺校区时，只询问校区并停止。用户给出校区后，先运行 `sports venues --campus <校区>`，用返回的场馆名称和类别匹配用户的自然语言描述。唯一明确匹配时说明采用项并继续；匹配不唯一时展示候选并请用户选择，不要要求用户提供 CLI 精确名称。用户描述的“健身房/重量训练”等可能是场馆或项目，应结合返回的场馆名称和类别匹配。
 
 场馆匹配唯一且日期已知后，运行：
 
@@ -49,7 +49,7 @@ szu-cli auth logout
 szu-cli sports slots --campus <name> --venue <name> --date <YYYY-MM-DD>
 ```
 
-根据结果确认目标时间是否可用；若具体场地尚未明确，展示可用场地候选并询问用户。再使用完整参数运行 `sports reserve ... --dry-run`。展示预览并获得用户明确确认后，才可使用 `--confirm` 执行真实预约。
+根据结果确认目标时间是否可用。使用校区、场馆、日期和时段运行 `sports reserve ... --dry-run`；不要求用户提供具体场地。展示预览并获得用户明确确认后，才可使用 `--confirm` 执行真实预约。
 
 ## 回答形式
 

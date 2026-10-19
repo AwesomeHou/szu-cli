@@ -75,13 +75,13 @@ test('sports reserve dry-run does not submit and requires confirmation', () => {
     date: '2026-07-08',
     sourceUrl: 'https://example.test/'
   });
-  const payload = buildSportsReserveDryRunPayload(slots, '20:00-21:00', '一楼健身房');
+  const payload = buildSportsReserveDryRunPayload(slots, '20:00-21:00');
 
   assert.equal(payload.wouldSubmit, true);
   assert.equal(payload.requiresConfirmation, true);
   assert.equal(payload.submitted, false);
   assert.equal(payload.selected.label, '20:00-21:00');
-  assert.equal(payload.field.name, '一楼健身房');
+  assert.equal(Object.hasOwn(payload, 'field'), false);
 });
 
 test('sports reserve dry-run accepts a slot time without status suffix', () => {
@@ -97,7 +97,7 @@ test('sports reserve dry-run accepts a slot time without status suffix', () => {
     venue: '一楼重量型健身',
     date: '2026-07-08'
   });
-  const payload = buildSportsReserveDryRunPayload(slots, '20:00-21:00', '一楼健身房');
+  const payload = buildSportsReserveDryRunPayload(slots, '20:00-21:00');
 
   assert.equal(payload.selected.label, '20:00-21:00(可预约)');
 });
@@ -110,12 +110,6 @@ test('sports parser returns open dates', () => {
 
   assert.deepEqual(payload.items, [{ date: '2026-07-07' }, { date: '2026-07-08' }]);
 });
-test('sports parser extracts field choices from selected slot text', () => {
-  const snapshot = parseSportsSnapshotFromText('选择场地\n一楼健身房(109/120)\n取消\n提交预约');
-
-  assert.deepEqual(snapshot.fields, [{ name: '一楼健身房', label: '一楼健身房(109/120)', remaining: 109, capacity: 120 }]);
-});
-
 test('sports parser returns latest bookings with default limit shape', () => {
   const text = [
     '取消预约 | 未支付 | 详情\t202607091405161043\t2026-07-09 20:00~2026-07-09 21:00\t2026-07-09 14:05:16\t粤海校区\t运动广场西馆一楼健身房\t一楼健身房\t一楼重量型健身\t已预约\t2.0\t未支付\t预约人',

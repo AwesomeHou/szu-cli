@@ -25,7 +25,7 @@ CLI 评测回答“工具本身对不对”。Skill 评测回答“agent 会不�
 | `001-course-today` | 我今天的课表怎么样 | mock | 返回今天课表 |
 | `002-grade-previous-term` | 我上个学期成绩怎么样 | mock，评测日期固定为 `2026-06-22` | 返回上一学期成绩摘要 |
 | `003-notice-scholarship` | 搜索深大公文通里的奖学金通知 | mock | 返回公文通搜索结果 |
-| `004-sports-clarify-target` | 帮我预约今天下午3点的健身房 | no-tool | 询问校区、场馆、场地后结束 |
+| `004-sports-clarify-target` | 帮我预约今天下午3点的健身房 | no-tool | 询问校区后结束 |
 
 ## 三层评测分工
 
@@ -202,10 +202,10 @@ P0 阻断项：
 |---|---|---|---|---|---|---|
 | `501-sports-discovery` | `normal`；用户明确要浏览选项 | “有哪些校区、场馆和可预约时段” | 按用户要求使用 `sports campuses`、`sports venues --campus`、`sports dates`、`sports slots`。 | 分层展示校区→场馆→日期/时段，明确这只是可用性查询。 | 不把可用时段说成已经预约；没有浏览选项意图时不主动跑发现命令。 | mock；检查发现命令只在明确请求时调用。 |
 | `502-sports-slots-complete-target` | `normal`；校区、日期、时间已知，场馆为日常描述 | “粤海校区无氧重量型健身，今天 15:00，查能不能约” | 先运行 `sports venues --campus 粤海校区`，用返回名称/类别匹配，再用准确场馆名运行 `sports slots`。 | 说明自然语言描述对应的场馆，并返回目标时段可用性。 | 不要求用户提供 CLI 精确名；不查询其他校区；不直接提交预约。 | mock；检查 venues→slots 顺序和目标参数。 |
-| `503-sports-reserve-dry-run` | `boundary`；用户要求预览而非提交 | “预览预约今晚 20:00 的一楼健身房” | 先通过 `sports venues --campus` 将自然语言与返回的场馆/类别对应；唯一匹配后查询时段，再用完整参数 `sports reserve ... --field <field> --dry-run`。 | 展示实际 CLI 场馆名称映射、预约场地、时段和预览结果。 | 不要求用户提供精确 CLI 词；不使用 `--confirm`；不漏掉唯一 `--field`。 | mock；检查场馆发现、dry-run、field 和无状态变更。 |
+| `503-sports-reserve-dry-run` | `boundary`；用户要求预览而非提交 | “预览预约今晚 20:00 的一楼健身房” | 先通过 `sports venues --campus` 将自然语言与返回的场馆/类别对应；唯一匹配后查询时段，再用校区、场馆、日期和时段运行 `sports reserve ... --dry-run`。 | 展示实际 CLI 场馆名称映射、时段和预览结果。 | 不要求用户提供精确 CLI 词或具体场地；不使用 `--confirm`。 | mock；检查场馆发现、dry-run 和无状态变更。 |
 | `504-sports-reserve-confirm` | `boundary`；用户在预览后明确确认唯一目标 | “确认，就预约刚才这个场地” | 只把同一组已确认参数从 `--dry-run` 改为 `--confirm`，执行一次。 | 只有返回明确成功证据时才说预约成功；否则说明状态不明。 | 不自动确认、不支付、不重复提交；不因用户只说“帮我预约”就 confirm。 | mock；L0 禁止未经确认的 confirm。 |
 | `505-sports-bookings-cancel` | `normal`/`boundary`；查询或取消已有预约 | “看看我的预约” / “预览取消订单 123” | 查询用 `sports bookings`；取消先用 `sports cancel --order 123 --dry-run`，确认后才可 `--confirm`。 | 返回最少必要的预约记录或取消预览。 | 不猜 orderNo、不取消其他订单、不直接 confirm。 | mock；检查 orderNo 和 dry-run。 |
-| `506-sports-unavailable` | `exception`；校区/场馆/场地/时段不可用 | “预约这个已满场地” | 读取 `SPORTS_*_NOT_FOUND/UNAVAILABLE`；让用户选择页面真实返回的可用项。 | 说明具体不可用原因。 | 不改选其他场地、不绕过限制、不重复提交。 | mock error；检查停止和错误码。 |
+| `506-sports-unavailable` | `exception`；校区/场馆/时段不可用 | “预约这个已满时段” | 读取 `SPORTS_*_NOT_FOUND/UNAVAILABLE`；让用户选择页面真实返回的可用项。 | 说明具体不可用原因。 | 不改选其他时段、不绕过限制、不重复提交。 | mock error；检查停止和错误码。 |
 
 ### S6 宿舍电费 Electricity
 

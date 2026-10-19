@@ -113,7 +113,7 @@ export function buildSportsSlotsPayload(snapshot, options = {}) {
   };
 }
 
-export function buildSportsReserveDryRunPayload(slotsPayload, slotLabel, fieldName) {
+export function buildSportsReserveDryRunPayload(slotsPayload, slotLabel) {
   const selected = slotsPayload.items.find((slot) => slot.label === slotLabel || slot.label.startsWith(`${slotLabel}(`));
   if (!selected) {
     throwSportsError('SPORTS_SLOT_NOT_FOUND', `Sports slot not found: ${slotLabel}.`);
@@ -126,7 +126,6 @@ export function buildSportsReserveDryRunPayload(slotsPayload, slotLabel, fieldNa
     wouldSubmit: true,
     requiresConfirmation: true,
     selected,
-    field: { name: fieldName },
     campus: slotsPayload.campus,
     venue: slotsPayload.venue,
     date: slotsPayload.date,
@@ -134,8 +133,8 @@ export function buildSportsReserveDryRunPayload(slotsPayload, slotLabel, fieldNa
   };
 }
 
-export function buildSportsReserveConfirmPayload(slotsPayload, slotLabel, fieldName, result = {}) {
-  const dryRun = buildSportsReserveDryRunPayload(slotsPayload, slotLabel, fieldName);
+export function buildSportsReserveConfirmPayload(slotsPayload, slotLabel, result = {}) {
+  const dryRun = buildSportsReserveDryRunPayload(slotsPayload, slotLabel);
   return {
     ...dryRun,
     submitted: true,
@@ -166,7 +165,6 @@ export function parseSportsSnapshotFromText(text) {
   return {
     campuses,
     dates: parseDates(value),
-    fields: parseFields(value),
     venues: venueNames
       .filter((name) => value.includes(name))
       .map((name) => ({
@@ -197,27 +195,6 @@ function normalizeSlot(row) {
   };
 }
 
-function parseFields(text) {
-  const lines = String(text ?? '').split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-  const start = lines.indexOf('选择场地');
-  if (start < 0) {
-    return [];
-  }
-  const result = [];
-  for (const line of lines.slice(start + 1)) {
-    if (line === '取消' || line === '提交预约') {
-      break;
-    }
-    const match = line.match(/^(.+?)\((\d+)\/(\d+)\)$/);
-    result.push({
-      name: match?.[1] ?? line,
-      label: line,
-      remaining: match ? Number.parseInt(match[2], 10) : null,
-      capacity: match ? Number.parseInt(match[3], 10) : null
-    });
-  }
-  return result;
-}
 function parseDates(text) {
   const matches = String(text ?? '').match(/20\d{2}-\d{2}-\d{2}/g) ?? [];
   return [...new Set(matches)];

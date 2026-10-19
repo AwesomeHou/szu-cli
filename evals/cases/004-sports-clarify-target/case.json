@@ -5,7 +5,7 @@
   "mode": "no-tool",
   "skill": {
     "source": "skills/szu-cli-skill",
-    "version": "0.2.9",
+    "version": "0.2.10",
     "discovery": "repo"
   },
   "runtime": {
