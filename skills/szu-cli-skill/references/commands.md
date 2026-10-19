@@ -49,7 +49,7 @@ szu-cli auth logout
 szu-cli sports slots --campus <name> --venue <name> --date <YYYY-MM-DD>
 ```
 
-根据结果确认目标时间是否可用。使用校区、场馆、日期和时段运行 `sports reserve ... --dry-run`；不要求用户提供具体场地。展示预览并获得用户明确确认后，才可使用 `--confirm` 执行真实预约。
+根据结果确认目标时间是否可用。使用校区、场馆、日期和时段运行 `sports reserve ... --dry-run`；不提供 `--field`。真实提交时 CLI 会自动选择唯一可用的页面场地；若页面返回多个可用场地并提示 `SPORTS_FIELD_SELECTION_REQUIRED`，展示候选并请用户选择，然后再提交。
 
 ## 回答形式
 

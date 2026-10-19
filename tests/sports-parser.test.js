@@ -110,6 +110,13 @@ test('sports parser returns open dates', () => {
 
   assert.deepEqual(payload.items, [{ date: '2026-07-07' }, { date: '2026-07-08' }]);
 });
+
+test('sports parser extracts field choices needed by the page after a slot is selected', () => {
+  const snapshot = parseSportsSnapshotFromText('选择场地\n一楼健身房(109/120)\n取消\n提交预约');
+
+  assert.deepEqual(snapshot.fields, [{ name: '一楼健身房', label: '一楼健身房(109/120)', remaining: 109, capacity: 120 }]);
+});
+
 test('sports parser returns latest bookings with default limit shape', () => {
   const text = [
     '取消预约 | 未支付 | 详情\t202607091405161043\t2026-07-09 20:00~2026-07-09 21:00\t2026-07-09 14:05:16\t粤海校区\t运动广场西馆一楼健身房\t一楼健身房\t一楼重量型健身\t已预约\t2.0\t未支付\t预约人',

@@ -4,7 +4,8 @@ import assert from 'node:assert/strict';
 import {
   findSportsCancelButton,
   isSportsCancellationConfirmed,
-  isSportsSubmitConfirmed
+  isSportsSubmitConfirmed,
+  resolveUniqueSportsField
 } from '../src/modules/sports.js';
 
 test('sports submit confirmation requires an explicit success state', () => {
@@ -18,6 +19,23 @@ test('sports cancellation requires explicit confirmation evidence', () => {
   assert.equal(
     isSportsCancellationConfirmed('取消预约\t202607091405161043\ttime\tbooked\tcampus\tvenue\tfield\tproject\t已取消\ttype\tnote', '202607091405161043'),
     true
+  );
+});
+
+test('sports reservation automatically selects the only available field', () => {
+  assert.deepEqual(resolveUniqueSportsField([
+    { name: '一楼健身房', label: '一楼健身房(109/120)', remaining: 109 }
+  ]), { name: '一楼健身房', label: '一楼健身房(109/120)', remaining: 109 });
+  assert.equal(resolveUniqueSportsField([]), null);
+});
+
+test('sports reservation does not guess when multiple fields are available', () => {
+  assert.throws(
+    () => resolveUniqueSportsField([
+      { name: '一号场', remaining: 1 },
+      { name: '二号场', remaining: 1 }
+    ]),
+    (error) => error.code === 'SPORTS_FIELD_SELECTION_REQUIRED' && error.details.fields.length === 2
   );
 });
 

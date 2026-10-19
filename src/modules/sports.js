@@ -194,6 +194,12 @@ async function submitSportsReservation(options, slots) {
     await settleSportsPage(page, options);
     await clickRequiredText(page, dryRun.selected.label, 'slot');
     await page.waitForTimeout(1000);
+    const afterSlotText = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
+    const field = resolveUniqueSportsField(parseSportsSnapshotFromText(afterSlotText).fields);
+    if (field) {
+      await clickRequiredText(page, field.label, 'field');
+      await page.waitForTimeout(500);
+    }
     const submit = page.getByText('提交预约', { exact: true }).first();
     if (!(await submit.count().catch(() => 0))) {
       throwPageChanged('submit button');
@@ -491,6 +497,17 @@ export function isSportsCancellationConfirmed(text, orderNo) {
   const value = String(text ?? '');
   const booking = parseSportsBookingsFromText(value).find((item) => item.orderNo === orderNo);
   return /取消成功/.test(value) || Boolean(booking && /取消预约|预约作废|已取消/.test(`${booking.status ?? ''} ${booking.note ?? ''}`));
+}
+
+export function resolveUniqueSportsField(fields) {
+  const available = (Array.isArray(fields) ? fields : []).filter((field) => field.remaining !== 0);
+  if (available.length > 1) {
+    const error = new Error(`Multiple available sports fields require a choice: ${available.map((field) => field.name).join(', ')}.`);
+    error.code = 'SPORTS_FIELD_SELECTION_REQUIRED';
+    error.details = { fields: available.map((field) => field.name) };
+    throw error;
+  }
+  return available[0] ?? null;
 }
 
 export async function findSportsCancelButton(page, orderNo) {

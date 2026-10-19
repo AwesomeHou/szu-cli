@@ -5,7 +5,7 @@ display_name_en: Shenzhen University — Campus Services Skill
 description: 当用户需要通过本地 szu-cli 查询或操作深圳大学校园事务时使用，包括公文通、课表、成绩、电费、图书馆文献查询、健身房预约和知网论文下载等 10+ 个模块；深大学生自行制作，非官方，可在 github.com/AwesomeHou/szu-cli 反馈问题。
 description_zh: 通过自然语言完成公文通、课表、成绩、电费、图书馆文献查询，健身房预约，知网论文下载等操作，覆盖深圳大学校园服务的 10+ 个模块；深大学生自行制作，非官方，可在 github.com/AwesomeHou/szu-cli 反馈问题或通过电子邮件联系作者。
 description_en: Use natural language with the local szu-cli to query notices, timetables, grades, electricity balances, library literature, CNKI papers, and gym reservations across 10+ Shenzhen University campus modules. Built by Shenzhen University students; unofficial. Report issues at github.com/AwesomeHou/szu-cli or contact the author by email.
-version: 0.2.11
+version: 0.2.12
 author: Awesome
 license: MIT
 metadata:
@@ -65,7 +65,7 @@ szu-cli auth login
 
 预约请求缺少校区时，只询问校区并停止；可使用画像中的常用校区作为建议，但若本次请求语境不明确，不要直接替用户选定。用户给出校区后，调用 `szu-cli sports venues --campus <校区>` 查看该校区真实可预约的场馆，再把名称、类别与用户的日常描述（如“健身房”“无氧重量型健身”）对应起来。
 
-按名称、类别和用户描述选择最匹配的场馆：唯一且明确匹配时，告知用户采用的 CLI 场馆名称并继续；存在多个合理候选或匹配不确定时，列出 CLI 返回的候选名称并请用户选择，不要要求用户自己猜 CLI 精确词语。体育预约不需要用户另行提供具体场地。若未给出日期或目标时间，再只询问缺少的信息。
+按名称、类别和用户描述选择最匹配的场馆：唯一且明确匹配时，告知用户采用的 CLI 场馆名称并继续；存在多个合理候选或匹配不确定时，列出 CLI 返回的候选名称并请用户选择，不要要求用户自己猜 CLI 精确词语。预约命令不需要 `--field` 参数；页面只有一个可用场地时 CLI 会自动选择，多个可用场地时按错误返回的候选询问用户。若未给出日期或目标时间，再只询问缺少的信息。
 
 目标信息齐全后，使用 CLI 返回的准确校区和场馆名称运行 `sports slots --campus <name> --venue <name> --date <YYYY-MM-DD>`。根据结果确认用户要求的时段可预约，然后使用校区、场馆、日期和时段运行 `sports reserve ... --dry-run` 预览，再等待用户明确确认，才可对同一目标使用 `--confirm` 执行预约。不得因画像或语义匹配跳过 dry-run 与确认。
 

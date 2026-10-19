@@ -24,6 +24,7 @@
 - `SPORTS_CAMPUS_NOT_FOUND`：重新运行 `szu-cli sports campuses`。
 - `SPORTS_VENUE_NOT_FOUND`：重新运行 `szu-cli sports venues --campus <name>`。
 - `SPORTS_SLOT_NOT_FOUND` / `SPORTS_SLOT_UNAVAILABLE`：重新运行 `szu-cli sports slots ...` 并选择可用时段。
+- `SPORTS_FIELD_SELECTION_REQUIRED`：页面有多个可用场地；展示错误详情中的候选名称并请用户选择，再继续预约。
 - `SPORTS_SUBMIT_UNVERIFIED`：不要自动重试；让用户检查“我的预约”，或运行 `szu-cli sports bookings`。
 - `SPORTS_BOOKING_NOT_FOUND`：重新运行 `szu-cli sports bookings` 并使用目标记录的 `orderNo`。
 - `SPORTS_CANCEL_UNVERIFIED`：不要自动重试；运行 `szu-cli sports bookings` 检查订单状态。

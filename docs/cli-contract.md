@@ -164,6 +164,7 @@ szu-cli wanfang download <url> --headed --dir downloads
 - `SPORTS_VENUE_NOT_FOUND`：找不到指定体育场馆。
 - `SPORTS_SLOT_NOT_FOUND`：找不到指定预约时段。
 - `SPORTS_SLOT_UNAVAILABLE`：指定时段不可预约。
+- `SPORTS_FIELD_SELECTION_REQUIRED`：页面有多个可用场地，需要用户选择；唯一场地由 CLI 自动选择。
 - `SPORTS_SUBMIT_UNVERIFIED`：体育预约点击提交后，页面没有出现明确的预约成功、提交成功或待支付状态。
 - `SPORTS_BOOKING_NOT_FOUND`：找不到指定体育预约订单。
 - `SPORTS_CANCEL_UNVERIFIED`：体育预约点击取消后，页面没有出现可确认的取消状态。
@@ -830,7 +831,7 @@ szu-cli wanfang download <url> --headed --dir downloads
 }
 ```
 
-`sports bookings` 的历史记录字段包含 `actions`、`orderNo`、`timeRange`、`bookedAt`、`campus`、`venue`、`field`、`project`、`status`、`orderType` 和 `note`，不输出姓名、学号、学院等身份字段。`sports reserve` 只需指定校区、场馆、日期和时段；`--dry-run` 返回完整预约目标且不点击“提交预约”。真实提交必须显式传入 `--confirm`；当前 live MVP 不自动支付、不跳转支付页、不取消支付。预约成功后 CLI 只返回 `payment.required` 和手动支付提醒，不输出支付链接。`sports cancel --order <orderNo> --dry-run` 会验证订单存在但不取消；真实取消必须显式传入 `--confirm`。
+`sports bookings` 的历史记录字段包含 `actions`、`orderNo`、`timeRange`、`bookedAt`、`campus`、`venue`、`field`、`project`、`status`、`orderType` 和 `note`，不输出姓名、学号、学院等身份字段。`sports reserve` 只需指定校区、场馆、日期和时段；`--dry-run` 返回完整预约目标且不点击“提交预约”。真实提交必须显式传入 `--confirm`；页面只有一个可用场地时 CLI 自动选择，多个可用场地时停止并返回候选要求用户选择。当前 live MVP 不自动支付、不跳转支付页、不取消支付。预约成功后 CLI 只返回 `payment.required` 和手动支付提醒，不输出支付链接。`sports cancel --order <orderNo> --dry-run` 会验证订单存在但不取消；真实取消必须显式传入 `--confirm`。
 ## 电费 Schema
 
 `szu-cli electricity buildings` 返回 SIMS 电费查询页中的可用校区和楼栋。该命令需要校园内网访问。
