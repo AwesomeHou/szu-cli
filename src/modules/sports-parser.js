@@ -23,7 +23,6 @@ export function buildSportsSlotsByDatePayload(snapshot, options = {}) {
       return {
         date,
         bookingMode: payload.bookingMode,
-        place: payload.place,
         slots: payload.items
       };
     }),
@@ -109,7 +108,6 @@ export function buildSportsSlotsPayload(snapshot, options = {}) {
     venue: options.venue,
     date: options.date,
     bookingMode: stringOrNull(snapshot?.bookingMode) ?? '散场',
-    place: stringOrNull(snapshot?.place ?? rows(snapshot?.slots)[0]?.place),
     items: rows(snapshot?.slots).map(normalizeSlot),
     sourceUrl: options.sourceUrl
   };
@@ -195,8 +193,7 @@ function normalizeSlot(row) {
     state: stringOrNull(row.state) ?? (expired ? '已过期' : full ? '已满' : '可预约'),
     expired,
     selectable: !expired && !full && row.selectable !== false,
-    remaining,
-    place: stringOrNull(row.place)
+    remaining
   };
 }
 

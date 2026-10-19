@@ -103,6 +103,8 @@ test('sports slots without date returns slots grouped by open dates', () => {
   assert.equal(body.data.items.length, 2);
   assert.equal(body.data.items[1].date, '2026-07-08');
   assert.equal(body.data.items[1].slots[0].selectable, true);
+  assert.equal(Object.hasOwn(body.data.items[1], 'place'), false);
+  assert.equal(Object.hasOwn(body.data.items[1].slots[0], 'place'), false);
 });
 test('sports slots returns availability without identity fields', () => {
   const result = runSports([
@@ -121,6 +123,8 @@ test('sports slots returns availability without identity fields', () => {
   const body = JSON.parse(result.stdout);
   assert.equal(body.data.items[0].selectable, false);
   assert.equal(body.data.items[1].selectable, true);
+  assert.equal(Object.hasOwn(body.data, 'place'), false);
+  assert.equal(Object.hasOwn(body.data.items[1], 'place'), false);
   assert.equal(JSON.stringify(body.data).includes('2023000000'), false);
   assert.equal(JSON.stringify(body.data).includes('测试用户'), false);
 });

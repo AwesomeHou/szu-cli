@@ -64,6 +64,8 @@ test('sports parser marks expired and full slots unavailable', () => {
   assert.equal(payload.items[1].remaining, 0);
   assert.equal(payload.items[1].selectable, false);
   assert.equal(payload.items[2].selectable, true);
+  assert.equal(Object.hasOwn(payload, 'place'), false);
+  assert.equal(Object.hasOwn(payload.items[2], 'place'), false);
 });
 
 test('sports reserve dry-run does not submit and requires confirmation', () => {

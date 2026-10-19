@@ -810,7 +810,6 @@ szu-cli wanfang download <url> --headed --dir downloads
     "venue": "一楼重量型健身",
     "date": "2026-07-08",
     "bookingMode": "散场",
-    "place": "运动广场西馆一楼健身房",
     "items": [
       {
         "id": "20:00-21:00",
@@ -820,8 +819,7 @@ szu-cli wanfang download <url> --headed --dir downloads
         "state": "可预约",
         "expired": false,
         "selectable": true,
-        "remaining": 3,
-        "place": "运动广场西馆一楼健身房"
+        "remaining": 3
       }
     ],
     "sourceUrl": "https://ehall.szu.edu.cn/qljfwapp/sys/lwSzuCgyy/index.do#/sportVenue"
