@@ -1,4 +1,4 @@
-# 深圳大学—校园事务Skill
+# 深圳大学—校园服务Skill
 
 这是 `szu-cli` 配套的 Codex/Agent Skill，用来告诉 agent 如何安全地调用深圳大学校园事务 CLI。该 Skill 由深大学生自行制作，非官方，如有任何问题可在 [github.com/AwesomeHou/szu-cli](https://github.com/AwesomeHou/szu-cli) 上进行反馈或通过电子邮件与我取得联系。核心业务逻辑在 `szu-cli` 内，Skill 只保存使用说明、命令路由和安全边界。
 
@@ -10,7 +10,7 @@
 npx szu-cli@latest install
 ```
 
-该命令会将 CLI 安装到 npm 全局路径，并把本 Skill 全局安装到当前环境中可识别的主流 Agent。WorkBuddy 用户应优先从连接器市场安装“深圳大学校园事务”，也可以在技能商店搜索 `szu-cli-skill` 安装 Skill。
+该命令会将 CLI 安装到 npm 全局路径，并把本 Skill 全局安装到当前环境中可识别的主流 Agent。WorkBuddy 用户应优先从连接器市场安装“深圳大学校园服务”，也可以在技能商店搜索 `szu-cli-skill` 安装 Skill。
 
 上架后，也可以从 SkillHub 或 ClawHub 安装本 skill：
 

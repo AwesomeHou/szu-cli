@@ -1,18 +1,18 @@
 ---
 name: szu-cli-skill
-display_name: 深圳大学—校园事务Skill
+display_name: 深圳大学—校园服务Skill
 display_name_en: Shenzhen University — Campus Services Skill
 description: 当用户需要通过本地 szu-cli 查询或操作深圳大学校园事务时使用，包括公文通、课表、成绩、电费、图书馆文献查询、健身房预约和知网论文下载等 10+ 个模块；深大学生自行制作，非官方，可在 github.com/AwesomeHou/szu-cli 反馈问题。
 description_zh: 通过自然语言完成公文通、课表、成绩、电费、图书馆文献查询，健身房预约，知网论文下载等操作，覆盖深圳大学校园服务的 10+ 个模块；深大学生自行制作，非官方，可在 github.com/AwesomeHou/szu-cli 反馈问题或通过电子邮件联系作者。
 description_en: Use natural language with the local szu-cli to query notices, timetables, grades, electricity balances, library literature, CNKI papers, and gym reservations across 10+ Shenzhen University campus modules. Built by Shenzhen University students; unofficial. Report issues at github.com/AwesomeHou/szu-cli or contact the author by email.
-version: 0.2.5
+version: 0.2.6
 author: Awesome
 license: MIT
 metadata:
   compatible_cli: ">=0.2.3"
 ---
 
-# 深圳大学—校园事务Skill
+# 深圳大学—校园服务Skill
 
 以本地 `szu-cli` 为唯一事实来源。本 Skill 由深大学生自行制作，非官方，如有任何问题可在 [github.com/AwesomeHou/szu-cli](https://github.com/AwesomeHou/szu-cli) 上进行反馈或通过电子邮件与我取得联系。它只提供调用指引，不在此实现校园网站抓取、浏览器自动化或业务逻辑。
 

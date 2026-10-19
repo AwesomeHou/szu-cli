@@ -38,7 +38,7 @@ test('skill install copies bundled skill to explicit directory', () => {
   assert.equal(body.data.name, 'szu-cli-skill');
   assert.equal(body.data.installed, true);
   assert.equal(body.data.installedPath, join(targetRoot, 'szu-cli-skill'));
-  assert.match(readFileSync(join(targetRoot, 'szu-cli-skill', 'SKILL.md'), 'utf8'), /深圳大学—校园事务Skill/);
+  assert.match(readFileSync(join(targetRoot, 'szu-cli-skill', 'SKILL.md'), 'utf8'), /深圳大学—校园服务Skill/);
   assert.equal(existsSync(join(targetRoot, 'szu-cli-skill', 'references', 'commands.md')), true);
   assert.equal(existsSync(join(targetRoot, 'szu-cli-skill', 'references', 'examples.md')), true);
   assert.equal(existsSync(join(targetRoot, 'szu-cli-skill', 'references', 'academic-databases.md')), true);
@@ -64,8 +64,8 @@ test('skill install creates portable AI IDE bundle', () => {
   assert.equal(body.ok, true);
   assert.equal(body.data.target, 'ai-ide');
   assert.equal(body.data.installedPath, targetDir);
-  assert.match(readFileSync(join(targetDir, 'SKILL.md'), 'utf8'), /深圳大学—校园事务Skill/);
-  assert.match(readFileSync(join(targetDir, 'AGENTS.md'), 'utf8'), /深圳大学—校园事务Skill/);
+  assert.match(readFileSync(join(targetDir, 'SKILL.md'), 'utf8'), /深圳大学—校园服务Skill/);
+  assert.match(readFileSync(join(targetDir, 'AGENTS.md'), 'utf8'), /深圳大学—校园服务Skill/);
   assert.equal(existsSync(join(targetDir, 'references', 'commands.md')), true);
   assert.equal(existsSync(join(targetDir, 'agents', 'openai.yaml')), true);
   rmSync(targetRoot, { recursive: true, force: true });
@@ -90,7 +90,7 @@ test('skill install supports WorkBuddy and Claude Code roots', () => {
     assert.equal(body.ok, true);
     assert.equal(body.data.target, target);
     assert.equal(body.data.installedPath, targetDir);
-    assert.match(readFileSync(join(targetDir, 'SKILL.md'), 'utf8'), /深圳大学—校园事务Skill/);
+    assert.match(readFileSync(join(targetDir, 'SKILL.md'), 'utf8'), /深圳大学—校园服务Skill/);
     assert.equal(existsSync(join(targetDir, 'references', 'commands.md')), true);
     assert.equal(existsSync(join(targetDir, 'agents', 'openai.yaml')), true);
     rmSync(targetRoot, { recursive: true, force: true });

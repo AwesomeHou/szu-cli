@@ -12,7 +12,7 @@ for (const file of requiredConnectorFiles) {
 }
 
 const meta = JSON.parse(await readFile(join(connectorRoot, 'connector-meta.json'), 'utf8'));
-assert(meta.name === '深圳大学校园事务', 'connector name is out of sync');
+assert(meta.name === '深圳大学校园服务', 'connector name is out of sync');
 assert(meta.name_en === 'Shenzhen University Campus Services', 'connector English name is out of sync');
 assert(meta.description && meta.description_zh && meta.description_en, 'connector descriptions are required');
 assert(meta.description === canonicalDescription && meta.description_zh === canonicalDescription, 'connector Chinese description is out of sync');
