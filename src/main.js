@@ -32,6 +32,7 @@ import {
   getSportsBookings,
   getSportsCampuses,
   getSportsDates,
+  getSportsFields,
   getSportsSlots,
   getSportsStatus,
   getSportsVenues,
@@ -265,7 +266,7 @@ export async function run(argv) {
     return;
   }
 
-  if (domain === 'sports' && (action === 'status' || action === 'campuses' || action === 'venues' || action === 'dates' || action === 'slots' || action === 'bookings' || action === 'reserve' || action === 'cancel')) {
+  if (domain === 'sports' && (action === 'status' || action === 'campuses' || action === 'venues' || action === 'fields' || action === 'dates' || action === 'slots' || action === 'bookings' || action === 'reserve' || action === 'cancel')) {
     try {
       const options = parseSportsOptions(action, argv.slice(2));
       const data = action === 'status'
@@ -274,15 +275,17 @@ export async function run(argv) {
           ? await getSportsCampuses(options)
           : action === 'venues'
             ? await getSportsVenues(options)
-            : action === 'dates'
-              ? await getSportsDates(options)
-              : action === 'slots'
-                ? await getSportsSlots(options)
-                : action === 'bookings'
-                  ? await getSportsBookings(options)
-                  : action === 'reserve'
-                  ? await reserveSportsSlot(options)
-                  : await cancelSportsBooking(options);
+            : action === 'fields'
+              ? await getSportsFields(options)
+              : action === 'dates'
+                ? await getSportsDates(options)
+                : action === 'slots'
+                  ? await getSportsSlots(options)
+                  : action === 'bookings'
+                    ? await getSportsBookings(options)
+                    : action === 'reserve'
+                      ? await reserveSportsSlot(options)
+                      : await cancelSportsBooking(options);
       writeJson(successEnvelope(data, {
         command: `sports ${action}`,
         gateway: 'direct',
@@ -852,6 +855,7 @@ function parseSportsOptions(action, argv) {
     url: null,
     campus: null,
     venue: null,
+    field: null,
     date: null,
     slot: null,
     dryRun: false,
@@ -869,23 +873,28 @@ function parseSportsOptions(action, argv) {
       i += 1;
       continue;
     }
-    if (arg === '--campus' && ['venues', 'dates', 'slots', 'reserve'].includes(action)) {
+    if (arg === '--campus' && ['venues', 'fields', 'dates', 'slots', 'reserve'].includes(action)) {
       options.campus = requireValue(argv, i, arg);
       i += 1;
       continue;
     }
-    if (arg === '--venue' && ['dates', 'slots', 'reserve'].includes(action)) {
+    if (arg === '--venue' && ['fields', 'dates', 'slots', 'reserve'].includes(action)) {
       options.venue = requireValue(argv, i, arg);
       i += 1;
       continue;
     }
-    if (arg === '--date' && ['slots', 'reserve'].includes(action)) {
+    if (arg === '--date' && ['fields', 'slots', 'reserve'].includes(action)) {
       options.date = parseDateString(requireValue(argv, i, arg), '--date');
       i += 1;
       continue;
     }
-    if (arg === '--slot' && action === 'reserve') {
+    if (arg === '--slot' && ['fields', 'reserve'].includes(action)) {
       options.slot = requireValue(argv, i, arg);
+      i += 1;
+      continue;
+    }
+    if (arg === '--field' && action === 'reserve') {
+      options.field = requireValue(argv, i, arg);
       i += 1;
       continue;
     }
@@ -1622,6 +1631,7 @@ function handleKnownError(error, command) {
     SPORTS_BOOKING_NOT_FOUND: 35,
     SPORTS_CANCEL_UNVERIFIED: 36,
     SPORTS_FIELD_SELECTION_REQUIRED: 40,
+    SPORTS_FIELD_NOT_FOUND: 41,
     RATE_LIMITED: 30,
     DOWNLOAD_UNAVAILABLE: 31,
     HEADED_REQUIRED: 2,

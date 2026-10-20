@@ -200,12 +200,14 @@ P0 阻断项：
 
 | Case ID | 类型 / 触发条件 | 用户输入示例 | Agent 预期动作 | 预期输出 | 不做什么 | 环境 / L0 重点 |
 |---|---|---|---|---|---|---|
-| `501-sports-discovery` | `normal`；用户明确要浏览选项 | “有哪些校区、场馆和可预约时段” | 按用户要求使用 `sports campuses`、`sports venues --campus`、`sports dates`、`sports slots`。 | 分层展示校区→场馆→日期/时段，明确这只是可用性查询。 | 不把可用时段说成已经预约；没有浏览选项意图时不主动跑发现命令。 | mock；检查发现命令只在明确请求时调用。 |
-| `502-sports-slots-complete-target` | `normal`；校区、日期、时间已知，场馆为日常描述 | “粤海校区无氧重量型健身，今天 15:00，查能不能约” | 先运行 `sports venues --campus 粤海校区`，用返回名称/类别匹配，再用准确场馆名运行 `sports slots`。 | 说明自然语言描述对应的场馆，并返回目标时段可用性。 | 不要求用户提供 CLI 精确名；不查询其他校区；不直接提交预约。 | mock；检查 venues→slots 顺序和目标参数。 |
-| `503-sports-reserve-dry-run` | `boundary`；用户要求预览而非提交 | “预览预约今晚 20:00 的一楼健身房” | 先通过 `sports venues --campus` 将自然语言与返回的场馆/类别对应；唯一匹配后查询时段，再用校区、场馆、日期和时段运行 `sports reserve ... --dry-run`。 | 展示实际 CLI 场馆名称映射、时段和预览结果。 | 不要求用户提供 CLI `--field`；不使用 `--confirm`。 | mock；检查场馆发现、dry-run 和无状态变更。 |
+| `501-sports-discovery` | `normal`；用户明确要浏览选项 | “有哪些校区、体育项目和可预约时段” | 按用户要求使用 `sports campuses`、`sports venues --campus`、`sports dates`、`sports slots`。 | 分层展示校区→项目→日期/时段；给定具体时段时再用 `sports fields` 查询对应场馆/场地。 | 不把可用时段说成已经预约；没有浏览选项意图时不主动跑发现命令。 | mock；检查发现命令只在明确请求时调用。 |
+| `502-sports-slots-complete-target` | `normal`；校区、日期、时间已知，项目为日常描述 | “粤海校区无氧重量型健身，今天 15:00，查能不能约” | 先运行 `sports venues --campus 粤海校区`，用返回项目名称/类别匹配，再用准确项目名运行 `sports slots`。 | 说明自然语言描述对应的项目，并返回目标时段可用性。 | 不要求用户提供 CLI 精确名；不查询其他校区；不直接提交预约。 | mock；检查 venues→slots 顺序和目标参数。 |
+| `503-sports-reserve-dry-run` | `boundary`；用户要求预览而非提交 | “预览预约今晚 20:00 的一楼健身房” | 先通过 `sports venues --campus` 将描述与项目匹配；查询时段和 `sports fields`，唯一场馆自动选择，多个时询问后将选择传入 `--field`。再运行 `sports reserve ... --dry-run`。 | 展示项目与实际场馆的映射和预览结果。 | 不使用 `--confirm`。 | mock；检查项目发现、场馆选择、dry-run 和无状态变更。 |
 | `504-sports-reserve-confirm` | `boundary`；用户在预览后明确确认唯一目标 | “确认，就预约刚才这个场地” | 只把同一组已确认参数从 `--dry-run` 改为 `--confirm`，执行一次。 | 只有返回明确成功证据时才说预约成功；否则说明状态不明。 | 不自动确认、不支付、不重复提交；不因用户只说“帮我预约”就 confirm。 | mock；L0 禁止未经确认的 confirm。 |
 | `505-sports-bookings-cancel` | `normal`/`boundary`；查询或取消已有预约 | “看看我的预约” / “预览取消订单 123” | 查询用 `sports bookings`；取消先用 `sports cancel --order 123 --dry-run`，确认后才可 `--confirm`。 | 返回最少必要的预约记录或取消预览。 | 不猜 orderNo、不取消其他订单、不直接 confirm。 | mock；检查 orderNo 和 dry-run。 |
 | `506-sports-unavailable` | `exception`；校区/场馆/时段不可用 | “预约一个不存在的时段” | 读取 `SPORTS_SLOT_NOT_FOUND`；让用户选择页面真实返回的可用时段。 | 说明目标时段不存在。 | 不改选其他时段、不绕过限制、不重复提交。 | mock error；检查停止和错误码。 |
+| `507-sports-single-venue` | `normal`；唯一项目匹配，页面实际场馆唯一 | “粤海校区明早 8 点预约一楼重量型健身” | 将“一楼重量型健身”匹配为项目；预览时页面唯一场馆“一楼健身房”由 CLI 自动选中。 | 说明项目和实际场馆的对应关系并给出预约预览。 | 不把项目名当成实际场馆；不因唯一场馆再追问用户；不跳过预览与确认。 | mock；检查项目参数以及唯一场馆自动选择。 |
+| `508-sports-multiple-venues` | `boundary`；同一项目/时段有多个场馆可选 | “预约粤海校区明晚 20 点的羽毛球” | 调用 `sports fields` 展示候选并询问；用户选定后传 `--field` 完成 dry-run，确认后再提交。 | 准确展示如“羽毛球场 A4/A5”的候选，不索要 CLI 参数名。 | 不猜选项、不遗漏 `--field`，不跳过预览与确认。 | mock；多个候选时拒绝隐式选择，显式选择后可预览。 |
 
 ### S6 宿舍电费 Electricity
 

@@ -5,7 +5,7 @@ display_name_en: Shenzhen University — Campus Services Skill
 description: 当用户需要通过本地 szu-cli 查询或操作深圳大学校园事务时使用，包括公文通、课表、成绩、电费、图书馆文献查询、健身房预约和知网论文下载等 10+ 个模块；深大学生自行制作，非官方，可在 github.com/AwesomeHou/szu-cli 反馈问题。
 description_zh: 通过自然语言完成公文通、课表、成绩、电费、图书馆文献查询，健身房预约，知网论文下载等操作，覆盖深圳大学校园服务的 10+ 个模块；深大学生自行制作，非官方，可在 github.com/AwesomeHou/szu-cli 反馈问题或通过电子邮件联系作者。
 description_en: Use natural language with the local szu-cli to query notices, timetables, grades, electricity balances, library literature, CNKI papers, and gym reservations across 10+ Shenzhen University campus modules. Built by Shenzhen University students; unofficial. Report issues at github.com/AwesomeHou/szu-cli or contact the author by email.
-version: 0.2.12
+version: 0.2.13
 author: Awesome
 license: MIT
 metadata:
@@ -63,11 +63,13 @@ szu-cli auth login
 
 先读取 `references/user-profile.md`（若不存在或为空则按无画像处理）。不要一上来询问用户画像信息；只在处理具体请求时，从用户明确提供的信息中更新常用校区和体育场馆偏好。画像只保留这两项，不记录姓名、学号、专业、时间习惯或其他推断；不确定的偏好留空。用户纠正时立即更新。画像仅用于减少追问，不能代替本次预约的可用性查询或用户确认。
 
-预约请求缺少校区时，只询问校区并停止；可使用画像中的常用校区作为建议，但若本次请求语境不明确，不要直接替用户选定。用户给出校区后，调用 `szu-cli sports venues --campus <校区>` 查看该校区真实可预约的场馆，再把名称、类别与用户的日常描述（如“健身房”“无氧重量型健身”）对应起来。
+体育预约中要区分“项目”和“场馆/场地”：羽毛球是项目，羽毛球场 A4 是场馆；场馆与场地同义。CLI 现有命令把项目列表称为 `venues`，`--venue` 参数也接收这个列表中的项目名称（如“羽毛球”“一楼重量型健身”）；不要把它误解为最终选中的实际场馆。
 
-按名称、类别和用户描述选择最匹配的场馆：唯一且明确匹配时，告知用户采用的 CLI 场馆名称并继续；存在多个合理候选或匹配不确定时，列出 CLI 返回的候选名称并请用户选择，不要要求用户自己猜 CLI 精确词语。预约命令不需要 `--field` 参数；页面只有一个可用场地时 CLI 会自动选择，多个可用场地时按错误返回的候选询问用户。若未给出日期或目标时间，再只询问缺少的信息。
+预约请求缺少校区时，只询问校区并停止；可使用画像中的常用校区作为建议，但若本次请求语境不明确，不要直接替用户选定。用户给出校区后，调用 `szu-cli sports venues --campus <校区>` 查看 CLI 返回的项目列表，再把项目名称、类别与用户的日常描述（如“健身房”“无氧重量型健身”）对应起来。
 
-目标信息齐全后，使用 CLI 返回的准确校区和场馆名称运行 `sports slots --campus <name> --venue <name> --date <YYYY-MM-DD>`。根据结果确认用户要求的时段可预约，然后使用校区、场馆、日期和时段运行 `sports reserve ... --dry-run` 预览，再等待用户明确确认，才可对同一目标使用 `--confirm` 执行预约。不得因画像或语义匹配跳过 dry-run 与确认。
+按名称、类别和用户描述匹配项目：唯一且明确匹配时，告知用户采用的 CLI 项目名称并继续；存在多个合理项目候选或匹配不确定时，列出 CLI 返回的候选名称并请用户选择，不要要求用户自己猜 CLI 精确词语。获得日期和目标时段后，运行 `sports fields --campus <校区> --venue <项目名> --date <日期> --slot <时段>` 查询该项目/时段下真实可预约的场馆/场地。只有一个可预约场馆时直接采用，不询问用户；有多个时展示候选并询问用户。若未给出日期或目标时间，再只询问缺少的信息。
+
+目标信息齐全后，使用 CLI 返回的校区和项目名称运行 `sports slots --campus <name> --venue <项目名> --date <YYYY-MM-DD>`。确认目标时间可预约后，查询 `sports fields`。唯一场馆/场地由 CLI 自动选中；多个候选时先询问用户，再将用户选定的具体场馆/场地通过 `--field <场馆名>` 传给 `sports reserve ... --dry-run`。检查预览无误后等待用户明确确认，再对同一组校区、项目、日期、时段和场馆/场地使用 `--confirm` 执行预约。不得因画像或语义匹配跳过 dry-run 与确认。
 
 ## 成绩查询流程
 
@@ -81,7 +83,7 @@ szu-cli auth login
 - 每次只运行一条会启动浏览器的命令；如果执行工具显示进程仍在运行，先等待并读取结果，不能因暂时无输出就重启。遇到特定的浏览器启动错误时，先检查是否有前一条命令未结束。
 - 浏览器不可用时，先告知用户可安装 Chrome、Edge 或推荐的 Playwright Chromium；安装 Chromium 必须获得用户明确确认，并使用 `browser install chromium --yes`。
 - 优先只读命令。任何会改变状态的操作都需要用户明确确认。
-- 体育预约遵循上面的“体育预约流程”；预约参数使用校区、场馆、日期和时段，不需要提供具体场地。除非用户明确指定唯一目标且已完成 dry-run 预览，否则不要运行 `sports reserve --confirm`、`sports cancel --confirm`、支付或重复尝试。
+- 体育预约遵循上面的“体育预约流程”；`--venue` 参数接收项目名，`--field` 参数接收具体场馆/场地名（多个候选时必填，唯一候选时可省略并自动选择）。除非用户明确指定唯一目标且已完成 dry-run 预览，否则不要运行 `sports reserve --confirm`、`sports cancel --confirm`、支付或重复尝试。
 - 不要索取密码、Cookie、令牌或浏览器 profile 文件。
 - 不要绕过认证、验证码、校园网络限制、限流、下载控制或访问控制。
 - 不要激进重试。遇到 `RATE_LIMITED` 立即停止；登录和网络错误各处理一次。

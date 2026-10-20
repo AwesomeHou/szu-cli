@@ -22,9 +22,10 @@
 - `LECTURE_NOT_FOUND`：让用户重新运行 `szu-cli lecture list`。
 - `SPORTS_CONFIRM_REQUIRED`：使用 `--dry-run` 预览；只有用户明确确认后才能改用 `--confirm`。
 - `SPORTS_CAMPUS_NOT_FOUND`：重新运行 `szu-cli sports campuses`。
-- `SPORTS_VENUE_NOT_FOUND`：重新运行 `szu-cli sports venues --campus <name>`。
+- `SPORTS_VENUE_NOT_FOUND`：重新运行 `szu-cli sports venues --campus <name>`；此错误码沿用旧命名，指 CLI 项目列表中没有该名称。
 - `SPORTS_SLOT_NOT_FOUND` / `SPORTS_SLOT_UNAVAILABLE`：重新运行 `szu-cli sports slots ...` 并选择可用时段。
-- `SPORTS_FIELD_SELECTION_REQUIRED`：页面有多个可用场地；展示错误详情中的候选名称并请用户选择，再继续预约。
+- `SPORTS_FIELD_SELECTION_REQUIRED`：选定项目和时段后，页面返回多个可预约场馆/场地但预约命令没有 `--field`；用 `sports fields` 展示错误详情 `fields` 中的候选，询问用户后以其选择的名称重试 `--dry-run --field <name>`。只有一个可预约项时 CLI 自动选中。
+- `SPORTS_FIELD_NOT_FOUND`：所选场馆/场地不存在或当前时段不可预约；检查 `sports fields` 返回的候选名称及可用状态。
 - `SPORTS_SUBMIT_UNVERIFIED`：不要自动重试；让用户检查“我的预约”，或运行 `szu-cli sports bookings`。
 - `SPORTS_BOOKING_NOT_FOUND`：重新运行 `szu-cli sports bookings` 并使用目标记录的 `orderNo`。
 - `SPORTS_CANCEL_UNVERIFIED`：不要自动重试；运行 `szu-cli sports bookings` 检查订单状态。

@@ -39,6 +39,18 @@ test('sports reservation does not guess when multiple fields are available', () 
   );
 });
 
+test('sports reservation selects the explicitly requested available venue', () => {
+  const fields = [
+    { name: '羽毛球场 A4', remaining: 2 },
+    { name: '羽毛球场 A5', remaining: 1 }
+  ];
+  assert.equal(resolveUniqueSportsField(fields, '羽毛球场 A5'), fields[1]);
+  assert.throws(
+    () => resolveUniqueSportsField(fields, '羽毛球场 A6'),
+    (error) => error.code === 'SPORTS_FIELD_NOT_FOUND' && error.details.fields.length === 2
+  );
+});
+
 test('sports cancellation never falls back to another order button', async () => {
   const cancel = {
     count: async () => 0

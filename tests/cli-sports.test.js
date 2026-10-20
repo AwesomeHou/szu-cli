@@ -70,6 +70,24 @@ test('sports campuses and venues return normalized data', () => {
   assert.equal(JSON.parse(venues.stdout).data.items[0].name, '一楼重量型健身');
 });
 
+test('sports fields lists concrete venues for the selected project and slot', () => {
+  const result = runSports([
+    'sports',
+    'fields',
+    '--campus', '粤海校区',
+    '--venue', '一楼重量型健身',
+    '--date', '2026-07-08',
+    '--slot', '20:00-21:00',
+    '--json'
+  ]);
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.meta.command, 'sports fields');
+  assert.equal(body.data.items[0].name, '一楼健身房');
+  assert.equal(body.data.items[0].available, true);
+});
+
 test('sports dates lists open booking dates', () => {
   const result = runSports([
     'sports',
@@ -192,10 +210,10 @@ test('sports reserve dry-run does not submit', () => {
   assert.equal(body.data.submitted, false);
   assert.equal(body.data.requiresConfirmation, true);
   assert.equal(body.data.selected.label, '20:00-21:00');
-  assert.equal(Object.hasOwn(body.data, 'field'), false);
+  assert.equal(body.data.field, '一楼健身房');
 });
 
-test('sports reserve confirm works without a field in mock backend', () => {
+test('sports reserve confirm auto-selects the only available field in mock backend', () => {
   const result = runSports([
     'sports',
     'reserve',
@@ -215,10 +233,10 @@ test('sports reserve confirm works without a field in mock backend', () => {
   const body = JSON.parse(result.stdout);
   assert.equal(body.data.submitted, true);
   assert.equal(body.data.payment.required, true);
-  assert.equal(Object.hasOwn(body.data, 'field'), false);
+  assert.equal(body.data.field, '一楼健身房');
 });
 
-test('sports reserve rejects the removed field option', () => {
+test('sports reserve accepts a requested field', () => {
   const result = runSports([
     'sports',
     'reserve',
@@ -236,8 +254,62 @@ test('sports reserve rejects the removed field option', () => {
     '--json'
   ]);
 
-  assert.notEqual(result.status, 0);
-  assert.match(`${result.stdout}${result.stderr}`, /Unknown option: --field/);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).data.field, '一楼健身房');
+});
+
+test('sports reserve requires a field when multiple venues are available', () => {
+  const result = runSports([
+    'sports', 'reserve',
+    '--campus', '粤海校区',
+    '--venue', '羽毛球',
+    '--date', '2026-07-08',
+    '--slot', '20:00-21:00',
+    '--dry-run', '--json'
+  ], {
+    env: {
+      SZU_MOCK_SPORTS_JSON: JSON.stringify({
+        ...snapshot,
+        venues: [{ campus: '粤海校区', name: '羽毛球', category: null, bookable: true }],
+        fields: [
+          { name: '羽毛球场 A4', label: '羽毛球场 A4(2/4)', remaining: 2 },
+          { name: '羽毛球场 A5', label: '羽毛球场 A5(1/4)', remaining: 1 }
+        ]
+      })
+    }
+  });
+
+  assert.equal(result.status, 40);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.error.code, 'SPORTS_FIELD_SELECTION_REQUIRED');
+  assert.deepEqual(body.error.details.fields, ['羽毛球场 A4', '羽毛球场 A5']);
+  assert.match(body.error.hint, /sports fields/);
+});
+
+test('sports reserve selects the requested venue when multiple are available', () => {
+  const result = runSports([
+    'sports', 'reserve',
+    '--campus', '粤海校区',
+    '--venue', '羽毛球',
+    '--date', '2026-07-08',
+    '--slot', '20:00-21:00',
+    '--field', '羽毛球场 A5',
+    '--dry-run', '--json'
+  ], {
+    env: {
+      SZU_MOCK_SPORTS_JSON: JSON.stringify({
+        ...snapshot,
+        venues: [{ campus: '粤海校区', name: '羽毛球', category: null, bookable: true }],
+        fields: [
+          { name: '羽毛球场 A4', label: '羽毛球场 A4(2/4)', remaining: 2 },
+          { name: '羽毛球场 A5', label: '羽毛球场 A5(1/4)', remaining: 1 }
+        ]
+      })
+    }
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).data.field, '羽毛球场 A5');
 });
 
 test('sports cancel confirm is covered only by mock backend', () => {

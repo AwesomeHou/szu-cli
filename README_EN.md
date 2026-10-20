@@ -109,7 +109,7 @@ npx --yes skills add https://github.com/AwesomeHou/szu-cli --skill szu-cli-skill
 | Class timetables and programs | Query class timetables, training programs, and curriculum modules | `szu-cli timetable classes --limit 5`<br>`szu-cli program list --limit 5` |
 | Grades and academic progress | Query grades, GPA, ideology credits, and training-plan completion | `szu-cli grade list`<br>`szu-cli completion summary` |
 | Innovation lectures | Query registerable lectures, lecture details, and personal progress | `szu-cli lecture list`<br>`szu-cli lecture progress` |
-| Sports venues | Query venues and available slots, then preview reservations or cancellations | `szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08`<br>`szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --dry-run` |
+| Sports booking | Query projects, slots, and concrete venues; a unique venue is selected automatically, while `--field` selects one from multiple choices | `szu-cli sports fields --campus 粤海校区 --venue 羽毛球 --date 2026-07-08 --slot 20:00-21:00`<br>`szu-cli sports reserve --campus 粤海校区 --venue 羽毛球 --date 2026-07-08 --slot 20:00-21:00 --field "羽毛球场 A4" --dry-run` |
 | Dorm electricity | List supported buildings and query a room's remaining electricity | `szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838` |
 | Library catalog | Search books and query locations, call numbers, and loan status | `szu-cli library search 交通设计`<br>`szu-cli library item 3706432` |
 | CNKI | Search article metadata and details in a visible browser | `szu-cli cnki search 交通设计 --headed` |

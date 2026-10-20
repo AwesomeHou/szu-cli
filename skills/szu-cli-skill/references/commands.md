@@ -33,23 +33,24 @@ szu-cli auth logout
 | 仍开放但满额或容量未知的讲座 | `lecture list --availability open` | 将未知容量视作可报名 |
 | 讲座详情或学习进度 | `lecture item <id>`；`lecture progress` | 暴露原始私人进度记录；调用报名或取消报名接口 |
 | 我的体育预约 | `sports bookings`；需多于 3 条时加 `--limit <n>` | 暴露无关预约历史 |
-| 体育场馆可用情况 | `sports campuses`；`sports venues --campus <name>`；`sports dates --campus <name> --venue <name>`；`sports slots --campus <name> --venue <name>` | 将时段可用视作预约成功 |
-| 体育预约或取消的预览 | `sports reserve ... --dry-run`；`sports cancel --order <orderNo> --dry-run` | 缺少校区、场馆、日期、时段或订单号，或未获明确指令就运行 `--confirm`、支付或重复尝试 |
+| 体育项目和时段可用情况 | `sports campuses`；`sports venues --campus <name>`；`sports dates --campus <name> --venue <project>`；`sports slots --campus <name> --venue <project>` | 将时段可用视作预约成功 |
+| 查询时段内可选场馆/场地 | `sports fields --campus <name> --venue <project> --date <date> --slot <slot>` | 将项目名当成场馆/场地名 |
+| 体育预约或取消的预览 | `sports reserve ... --dry-run [--field <venue>]`；`sports cancel --order <orderNo> --dry-run` | 缺少校区、项目、日期、时段或订单号，或未获明确指令就运行 `--confirm`、支付或重复尝试 |
 | 宿舍电费 | 楼栋不确定时用 `electricity buildings`，再 `electricity query --building <name> --room <room>`；校区可由 CLI 根据唯一楼栋匹配推断 | 猜测楼栋/房间或尝试缴费 |
 | 图书馆馆藏 | `library search ...`；详情用 `library item <id|url>` | 将检索行当作馆藏册详情 |
 | 知网、万方或文献检索 | 阅读 `academic-databases.md` | 在元数据/引用工作前直接下载 |
 
 ## 体育预约的固定顺序
 
-先读精简画像；不要主动询问画像。请求缺校区时，只询问校区并停止。用户给出校区后，先运行 `sports venues --campus <校区>`，用返回的场馆名称和类别匹配用户的自然语言描述。唯一明确匹配时说明采用项并继续；匹配不唯一时展示候选并请用户选择，不要要求用户提供 CLI 精确名称。用户描述的“健身房/重量训练”等可能是场馆或项目，应结合返回的场馆名称和类别匹配。
+先读精简画像；不要主动询问画像。请求缺校区时，只询问校区并停止。术语上，羽毛球是项目，羽毛球场 A4 是场馆；场馆与场地同义。当前 CLI 的 `sports venues` / `--venue` 沿用旧命名，实际返回并接收的是项目名称。用户给出校区后，先运行 `sports venues --campus <校区>`，用返回的项目名称和类别匹配用户的自然语言描述。唯一明确匹配时说明采用项并继续；匹配不唯一时展示候选并请用户选择，不要要求用户提供 CLI 精确名称。
 
-场馆匹配唯一且日期已知后，运行：
+项目匹配唯一且日期已知后，运行：
 
 ```bash
 szu-cli sports slots --campus <name> --venue <name> --date <YYYY-MM-DD>
 ```
 
-根据结果确认目标时间是否可用。使用校区、场馆、日期和时段运行 `sports reserve ... --dry-run`；不提供 `--field`。真实提交时 CLI 会自动选择唯一可用的页面场地；若页面返回多个可用场地并提示 `SPORTS_FIELD_SELECTION_REQUIRED`，展示候选并请用户选择，然后再提交。
+根据结果确认目标时间是否可用。运行 `sports fields --campus <校区> --venue <项目名> --date <日期> --slot <时段>` 查看该时段的实际场馆/场地。唯一可预约项由 CLI 自动选择，无需询问；多个可预约项展示名称并请用户选择。对多个候选，使用 `--field <用户选择的场馆/场地名>` 运行 `sports reserve ... --dry-run`；唯一候选时 `--field` 可省略。预览确认无误后，等待用户明确确认，再以相同参数（包括必要的 `--field`）加 `--confirm` 提交。
 
 ## 回答形式
 

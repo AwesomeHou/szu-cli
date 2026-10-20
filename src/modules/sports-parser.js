@@ -113,7 +113,24 @@ export function buildSportsSlotsPayload(snapshot, options = {}) {
   };
 }
 
-export function buildSportsReserveDryRunPayload(slotsPayload, slotLabel) {
+export function buildSportsFieldsPayload(snapshot, options = {}) {
+  return {
+    campus: options.campus,
+    venue: options.venue,
+    date: options.date,
+    slot: options.slot,
+    items: rows(snapshot?.fields).map((field) => ({
+      name: stringOrNull(field.name),
+      label: stringOrNull(field.label ?? field.name),
+      remaining: integerOrNull(field.remaining),
+      capacity: integerOrNull(field.capacity),
+      available: field.available !== false && field.remaining !== 0
+    })).filter((field) => field.name),
+    sourceUrl: options.sourceUrl
+  };
+}
+
+export function buildSportsReserveDryRunPayload(slotsPayload, slotLabel, fieldName) {
   const selected = slotsPayload.items.find((slot) => slot.label === slotLabel || slot.label.startsWith(`${slotLabel}(`));
   if (!selected) {
     throwSportsError('SPORTS_SLOT_NOT_FOUND', `Sports slot not found: ${slotLabel}.`);
@@ -129,12 +146,13 @@ export function buildSportsReserveDryRunPayload(slotsPayload, slotLabel) {
     campus: slotsPayload.campus,
     venue: slotsPayload.venue,
     date: slotsPayload.date,
+    ...(fieldName ? { field: fieldName } : {}),
     sourceUrl: slotsPayload.sourceUrl
   };
 }
 
 export function buildSportsReserveConfirmPayload(slotsPayload, slotLabel, result = {}) {
-  const dryRun = buildSportsReserveDryRunPayload(slotsPayload, slotLabel);
+  const dryRun = buildSportsReserveDryRunPayload(slotsPayload, slotLabel, result.field);
   return {
     ...dryRun,
     submitted: true,

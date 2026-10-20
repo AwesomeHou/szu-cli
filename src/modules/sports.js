@@ -8,6 +8,7 @@ import {
   buildSportsBookingsPayload,
   buildSportsCampusesPayload,
   buildSportsDatesPayload,
+  buildSportsFieldsPayload,
   buildSportsReserveConfirmPayload,
   buildSportsReserveDryRunPayload,
   buildSportsSlotsByDatePayload,
@@ -90,6 +91,29 @@ export async function getSportsSlots(options = {}) {
     });
 }
 
+export async function getSportsFields(options = {}) {
+  requireOption(options.campus, '--campus');
+  requireOption(options.venue, '--venue');
+  requireOption(options.date, '--date');
+  requireOption(options.slot, '--slot');
+  const slots = await getSportsSlots(options);
+  const selectedSlot = buildSportsReserveDryRunPayload(slots, options.slot).selected;
+  const loaded = await loadSportsFieldsPage(options, selectedSlot.label);
+  assertSportsAccess(classifySportsPage(loaded.pageState), loaded.pageState);
+  ensureVenue(loaded.snapshot, options);
+  const payload = buildSportsFieldsPayload(loaded.snapshot, {
+    campus: options.campus,
+    venue: options.venue,
+    date: options.date,
+    slot: selectedSlot.label,
+    sourceUrl: loaded.sourceUrl
+  });
+  if (!payload.items.length) {
+    throwSportsError('SPORTS_FIELD_NOT_FOUND', 'No bookable sports venue was found for the selected project and time slot.');
+  }
+  return payload;
+}
+
 
 export async function getSportsBookings(options = {}) {
   const loaded = await loadSportsBookingsPage(options);
@@ -109,11 +133,19 @@ export async function reserveSportsSlot(options = {}) {
     throwSportsError('SPORTS_CONFIRM_REQUIRED', 'Use --dry-run to preview or --confirm to submit a sports reservation.');
   }
   const slots = await getSportsSlots(options);
+  const selectedSlot = buildSportsReserveDryRunPayload(slots, options.slot).selected;
+  const loadedFields = await loadSportsFieldsPage(options, selectedSlot.label);
+  assertSportsAccess(classifySportsPage(loadedFields.pageState), loadedFields.pageState);
+  ensureVenue(loadedFields.snapshot, options);
+  const field = resolveUniqueSportsField(loadedFields.snapshot.fields, options.field);
+  if (!field) {
+    throwSportsError('SPORTS_FIELD_NOT_FOUND', 'No bookable sports venue was found for the selected project and time slot.');
+  }
   if (options.dryRun) {
-    return buildSportsReserveDryRunPayload(slots, options.slot);
+    return buildSportsReserveDryRunPayload(slots, options.slot, field.name);
   }
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
-    return buildSportsReserveConfirmPayload(slots, options.slot);
+    return buildSportsReserveConfirmPayload(slots, options.slot, { field: field.name });
   }
   return submitSportsReservation(options, slots);
 }
@@ -195,11 +227,12 @@ async function submitSportsReservation(options, slots) {
     await clickRequiredText(page, dryRun.selected.label, 'slot');
     await page.waitForTimeout(1000);
     const afterSlotText = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
-    const field = resolveUniqueSportsField(parseSportsSnapshotFromText(afterSlotText).fields);
-    if (field) {
-      await clickRequiredText(page, field.label, 'field');
-      await page.waitForTimeout(500);
+    const field = resolveUniqueSportsField(parseSportsSnapshotFromText(afterSlotText).fields, options.field);
+    if (!field) {
+      throwSportsError('SPORTS_FIELD_NOT_FOUND', 'No bookable sports venue was found for the selected project and time slot.');
     }
+    await clickRequiredText(page, field.label, 'field');
+    await page.waitForTimeout(500);
     const submit = page.getByText('提交预约', { exact: true }).first();
     if (!(await submit.count().catch(() => 0))) {
       throwPageChanged('submit button');
@@ -214,6 +247,7 @@ async function submitSportsReservation(options, slots) {
       throw error;
     }
     return buildSportsReserveConfirmPayload(slots, options.slot, {
+      field: field.name,
       status: 'pending-payment',
       payment: {
         required: true,
@@ -221,6 +255,50 @@ async function submitSportsReservation(options, slots) {
         message: '预约已提交；请及时到 我的预约 中手动完成支付。'
       }
     });
+  } finally {
+    await context.close();
+  }
+}
+
+async function loadSportsFieldsPage(options, slotLabel) {
+  if (process.env.SZU_BROWSER_BACKEND === 'mock') {
+    return loadMockSports(options);
+  }
+  const profilePath = getProfilePath();
+  if (!existsSync(profilePath)) {
+    const error = new Error('Browser profile does not exist.');
+    error.code = 'LOGIN_REQUIRED';
+    error.hint = `Run \`szu-cli auth login --url ${SPORTS_URL}\` first.`;
+    throw error;
+  }
+  assertBrowserAvailable({ persist: false });
+  const { chromium } = await importPlaywright();
+  const context = await chromium.launchPersistentContext(
+    profilePath,
+    getLaunchOptions({ headless: options.headless ?? true })
+  );
+  try {
+    const page = context.pages()[0] ?? await context.newPage();
+    await page.goto(EHALL_HOME_URL, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
+    const response = await page.goto(options.url ?? SPORTS_URL, {
+      waitUntil: 'domcontentloaded',
+      timeout: 30000
+    });
+    await settleSportsPage(page, options);
+    await clickRequiredText(page, slotLabel, 'slot');
+    await page.waitForTimeout(1000);
+    const text = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
+    const pageState = {
+      url: page.url(),
+      title: await page.title(),
+      text,
+      status: response?.status() ?? null
+    };
+    return {
+      pageState,
+      snapshot: parseSportsSnapshotFromText(text),
+      sourceUrl: sanitizeSportsSourceUrl(page.url())
+    };
   } finally {
     await context.close();
   }
@@ -499,12 +577,23 @@ export function isSportsCancellationConfirmed(text, orderNo) {
   return /取消成功/.test(value) || Boolean(booking && /取消预约|预约作废|已取消/.test(`${booking.status ?? ''} ${booking.note ?? ''}`));
 }
 
-export function resolveUniqueSportsField(fields) {
-  const available = (Array.isArray(fields) ? fields : []).filter((field) => field.remaining !== 0);
+export function resolveUniqueSportsField(fields, requestedName) {
+  const available = (Array.isArray(fields) ? fields : []).filter((field) => field.available !== false && field.remaining !== 0);
+  if (requestedName) {
+    const selected = available.find((field) => field.name === requestedName || field.label === requestedName);
+    if (!selected) {
+      const error = new Error(`Sports venue not available: ${requestedName}.`);
+      error.code = 'SPORTS_FIELD_NOT_FOUND';
+      error.details = { fields: available.map((field) => field.name) };
+      throw error;
+    }
+    return selected;
+  }
   if (available.length > 1) {
-    const error = new Error(`Multiple available sports fields require a choice: ${available.map((field) => field.name).join(', ')}.`);
+    const error = new Error(`Multiple available sports venues require a choice. Query them with sports fields, then retry with --field: ${available.map((field) => field.name).join(', ')}.`);
     error.code = 'SPORTS_FIELD_SELECTION_REQUIRED';
     error.details = { fields: available.map((field) => field.name) };
+    error.hint = 'Run sports fields for this slot, ask the user to choose a venue, then retry sports reserve with --field <name>.';
     throw error;
   }
   return available[0] ?? null;

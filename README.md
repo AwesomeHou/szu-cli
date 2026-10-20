@@ -109,7 +109,7 @@ npx --yes skills add https://github.com/AwesomeHou/szu-cli --skill szu-cli-skill
 | 全校课表与培养方案 | 查询班级课表、培养方案及课程模块 | `szu-cli timetable classes --limit 5`<br>`szu-cli program list --limit 5` |
 | 成绩与学业进度 | 查询成绩、GPA、思政学分和培养方案完成情况 | `szu-cli grade list`<br>`szu-cli completion summary` |
 | 创新领航讲座 | 查询可报名讲座、讲座详情和个人学习进度 | `szu-cli lecture list`<br>`szu-cli lecture progress` |
-| 体育场馆 | 查询场馆和可预约时段，预览预约或取消操作 | `szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08`<br>`szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --dry-run` |
+| 体育预约 | 查询项目、时段和实际可预约场馆/场地；唯一候选自动选择，多个候选可用 `--field` 指定 | `szu-cli sports fields --campus 粤海校区 --venue 羽毛球 --date 2026-07-08 --slot 20:00-21:00`<br>`szu-cli sports reserve --campus 粤海校区 --venue 羽毛球 --date 2026-07-08 --slot 20:00-21:00 --field "羽毛球场 A4" --dry-run` |
 | 宿舍电费 | 查询可用楼栋及指定房间的用电余额 | `szu-cli electricity query --campus 深大新斋区 --building 红豆斋 --room 838` |
 | 图书馆馆藏 | 搜索图书并查询馆藏位置、索书号和借阅状态 | `szu-cli library search 交通设计`<br>`szu-cli library item 3706432` |
 | 知网 | 在用户可见浏览器中检索论文元数据和详情 | `szu-cli cnki search 交通设计 --headed` |

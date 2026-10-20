@@ -5,6 +5,7 @@ import {
   buildSportsBookingsPayload,
   buildSportsCampusesPayload,
   buildSportsDatesPayload,
+  buildSportsFieldsPayload,
   buildSportsReserveDryRunPayload,
   buildSportsSlotsPayload,
   buildSportsVenuesPayload,
@@ -115,6 +116,22 @@ test('sports parser extracts field choices needed by the page after a slot is se
   const snapshot = parseSportsSnapshotFromText('选择场地\n一楼健身房(109/120)\n取消\n提交预约');
 
   assert.deepEqual(snapshot.fields, [{ name: '一楼健身房', label: '一楼健身房(109/120)', remaining: 109, capacity: 120 }]);
+});
+
+test('sports parser returns actual bookable venues for a selected project and slot', () => {
+  const snapshot = parseSportsSnapshotFromText('选择场地\n羽毛球场 A4(2/4)\n羽毛球场 A5(0/4)\n取消\n提交预约');
+  const payload = buildSportsFieldsPayload(snapshot, {
+    campus: '粤海校区',
+    venue: '羽毛球',
+    date: '2026-07-08',
+    slot: '20:00-21:00'
+  });
+
+  assert.equal(payload.items.length, 2);
+  assert.deepEqual(payload.items.map(({ name, available }) => ({ name, available })), [
+    { name: '羽毛球场 A4', available: true },
+    { name: '羽毛球场 A5', available: false }
+  ]);
 });
 
 test('sports parser returns latest bookings with default limit shape', () => {

@@ -62,8 +62,9 @@ szu-cli lecture progress
 szu-cli sports status
 szu-cli sports campuses
 szu-cli sports venues --campus 粤海校区
-szu-cli sports slots --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08
-szu-cli sports reserve --campus 粤海校区 --venue 一楼重量型健身 --date 2026-07-08 --slot 20:00-21:00 --dry-run
+szu-cli sports slots --campus 粤海校区 --venue 羽毛球 --date 2026-07-08
+szu-cli sports fields --campus 粤海校区 --venue 羽毛球 --date 2026-07-08 --slot 20:00-21:00
+szu-cli sports reserve --campus 粤海校区 --venue 羽毛球 --date 2026-07-08 --slot 20:00-21:00 --field "羽毛球场 A4" --dry-run
 szu-cli sports cancel --order <orderNo> --dry-run
 szu-cli electricity status
 szu-cli electricity buildings
@@ -161,10 +162,11 @@ szu-cli wanfang download <url> --headed --dir downloads
 - `LECTURE_NOT_FOUND`：讲座列表中找不到指定讲座 ID。
 - `SPORTS_CONFIRM_REQUIRED`：体育预约需要 `--dry-run` 或 `--confirm`。
 - `SPORTS_CAMPUS_NOT_FOUND`：找不到指定体育场馆校区。
-- `SPORTS_VENUE_NOT_FOUND`：找不到指定体育场馆。
+- `SPORTS_VENUE_NOT_FOUND`：CLI 项目列表中找不到指定名称（沿用历史错误码命名）。
 - `SPORTS_SLOT_NOT_FOUND`：找不到指定预约时段。
 - `SPORTS_SLOT_UNAVAILABLE`：指定时段不可预约。
-- `SPORTS_FIELD_SELECTION_REQUIRED`：页面有多个可用场地，需要用户选择；唯一场地由 CLI 自动选择。
+- `SPORTS_FIELD_SELECTION_REQUIRED`：项目和时段选定后，页面有多个可预约场馆/场地，需要用户选择；只有一个时 CLI 自动选择。错误码沿用内部兼容命名。
+- `SPORTS_FIELD_NOT_FOUND`：指定场馆/场地不存在或在该项目及时段不可预约；错误详情包含当前可选项。
 - `SPORTS_SUBMIT_UNVERIFIED`：体育预约点击提交后，页面没有出现明确的预约成功、提交成功或待支付状态。
 - `SPORTS_BOOKING_NOT_FOUND`：找不到指定体育预约订单。
 - `SPORTS_CANCEL_UNVERIFIED`：体育预约点击取消后，页面没有出现可确认的取消状态。
@@ -207,6 +209,8 @@ szu-cli wanfang download <url> --headed --dir downloads
 - `34`：体育预约提交结果未确认。
 - `35`：体育预约订单不存在。
 - `36`：体育预约取消结果未确认。
+- `40`：体育预约有多个可选场馆/场地但未指定 `--field`。
+- `41`：体育预约指定的场馆/场地不存在或不可用。
 - `30`：疑似限流或反滥用信号。
 - `31`：下载不可用。
 
@@ -799,7 +803,9 @@ szu-cli wanfang download <url> --headed --dir downloads
 
 ## 体育场馆预约 Schema
 
-`szu-cli sports bookings` 默认返回“我的预约”最近 3 条记录；可用 `--limit <n>` 调整数量。`szu-cli sports campuses` 返回体育场馆预约页可见校区。`sports venues --campus <校区>` 返回该校区可见场馆。`sports dates --campus <校区> --venue <场馆>` 返回该场馆当前开放预约的日期。`sports slots --campus <校区> --venue <场馆>` 会按开放日期分组返回日期和对应时段；加 `--date YYYY-MM-DD` 时只返回指定日期的时段状态。
+术语说明：羽毛球是项目，羽毛球场 A4 是场馆；“场馆”和“场地”同义。当前 CLI 保留了历史命名：`sports venues` 返回项目列表，`--venue <项目名>` 选择其中的项目。选定项目和时段后，预约页面再提供具体可预约场馆/场地。
+
+`szu-cli sports bookings` 默认返回“我的预约”最近 3 条记录；可用 `--limit <n>` 调整数量。`szu-cli sports campuses` 返回体育预约页可见校区。`sports venues --campus <校区>` 返回该校区可见项目。`sports dates --campus <校区> --venue <项目名>` 返回该项目当前开放预约的日期。`sports slots --campus <校区> --venue <项目名>` 会按开放日期分组返回日期和对应时段；加 `--date YYYY-MM-DD` 时只返回指定日期的时段状态。
 
 ```json
 {
@@ -831,7 +837,25 @@ szu-cli wanfang download <url> --headed --dir downloads
 }
 ```
 
-`sports bookings` 的历史记录字段包含 `actions`、`orderNo`、`timeRange`、`bookedAt`、`campus`、`venue`、`field`、`project`、`status`、`orderType` 和 `note`，不输出姓名、学号、学院等身份字段。`sports reserve` 只需指定校区、场馆、日期和时段；`--dry-run` 返回完整预约目标且不点击“提交预约”。真实提交必须显式传入 `--confirm`；页面只有一个可用场地时 CLI 自动选择，多个可用场地时停止并返回候选要求用户选择。当前 live MVP 不自动支付、不跳转支付页、不取消支付。预约成功后 CLI 只返回 `payment.required` 和手动支付提醒，不输出支付链接。`sports cancel --order <orderNo> --dry-run` 会验证订单存在但不取消；真实取消必须显式传入 `--confirm`。
+`sports fields --campus <校区> --venue <项目名> --date <YYYY-MM-DD> --slot <时段>` 会在选定项目和时段后返回实际场馆/场地候选及可用状态：
+
+```json
+{
+  "ok": true,
+  "data": {
+    "campus": "粤海校区",
+    "venue": "羽毛球",
+    "date": "2026-07-08",
+    "slot": "20:00-21:00",
+    "items": [
+      { "name": "羽毛球场 A4", "label": "羽毛球场 A4(2/4)", "remaining": 2, "capacity": 4, "available": true },
+      { "name": "羽毛球场 A5", "label": "羽毛球场 A5(0/4)", "remaining": 0, "capacity": 4, "available": false }
+    ]
+  }
+}
+```
+
+`sports bookings` 的历史记录字段包含 `actions`、`orderNo`、`timeRange`、`bookedAt`、`campus`、`venue`、`field`、`project`、`status`、`orderType` 和 `note`，不输出姓名、学号、学院等身份字段。`sports reserve` 需要校区、项目、日期和时段；多个可预约场馆/场地时通过 `--field <场馆名>` 指定，只有一个时自动选择。`--dry-run` 返回完整预约目标（包括选中的场馆/场地）且不点击“提交预约”。真实提交必须显式传入 `--confirm`；如果没有指定 `--field` 但存在多个候选，返回 `SPORTS_FIELD_SELECTION_REQUIRED` 和候选名称。当前 live MVP 不自动支付、不跳转支付页、不取消支付。预约成功后 CLI 只返回 `payment.required` 和手动支付提醒，不输出支付链接。`sports cancel --order <orderNo> --dry-run` 会验证订单存在但不取消；真实取消必须显式传入 `--confirm`。
 ## 电费 Schema
 
 `szu-cli electricity buildings` 返回 SIMS 电费查询页中的可用校区和楼栋。该命令需要校园内网访问。

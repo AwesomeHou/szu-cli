@@ -3,7 +3,7 @@
   "suite": "szu-cli-skill-v1",
   "input": "确认预约粤海校区一楼重量型健身今天 15:00 的一楼健身房",
   "mode": "mock",
-  "skill": { "source": "skills/szu-cli-skill", "version": "0.2.12", "discovery": "repo" },
+  "skill": { "source": "skills/szu-cli-skill", "version": "0.2.13", "discovery": "repo" },
   "runtime": { "backend": "mock", "evaluationDate": "2026-06-22", "clockSource": "fixture", "agentContext": "本次评测的当前日期为 2026-06-22，仅用于解释“今天”。" },
   "fixture": "fixture.json",
   "oracle": "oracle.json"
