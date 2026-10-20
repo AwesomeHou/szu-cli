@@ -1,4 +1,4 @@
-<h1><img src="assets/icon.png" alt="深圳大学校徽" width="40" align="center" /> SZU-CLI</h1>
+# <img src="assets/icon.png" alt="深圳大学校徽" width="32" align="absmiddle" /> SZU-CLI
 
 [![文档 中文](https://img.shields.io/badge/docs-%E4%B8%AD%E6%96%87-blue)](README.md)
 [![Docs English](https://img.shields.io/badge/docs-English-blue)](README_EN.md)
