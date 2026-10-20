@@ -1,4 +1,4 @@
-# SZU-CLI
+<h1><img src="assets/icon.png" alt="深圳大学校徽" width="40" align="center" /> SZU-CLI</h1>
 
 [![文档 中文](https://img.shields.io/badge/docs-%E4%B8%AD%E6%96%87-blue)](README.md)
 [![Docs English](https://img.shields.io/badge/docs-English-blue)](README_EN.md)
@@ -116,6 +116,34 @@ npx --yes skills add https://github.com/AwesomeHou/szu-cli --skill szu-cli-skill
 | 万方 | 在用户可见浏览器中检索论文元数据和详情 | `szu-cli wanfang search 交通设计 --headed` |
 
 更多命令请看英文版 [README](README_EN.md) 和 [CLI 契约](docs/cli-contract.md)。
+
+## 使用示例
+
+### 查询图书馆馆藏
+
+通过自然语言查找图书，获取馆藏位置、索书号和借阅状态。
+
+![查询图书馆馆藏示例](assets/查馆藏.png)
+
+### 查询 GPA 与专业排名
+
+汇总全部学年的 GPA 和专业排名。
+
+![查询 GPA 与专业排名示例](assets/查绩点排名.png)
+
+### 查看毕业学分进度
+
+查看培养方案的学分完成情况和未修课程。
+
+![查看毕业学分进度示例](assets/查学分.png)
+
+### 预约健身房
+
+先查询可预约时段并预览预约信息，确认后提交；预约提交后仍需按场馆要求完成支付。
+
+![预约健身房：查询时段并选择时间](assets/预约健身房-1.png)
+
+![预约健身房：确认并提交预约](assets/预约健身房-2.png)
 
 ## 设计方向
 
