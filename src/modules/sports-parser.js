@@ -201,15 +201,16 @@ function normalizeSlot(row) {
   const time = label.match(/(\d{2}:\d{2})\s*[-~]\s*(\d{2}:\d{2})/);
   const remaining = integerOrNull(row.remaining ?? row.remain ?? row.left);
   const expired = row.expired === true || label.includes('已过期') || String(row.state ?? '').includes('已过期');
-  const full = remaining === 0 || label.includes('已满') || String(row.state ?? '').includes('已满');
+  const full = remaining === 0 || /已满员|已满|满员/.test(label) || /已满员|已满|满员/.test(String(row.state ?? ''));
+  const occupied = /体育课占用|已占用|不可预约|未开放|维护中/.test(label) || /体育课占用|已占用|不可预约|未开放|维护中/.test(String(row.state ?? ''));
   return {
     id: stringOrNull(row.id) ?? label,
     label,
     startTime: time?.[1] ?? null,
     endTime: time?.[2] ?? null,
-    state: stringOrNull(row.state) ?? (expired ? '已过期' : full ? '已满' : '可预约'),
+    state: occupied ? '不可预约' : (stringOrNull(row.state) ?? (expired ? '已过期' : full ? '已满' : '可预约')),
     expired,
-    selectable: !expired && !full && row.selectable !== false,
+    selectable: !expired && !full && !occupied && row.selectable !== false,
     remaining
   };
 }
@@ -225,12 +226,21 @@ function parseFields(text) {
     if (line === '取消' || line === '提交预约') {
       break;
     }
-    const match = line.match(/^(.+?)\((\d+)\/(\d+)\)$/);
+    const countMatch = line.match(/^(.+?)\((\d+)\/(\d+)\)$/);
+    const statusMatch = line.match(/^(.+?)\(([^()]*)\)$/);
+    const status = statusMatch?.[2] ?? '';
+    const recognizedStatus = /^(可预约|可预订|已满员|已满|满员|体育课占用|已占用|不可预约|未开放|维护中|已关闭)$/.test(status);
+    if (!countMatch && !recognizedStatus) {
+      break;
+    }
     result.push({
-      name: match?.[1] ?? line,
+      name: countMatch?.[1] ?? statusMatch[1],
       label: line,
-      remaining: match ? Number.parseInt(match[2], 10) : null,
-      capacity: match ? Number.parseInt(match[3], 10) : null
+      remaining: countMatch ? Number.parseInt(countMatch[2], 10) : null,
+      capacity: countMatch ? Number.parseInt(countMatch[3], 10) : null,
+      available: countMatch
+        ? Number.parseInt(countMatch[2], 10) > 0
+        : /^(可预约|可预订)$/.test(status)
     });
   }
   return result;

@@ -3,7 +3,7 @@
   "suite": "szu-cli-skill-v1",
   "input": "粤海校区无氧重量型健身，今天 15:00，查能不能约",
   "mode": "mock",
-  "skill": { "source": "skills/szu-cli-skill", "version": "0.2.13", "discovery": "repo" },
+  "skill": { "source": "skills/szu-cli-skill", "version": "0.2.14", "discovery": "repo" },
   "runtime": { "backend": "mock", "evaluationDate": "2026-06-22", "clockSource": "fixture" },
   "fixture": "fixture.json",
   "oracle": "oracle.json"

@@ -69,6 +69,25 @@ test('sports parser marks expired and full slots unavailable', () => {
   assert.equal(Object.hasOwn(payload.items[2], 'place'), false);
 });
 
+test('sports parser marks class-occupied slots unavailable', () => {
+  const parsed = parseSportsSnapshotFromText([
+    '08:00-09:00(体育课占用)',
+    '09:00-10:00(可预约)',
+    '10:00-11:00(已满员)'
+  ].join('\n'));
+  const payload = buildSportsSlotsPayload(parsed, {
+    campus: '粤海校区',
+    venue: '一楼重量型健身',
+    date: '2026-07-08'
+  });
+
+  assert.deepEqual(payload.items.map(({ state, selectable }) => ({ state, selectable })), [
+    { state: '不可预约', selectable: false },
+    { state: '可预约', selectable: true },
+    { state: '已满', selectable: false }
+  ]);
+});
+
 test('sports reserve dry-run does not submit and requires confirmation', () => {
   const slots = buildSportsSlotsPayload(snapshot, {
     campus: '粤海校区',
@@ -115,7 +134,26 @@ test('sports parser returns open dates', () => {
 test('sports parser extracts field choices needed by the page after a slot is selected', () => {
   const snapshot = parseSportsSnapshotFromText('选择场地\n一楼健身房(109/120)\n取消\n提交预约');
 
-  assert.deepEqual(snapshot.fields, [{ name: '一楼健身房', label: '一楼健身房(109/120)', remaining: 109, capacity: 120 }]);
+  assert.deepEqual(snapshot.fields, [{ name: '一楼健身房', label: '一楼健身房(109/120)', remaining: 109, capacity: 120, available: true }]);
+});
+
+test('sports parser keeps only real field options and parses their availability', () => {
+  const snapshot = parseSportsSnapshotFromText([
+    '选择场地',
+    '羽毛球场A2(体育课占用)',
+    '羽毛球场A4(可预约)',
+    '羽毛球场C2(已满员)',
+    '包场最大人数',
+    '-人',
+    '取消',
+    '提交预约'
+  ].join('\n'));
+
+  assert.deepEqual(snapshot.fields.map(({ name, available }) => ({ name, available })), [
+    { name: '羽毛球场A2', available: false },
+    { name: '羽毛球场A4', available: true },
+    { name: '羽毛球场C2', available: false }
+  ]);
 });
 
 test('sports parser returns actual bookable venues for a selected project and slot', () => {
