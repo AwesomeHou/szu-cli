@@ -346,6 +346,7 @@ szu-cli wanfang download <url> --headed --dir downloads
 
 `notice search` 会提交网站搜索表单，同时支持：
 
+- 关键词可省略；至少提供一个搜索条件。比如 `szu-cli notice search --range 24h --limit 100` 会查询最近 24 小时的公告。
 - `--type <title|body|full>`，默认 `full`。
 - `--range <24h|7d|30d|6m|2026|2025|...>`，默认 `6m`。
 - `--publisher <发文单位>` 和 `--year <年份>`，使用公文通的指定单位/年份筛选；可用于 `notice list` 或无关键词的 `notice search`。

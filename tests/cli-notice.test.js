@@ -141,6 +141,25 @@ test('notice search uses site search source by default', () => {
   assert.equal(body.data.items[3].id, '577085');
 });
 
+test('notice search allows an empty keyword when a range is supplied', () => {
+  const result = runNotice(['notice', 'search', '--range', '24h', '--json', '--limit', '100']);
+
+  assert.equal(result.status, 0, result.stderr);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.ok, true);
+  assert.equal(body.data.search.keyword, null);
+  assert.equal(body.data.search.range, '24h');
+  assert.equal(body.data.items.length, 4);
+  assert.equal(body.data.total, 4);
+});
+
+test('notice search still requires an explicit filter', () => {
+  const result = runNotice(['notice', 'search', '--json']);
+
+  assert.equal(result.status, 1);
+  assert.match(JSON.parse(result.stdout).error.message, /requires a keyword or filter option/);
+});
+
 test('notice list supports page and pages over homepage results', () => {
   const result = runNotice(['notice', 'list', '--json', '--page', '2', '--pages', '1', '--limit', '2']);
 

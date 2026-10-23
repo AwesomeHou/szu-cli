@@ -6,6 +6,7 @@
 
 | 用户自然语言 | 推荐命令 | 说明 |
 |---|---|---|
+| “总结今天到目前为止的公文通” | `szu-cli notice search --range 24h --limit 100` | 关键词可省略；24 小时是滚动范围，按结果的 `date` 字段筛出今天的公告。 |
 | “帮我看看今天有什么课” | `szu-cli course today` | 查询当前用户课表，不用全校课表。 |
 | “查一下这周三第 3 到 4 节有什么课” | `szu-cli course list --weekday 3` | 如需周次再加 `--week <n>`。 |
 | “帮我查交通设计相关论文，最好给引用” | `szu-cli cnki search 交通设计 --headed --format gbt7714` | 学术数据库先做元数据/引用；不要批量下载。 |

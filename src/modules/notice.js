@@ -23,7 +23,7 @@ const CATEGORY_LABELS = {
 };
 
 export async function getNoticeItems(options = {}) {
-  const useSearchPage = Boolean(options.keyword || options.publisher || options.year);
+  const useSearchPage = Boolean(options.searchForm || options.keyword || options.publisher || options.year);
   const html = useSearchPage
     ? await loadNoticeSearchHtml(options)
     : await loadPageHtml(BOARD_URL, options);
@@ -237,7 +237,7 @@ function normalizeCategory(value = 'all') {
 
 function searchMeta(options = {}) {
   const category = normalizeCategory(options.category);
-  if (!options.keyword && !options.publisher && !options.year && !options.from && !options.to && category === '全部') {
+  if (!options.searchForm && !options.keyword && !options.publisher && !options.year && !options.from && !options.to && category === '全部') {
     return null;
   }
   return {

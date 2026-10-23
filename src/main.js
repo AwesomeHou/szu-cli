@@ -1506,6 +1506,8 @@ function parseNoticeOptions(action, argv) {
     publisher: null,
     year: null,
     range: '6m',
+    rangeSpecified: false,
+    searchForm: action === 'search',
     type: 'full'
   };
   const args = [...argv];
@@ -1538,6 +1540,7 @@ function parseNoticeOptions(action, argv) {
     }
     if (arg === '--range') {
       options.range = requireValue(args, i, arg);
+      options.rangeSpecified = true;
       i += 1;
       continue;
     }
@@ -1595,7 +1598,7 @@ function parseNoticeOptions(action, argv) {
   if (options.from && options.to && options.from > options.to) {
     throw new Error('--from must be earlier than or equal to --to.');
   }
-  if (action === 'search' && !options.keyword && !options.publisher && !options.year && !options.from && !options.to && options.category === 'all') {
+  if (action === 'search' && !options.keyword && !options.publisher && !options.year && !options.from && !options.to && options.category === 'all' && !options.rangeSpecified) {
     throw new Error('notice search requires a keyword or filter option.');
   }
 

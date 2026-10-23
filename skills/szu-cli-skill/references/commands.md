@@ -19,6 +19,7 @@ szu-cli auth logout
 | 环境或登录态 | `doctor`，再 `auth status` | 索取密码或 Cookie |
 | 最新公文通 | `notice list --limit <n>` | 直接抓取公开页面 |
 | 按类别、日期或关键词查公文通 | `notice list --category/--from/--to/--keyword ...` | 宽泛查询后再本地过滤 |
+| 不限关键词、按时间范围查询公文通 | `notice search --range 24h --limit 100` | 不要裸跑 `notice search`；至少指定一个范围或筛选条件 |
 | 按发布单位查公文通 | `notice list --publisher <unit>` | 将 `notice search <unit>` 当作发布单位筛选 |
 | 公文通详情或附件 | `notice view <id|url>`；单个请求文件用 `notice download ... --index <n> --dir <path>` | 批量下载或直接拼接隐藏附件链接 |
 | 今天或指定日期的我的课表 | `course today`；指定日期加 `--date YYYY-MM-DD` | 用全校课表查询当前用户 |

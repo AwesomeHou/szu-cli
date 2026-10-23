@@ -1,6 +1,6 @@
 {
   "slug": "szu-cli-skill",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "displayName": "深圳大学—校园服务Skill",
   "displayNameEn": "Shenzhen University — Campus Services Skill",
   "summary": "通过自然语言完成公文通、课表、成绩、电费、图书馆文献查询，健身房预约，知网论文下载......能力涵盖公文通、深圳大学网上办事大厅、深圳大学图书馆内的10+个模块。（深大学生自行制作，非官方，如有任何问题可在github.com/AwesomeHou/szu-cli 上进行反馈或通过电子邮件与我取得联系）",
