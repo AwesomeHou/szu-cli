@@ -19,6 +19,15 @@ test('validates an expected eHall application URL', () => {
   assert.equal(url.pathname.includes('/jwapp/sys/czjl/'), true);
 });
 
+test('upgrades portal HTTP entry URLs to HTTPS', () => {
+  const url = validateEhallEntryUrl(
+    'http://ehall.szu.edu.cn/jwapp/sys/wdkb/entrance.do',
+    '/jwapp/sys/wdkb/'
+  );
+
+  assert.equal(url.protocol, 'https:');
+});
+
 test('rejects an unexpected host or application path', () => {
   assert.throws(
     () => validateEhallEntryUrl('https://example.com/jwapp/sys/czjl/', '/jwapp/sys/czjl/'),
@@ -72,6 +81,17 @@ test('builds a known application entry with a fresh timestamp', () => {
   assert.equal(url.hash, '#/czjl');
 });
 
+test('omits an unavailable context from a known fallback entry', () => {
+  const entry = buildKnownEhallEntry({
+    appPath: '/jwapp/sys/wdkb/*default/index.do',
+    hash: '/xskcb',
+    now: 123456
+  });
+  const url = new URL(entry);
+
+  assert.equal(url.searchParams.has('gid_'), false);
+});
+
 test('resolves an application entry from portal data before known fallback', async () => {
   const page = {
     request: {
@@ -104,6 +124,46 @@ test('resolves an application entry from portal data before known fallback', asy
   });
 
   assert.equal(entry.includes('gid_=portal'), true);
+});
+
+test('resolves a student app from the student portal catalog and upgrades its entry URL', async () => {
+  const requested = [];
+  const page = {
+    request: {
+      async get(url) {
+        requested.push(url);
+        return {
+          ok: () => true,
+          async json() {
+            return url.includes('serviceRoleApp')
+              ? {
+                  appList: [
+                    {
+                      appName: '我的课表',
+                      pcOpenUrl: 'http://ehall.szu.edu.cn/jwapp/sys/wdkb/entrance.do?gid_=student-context'
+                    }
+                  ]
+                }
+              : {};
+          }
+        };
+      }
+    }
+  };
+
+  const entry = await resolveEhallEntry(page, {
+    names: ['我的课表'],
+    expectedPath: '/jwapp/sys/wdkb/',
+    known: {
+      appPath: '/jwapp/sys/wdkb/*default/index.do',
+      hash: '/xskcb'
+    }
+  });
+
+  assert.equal(new URL(entry).protocol, 'https:');
+  assert.equal(new URL(entry).pathname, '/jwapp/sys/wdkb/entrance.do');
+  assert.equal(new URL(entry).searchParams.get('gid_'), 'student-context');
+  assert.equal(requested.some((url) => url.includes('serviceRoleId=1__0')), true);
 });
 
 test('removes dynamic application context from source URLs', () => {

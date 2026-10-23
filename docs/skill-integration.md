@@ -63,7 +63,7 @@ szu-cli skill install --target codex
 skill 可以声明最低 CLI 版本：
 
 ```text
-Skill Version: 0.2.17
+Skill Version: 0.2.18
 Requires: szu-cli >= 0.2.3
 ```
 

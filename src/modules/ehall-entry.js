@@ -2,6 +2,9 @@ const EHALL_ORIGIN = 'https://ehall.szu.edu.cn';
 
 export function validateEhallEntryUrl(value, expectedPath) {
   const url = new URL(value, EHALL_ORIGIN);
+  if (url.protocol === 'http:' && url.hostname === 'ehall.szu.edu.cn') {
+    url.protocol = 'https:';
+  }
   if (
     url.protocol !== 'https:'
     || url.hostname !== 'ehall.szu.edu.cn'
@@ -20,7 +23,9 @@ export function buildKnownEhallEntry(options = {}) {
   const url = new URL(options.appPath, EHALL_ORIGIN);
   url.searchParams.set('t_s', String(options.now ?? Date.now()));
   url.searchParams.set('amp_sec_version_', '1');
-  url.searchParams.set('gid_', options.gid);
+  if (options.gid) {
+    url.searchParams.set('gid_', options.gid);
+  }
   url.searchParams.set('EMAP_LANG', 'zh');
   url.searchParams.set('THEME', 'cherry');
   url.hash = options.hash;
@@ -34,7 +39,7 @@ export async function resolveEhallEntry(page, options = {}) {
 
   const endpoints = options.portalEndpoints ?? [
     `https://ehall.szu.edu.cn/jsonp/serviceCenterData.json?containLabels=true&searchKey=${encodeURIComponent(options.names?.[0] ?? '')}&_=${Date.now()}`,
-    `https://ehall.szu.edu.cn/jsonp/serviceRoleApp.json?serviceRoleId=1__2&type=all&_=${Date.now()}`
+    `https://ehall.szu.edu.cn/jsonp/serviceRoleApp.json?serviceRoleId=1__0&type=all&_=${Date.now()}`
   ];
   for (const endpoint of endpoints) {
     try {

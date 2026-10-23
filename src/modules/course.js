@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs';
 import { classifyAuthPage } from './auth-detector.js';
 import { assertBrowserAvailable } from './browser.js';
 import { getLaunchOptions } from './browser-options.js';
+import { resolveEhallEntry, sanitizeEhallSourceUrl } from './ehall-entry.js';
 import { getProfilePath } from './paths.js';
 import { buildCoursePayload, filterCoursePayload, filterTodayCourses } from './course-parser.js';
 
@@ -152,7 +153,15 @@ async function loadCourseApi(options = {}) {
 
     await page.goto(EHALL_HOME_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(1500);
-    const sourceUrl = options.url ?? COURSE_ENTRY_URL;
+    const sourceUrl = await resolveEhallEntry(page, {
+      url: options.url,
+      names: ['我的课表'],
+      expectedPath: '/jwapp/sys/wdkb/',
+      known: {
+        appPath: '/jwapp/sys/wdkb/*default/index.do',
+        hash: '/xskcb'
+      }
+    });
     const response = await page.goto(sourceUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await waitForCourseApis(page, api);
 
@@ -166,7 +175,7 @@ async function loadCourseApi(options = {}) {
     return {
       pageState,
       api,
-      sourceUrl: pageState.url
+      sourceUrl: sanitizeEhallSourceUrl(pageState.url)
     };
   } finally {
     await context.close();
