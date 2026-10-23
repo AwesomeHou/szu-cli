@@ -6,11 +6,10 @@ import { classifyAuthPage } from './auth-detector.js';
 import { assertBrowserAvailable } from './browser.js';
 import { getLaunchOptions } from './browser-options.js';
 import { getProfilePath } from './paths.js';
-import { filterNotices, paginateNotices, parseNoticeListHtml } from './notice-parser.js';
+import { filterNotices, paginateNotices, parseBoardHtml, parseNoticeListHtml } from './notice-parser.js';
 import { parseNoticeDetailHtml, resolveNoticeViewUrl } from './notice-detail-parser.js';
 
 const BOARD_URL = 'https://www1.szu.edu.cn/board/';
-const LIST_URL = 'https://www1.szu.edu.cn/board/infolist.asp';
 const CATEGORY_LABELS = {
   pinned: '置顶',
   teaching: '教务',
@@ -27,9 +26,9 @@ export async function getNoticeItems(options = {}) {
   const useSearchPage = Boolean(options.keyword || options.publisher || options.year);
   const html = useSearchPage
     ? await loadNoticeSearchHtml(options)
-    : await loadPageHtml(LIST_URL, options);
+    : await loadPageHtml(BOARD_URL, options);
   const authState = classifyAuthPage({
-    url: options.finalUrl ?? LIST_URL,
+    url: options.finalUrl ?? BOARD_URL,
     title: extractTitle(html),
     text: stripTags(html)
   });
@@ -41,7 +40,9 @@ export async function getNoticeItems(options = {}) {
     throw error;
   }
 
-  const notices = parseNoticeListHtml(html, { baseUrl: BOARD_URL });
+  const notices = useSearchPage
+    ? parseNoticeListHtml(html, { baseUrl: BOARD_URL })
+    : parseBoardHtml(html, { baseUrl: BOARD_URL });
   assertCompleteNoticeSchema(notices);
   const filtered = filterNoticeItems(notices, { ...options, skipKeyword: useSearchPage });
   const page = options.page ?? 1;
@@ -56,7 +57,7 @@ export async function getNoticeItems(options = {}) {
     limit,
     total: filtered.length,
     ...(search ? { search } : {}),
-    sourceUrl: options.finalUrl ?? LIST_URL
+    sourceUrl: options.finalUrl ?? BOARD_URL
   };
 }
 
@@ -224,7 +225,7 @@ function filterNoticeItems(notices, options = {}) {
       if (category === '置顶') {
         return notice.isPinned === true;
       }
-      return notice.category === category;
+      return normalizeCategory(notice.category) === category;
     })
     .filter((notice) => inDateRange(notice.date, options.from, options.to));
 }

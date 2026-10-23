@@ -16,7 +16,7 @@ test('parses board html into normalized notices', () => {
   assert.equal(notices.length, 3);
   assert.deepEqual(notices[0], {
     id: '577437',
-    category: '教务教学',
+    category: '教务',
     title: '心理学院青年教师孙熔茜“薪火计划”公开课',
     dateText: '6/22',
     date: '2026-06-22',
@@ -45,7 +45,7 @@ test('parses lecture time while keeping visible lecture title', () => {
 
   assert.deepEqual(notices[2], {
     id: '577043',
-    category: '学术讲座',
+    category: '讲座',
     title: '粤海｜校友广场｜深大讲坛第224讲：模形式的算术',
     dateText: '6/23 8:30',
     date: '2026-06-23',

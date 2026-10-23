@@ -48,6 +48,7 @@ export function parseBoardHtml(html, options = {}) {
         dateText,
         date: normalizedDate.date,
         time: normalizedDate.time,
+        ...(/\|置顶\|/.test(cleanText(cells[0])) ? { isPinned: true } : {}),
         url
       });
     }
@@ -129,7 +130,18 @@ export function filterNotices(notices, options = {}) {
 
 function extractCategory(fieldset) {
   const match = fieldset.match(LEGEND_CATEGORY_RE);
-  return match ? cleanText(match[1]) : null;
+  if (!match) {
+    return null;
+  }
+  const category = cleanText(match[1]);
+  return {
+    '教务教学': '教务',
+    '科研动态': '科研',
+    '党务行政': '行政',
+    '学生工作': '学工',
+    '学术讲座': '讲座',
+    '校园生活': '生活'
+  }[category] ?? category;
 }
 
 function firstMatch(match) {

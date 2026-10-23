@@ -10,6 +10,7 @@ import assert from 'node:assert/strict';
 
 const cliPath = fileURLToPath(new URL('../src/cli.js', import.meta.url));
 const html = readFileSync(new URL('./fixtures/board.html', import.meta.url), 'utf8');
+const homepageHtml = readFileSync(new URL('./fixtures/notice-homepage.html', import.meta.url), 'utf8');
 const listHtml = readFileSync(new URL('./fixtures/notice-list.html', import.meta.url), 'utf8');
 const detailHtml = readFileSync(new URL('./fixtures/notice-view.html', import.meta.url), 'utf8');
 const publisherListHtml = `<!doctype html>
@@ -50,7 +51,7 @@ const keywordSearchHtml = `<!doctype html>
 </body>
 </html>`;
 
-function runNotice(args, text = html, detailText = detailHtml, listText = listHtml) {
+function runNotice(args, text = homepageHtml, detailText = detailHtml, listText = listHtml) {
   const home = mkdtempSync(join(tmpdir(), 'szu-cli-test-'));
   const result = spawnSync(process.execPath, [cliPath, ...args], {
     encoding: 'utf8',
@@ -76,6 +77,8 @@ test('notice list prints JSON items from mock board page', () => {
   assert.equal(body.ok, true);
   assert.equal(body.meta.command, 'notice list');
   assert.equal(body.data.items.length, 2);
+  assert.equal(body.data.total, 4);
+  assert.equal(body.data.sourceUrl, 'https://www1.szu.edu.cn/board/');
   assert.equal(body.data.items[0].id, '577164');
   assert.equal(body.data.items[0].isPinned, true);
 });
@@ -138,14 +141,14 @@ test('notice search uses site search source by default', () => {
   assert.equal(body.data.items[3].id, '577085');
 });
 
-test('notice list supports page and pages over infolist results', () => {
+test('notice list supports page and pages over homepage results', () => {
   const result = runNotice(['notice', 'list', '--json', '--page', '2', '--pages', '1', '--limit', '2']);
 
   assert.equal(result.status, 0, result.stderr);
   const body = JSON.parse(result.stdout);
   assert.equal(body.ok, true);
   assert.equal(body.data.items.length, 2);
-  assert.deepEqual(body.data.items.map((item) => item.id), ['577444', '577085']);
+  assert.deepEqual(body.data.items.map((item) => item.id), ['577097', '577085']);
   assert.equal(body.data.page, 2);
   assert.equal(body.data.pages, 1);
   assert.equal(body.data.total, 4);
@@ -238,7 +241,7 @@ test('notice search supports publisher without a keyword', () => {
 
 test('notice list returns LOGIN_REQUIRED when mock page is CAS login', () => {
   const cas = '<html><head><title>统一身份认证</title></head><body>账号登录 密码</body></html>';
-  const result = runNotice(['notice', 'list', '--json'], html, detailHtml, cas);
+  const result = runNotice(['notice', 'list', '--json'], cas, detailHtml, cas);
 
   assert.equal(result.status, 11);
   const body = JSON.parse(result.stdout);

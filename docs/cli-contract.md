@@ -335,6 +335,8 @@ szu-cli wanfang download <url> --headed --dir downloads
 
 `notice list` 和 `notice search` 支持：
 
+- `notice list` 默认读取公文通首页按类别分组的公告；分页和本地过滤针对首页返回的公告集合。
+
 - `--limit <n>`：每页条数，默认 `10`。
 - `--page <n>`：页码，默认 `1`。
 - `--pages <n>`：从 `--page` 开始返回多少页，默认 `1`。
