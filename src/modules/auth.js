@@ -46,7 +46,7 @@ export async function loginWithBrowserProfile(options = {}) {
     if (options.waitForClose !== false) {
       loginOutcome = options.workbuddy
         ? await waitForLoginOrClose(page, context)
-        : await context.waitForEvent('close').then(() => 'closed');
+        : await waitForContextClose(context).then(() => 'closed');
     }
 
     return {
@@ -70,7 +70,7 @@ export async function loginWithBrowserProfile(options = {}) {
 
 async function waitForLoginOrClose(page, context) {
   const deadline = Date.now() + WORKBUDDY_LOGIN_TIMEOUT_MS;
-  const contextClosed = context.waitForEvent('close').then(() => 'closed');
+  const contextClosed = waitForContextClose(context).then(() => 'closed');
 
   while (Date.now() < deadline) {
     if (page.isClosed()) {
@@ -95,6 +95,10 @@ async function waitForLoginOrClose(page, context) {
   error.code = 'AUTH_LOGIN_TIMEOUT';
   error.hint = 'Complete login in the opened browser window and retry the connection.';
   throw error;
+}
+
+export function waitForContextClose(context) {
+  return context.waitForEvent('close', { timeout: 0 });
 }
 
 async function readAuthPage(page) {

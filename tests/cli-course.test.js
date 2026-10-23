@@ -110,3 +110,28 @@ test('course commands return PERMISSION_DENIED for 403 page', () => {
   assert.equal(body.ok, false);
   assert.equal(body.error.code, 'PERMISSION_DENIED');
 });
+
+test('course commands report PAGE_CHANGED when a logged-in page omits required APIs', () => {
+  const result = runCourse(['course', 'today', '--json'], {
+    env: { SZU_MOCK_COURSE_API_JSON: '{}' }
+  });
+
+  assert.equal(result.status, 20);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.error.code, 'PAGE_CHANGED');
+  assert.match(body.error.message, /Missing eHall course API response/);
+});
+
+test('course commands report access denial before missing APIs on a 403 page', () => {
+  const result = runCourse(['course', 'today', '--json'], {
+    env: {
+      SZU_MOCK_COURSE_STATUS: '403',
+      SZU_MOCK_COURSE_TEXT: '403 版权信息',
+      SZU_MOCK_COURSE_API_JSON: '{}'
+    }
+  });
+
+  assert.equal(result.status, 13);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.error.code, 'PERMISSION_DENIED');
+});

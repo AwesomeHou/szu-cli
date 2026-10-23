@@ -23,6 +23,7 @@ export async function getCourseStatus(options = {}) {
   const { pageState, api, sourceUrl } = await loadCourseApi(options);
   const authState = classifyCoursePage(pageState);
   assertCourseAccess(authState, pageState);
+  ensureRequiredApis(api);
   const payload = buildCoursePayload(api, { sourceUrl });
 
   return {
@@ -37,6 +38,7 @@ export async function getCourseList(options = {}) {
   const { pageState, api, sourceUrl } = await loadCourseApi(options);
   const authState = classifyCoursePage(pageState);
   assertCourseAccess(authState, pageState);
+  ensureRequiredApis(api);
   return filterCoursePayload(buildCoursePayload(api, { sourceUrl }), options);
 }
 
@@ -161,7 +163,6 @@ async function loadCourseApi(options = {}) {
       status: response?.status() ?? null
     };
 
-    ensureRequiredApis(api);
     return {
       pageState,
       api,

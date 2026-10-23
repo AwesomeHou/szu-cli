@@ -17,6 +17,7 @@ export async function getGradeStatus(options = {}) {
   const { pageState, api, sourceUrl } = await loadGradeApi(options);
   const authState = classifyGradePage(pageState);
   assertGradeAccess(authState, pageState);
+  ensureRequiredApis(api);
   const payload = buildGradePayload(api, { sourceUrl });
 
   return {
@@ -32,6 +33,7 @@ export async function getGradeList(options = {}) {
   const { pageState, api, sourceUrl } = await loadGradeApi(options);
   const authState = classifyGradePage(pageState);
   assertGradeAccess(authState, pageState);
+  ensureRequiredApis(api);
   const payload = buildGradePayload(api, { sourceUrl });
   return filterGradePayloadByTerm(payload, options.term);
 }
@@ -151,7 +153,6 @@ async function loadGradeApi(options = {}) {
       status: response?.status() ?? null
     };
 
-    ensureRequiredApis(api);
     return {
       pageState,
       api,

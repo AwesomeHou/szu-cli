@@ -88,3 +88,28 @@ test('grade commands return PERMISSION_DENIED for 403 page', () => {
   assert.equal(body.ok, false);
   assert.equal(body.error.code, 'PERMISSION_DENIED');
 });
+
+test('grade commands report PAGE_CHANGED when a logged-in page omits required APIs', () => {
+  const result = runGrade(['grade', 'list', '--json'], {
+    env: { SZU_MOCK_GRADE_API_JSON: '{}' }
+  });
+
+  assert.equal(result.status, 20);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.error.code, 'PAGE_CHANGED');
+  assert.match(body.error.message, /Missing eHall grade API response/);
+});
+
+test('grade commands report access denial before missing APIs on a 403 page', () => {
+  const result = runGrade(['grade', 'list', '--json'], {
+    env: {
+      SZU_MOCK_GRADE_STATUS: '403',
+      SZU_MOCK_GRADE_TEXT: '403 版权信息',
+      SZU_MOCK_GRADE_API_JSON: '{}'
+    }
+  });
+
+  assert.equal(result.status, 13);
+  const body = JSON.parse(result.stdout);
+  assert.equal(body.error.code, 'PERMISSION_DENIED');
+});
