@@ -1,5 +1,6 @@
 import { getLaunchOptions } from './browser-options.js';
 import { assertBrowserAvailable } from './browser.js';
+import { collectLihuBuildings, LIHU_ELECTRICITY_URL, queryLihuElectricity } from './electricity-lihu.js';
 import {
   buildElectricityQueryPayload,
   normalizeCampusOptions,
@@ -13,7 +14,8 @@ export async function getElectricityStatus(options = {}) {
   return {
     available: true,
     campusCount: campuses.campuses.length,
-    sourceUrl: campuses.sourceUrl
+    sourceUrl: campuses.sourceUrl,
+    ...(campuses.sources ? { sources: campuses.sources, complete: campuses.complete } : {})
   };
 }
 
@@ -25,11 +27,37 @@ export async function getElectricityBuildings(options = {}) {
   const context = await launchContext(options);
   try {
     const page = await context.newPage();
-    await gotoElectricity(page, options.url ?? ELECTRICITY_ENTRY_URL);
-    const campuses = await collectCampusesAndBuildings(page);
+    const campuses = [];
+    const sources = [];
+    let firstError;
+    for (const url of options.url ? [options.url] : [ELECTRICITY_ENTRY_URL, LIHU_ELECTRICITY_URL]) {
+      try {
+        await gotoElectricity(page, url);
+        const system = await page.locator('#drlouming').count() ? 'lihu-phase2' : 'sims';
+        if (system === 'sims' && !await page.locator('select[name="client"]').count()) {
+          const error = new Error('Unable to recognize the electricity building selection page.');
+          error.code = 'PAGE_CHANGED';
+          throw error;
+        }
+        const found = system === 'lihu-phase2' ? await collectLihuBuildings(page) : await collectCampusesAndBuildings(page);
+        campuses.push(...found.map(campus => ({ ...campus, system, sourceUrl: url })));
+        sources.push({ url, system, available: true });
+      } catch (error) {
+        if (!['NETWORK_REQUIRED', 'PAGE_CHANGED'].includes(error.code)) {
+          throw error;
+        }
+        firstError ??= error;
+        sources.push({ url, available: false, error: { code: error.code, message: error.message } });
+      }
+    }
+    if (!sources.some(source => source.available)) {
+      throw firstError;
+    }
     return {
       campuses,
-      sourceUrl: page.url()
+      sourceUrl: sources.find(source => source.available).url,
+      sources,
+      complete: sources.every(source => source.available)
     };
   } finally {
     await closeContext(context);
@@ -41,21 +69,32 @@ export async function queryElectricity(options = {}) {
 
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
     const data = readMockData();
-    return buildElectricityQueryPayload({
+    const payload = buildElectricityQueryPayload({
       campus: query.campus,
       building: query.building,
       room: query.room,
       from: query.from,
       to: query.to,
       records: data.query?.records ?? [],
-      sourceUrl: query.url ?? ELECTRICITY_ENTRY_URL
+      sourceUrl: query.sourceUrl
     });
+    return query.system === 'lihu-phase2'
+      ? { ...payload, remainingKwh: data.query?.remainingKwh ?? null, balanceScope: 'current' }
+      : payload;
   }
 
   const context = await launchContext(options);
   try {
     const page = await context.newPage();
-    await gotoElectricity(page, query.url ?? ELECTRICITY_ENTRY_URL);
+    await gotoElectricity(page, query.sourceUrl);
+    if (query.system === 'lihu-phase2') {
+      const result = await queryLihuElectricity(page, query);
+      return {
+        ...buildElectricityQueryPayload({ ...query, records: result.records, sourceUrl: page.url() }),
+        remainingKwh: result.remainingKwh,
+        balanceScope: 'current'
+      };
+    }
     await selectCampus(page, query.campus);
     await selectBuilding(page, query.building);
     await page.fill('input[name="roomName"]', query.room);
@@ -162,15 +201,28 @@ async function resolveQueryOptions(options = {}) {
   requireQueryOptions(options);
   const buildings = await getElectricityBuildings(options);
   const campusMatches = options.campus
-    ? buildings.campuses.filter((campus) => textMatches(campus.name, options.campus))
+    ? buildings.campuses.filter((campus) => textMatches(campus.name, options.campus)
+      || campus.aliases?.some(alias => textMatches(alias, options.campus)))
     : buildings.campuses;
   const matches = campusMatches.flatMap((campus) => (
     campus.buildings
       .filter((building) => textMatches(building.name, options.building))
-      .map((building) => ({ campus: campus.name, building: building.name }))
+      .map((building) => ({
+        campus: campus.name,
+        building: building.name,
+        buildingId: building.id,
+        system: campus.system ?? 'sims',
+        sourceUrl: options.url ?? campus.sourceUrl ?? buildings.sourceUrl
+      }))
   ));
 
   if (matches.length !== 1) {
+    if (matches.length === 0 && buildings.complete === false) {
+      const error = new Error('An electricity source is unavailable; the building list is incomplete.');
+      error.code = buildings.sources.find(source => !source.available).error.code;
+      error.hint = 'Check the electricity source availability in `szu-cli electricity buildings` before retrying.';
+      throw error;
+    }
     const error = new Error(matches.length === 0
       ? `Could not find electricity building: ${options.building}.`
       : `Electricity building is ambiguous: ${options.building}.`);
@@ -181,8 +233,7 @@ async function resolveQueryOptions(options = {}) {
 
   return {
     ...options,
-    campus: matches[0].campus,
-    building: matches[0].building
+    ...matches[0]
   };
 }
 
@@ -232,7 +283,8 @@ function mockBuildings() {
   const data = readMockData();
   return {
     campuses: data.campuses ?? [],
-    sourceUrl: ELECTRICITY_ENTRY_URL
+    sourceUrl: ELECTRICITY_ENTRY_URL,
+    ...(data.sources ? { sources: data.sources, complete: data.complete } : {})
   };
 }
 

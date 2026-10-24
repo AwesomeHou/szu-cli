@@ -174,6 +174,7 @@ szu-cli wanfang download <url> --headed --dir downloads
 - `PROGRAM_NOT_FOUND`：培养方案中找不到指定方案。
 - `CALCULATION_TIMEOUT`：学业完成计算超时。
 - `MODULE_NOT_FOUND`：学业完成中找不到指定模块。
+- `ELECTRICITY_ROOM_NOT_FOUND`：丽湖二期的楼层或房间无法唯一匹配。
 - `HEADED_REQUIRED`：命令需要可见浏览器会话。
 - `UNSUPPORTED_ACTION`：命令已知但尚未实现。
 - `UNKNOWN_ERROR`：未知失败。
@@ -199,6 +200,7 @@ szu-cli wanfang download <url> --headed --dir downloads
 - `23`：培养方案不存在。
 - `24`：学业完成计算超时。
 - `25`：模块不存在。
+- `42`：丽湖二期房间不存在或无法唯一匹配。
 - `26`：讲座不存在。
 - `27`：体育预约缺少确认模式。
 - `28`：体育场馆校区不存在。
@@ -862,7 +864,9 @@ szu-cli wanfang download <url> --headed --dir downloads
 `sports bookings` 的历史记录字段包含 `actions`、`orderNo`、`timeRange`、`bookedAt`、`campus`、`venue`、`field`、`project`、`status`、`orderType` 和 `note`，不输出姓名、学号、学院等身份字段。`sports reserve` 需要校区、项目、日期和时段；多个可预约场馆/场地时通过 `--field <场馆名>` 指定，只有一个时自动选择。`--dry-run` 返回完整预约目标（包括选中的场馆/场地）且不点击“提交预约”。真实提交必须显式传入 `--confirm`；如果没有指定 `--field` 但存在多个候选，返回 `SPORTS_FIELD_SELECTION_REQUIRED` 和候选名称。当前 live MVP 不自动支付、不跳转支付页、不取消支付。预约成功后 CLI 只返回 `payment.required` 和手动支付提醒，不输出支付链接。`sports cancel --order <orderNo> --dry-run` 会验证订单存在但不取消；真实取消必须显式传入 `--confirm`。
 ## 电费 Schema
 
-`szu-cli electricity buildings` 返回 SIMS 电费查询页中的可用校区和楼栋。该命令需要校园内网访问。
+`szu-cli electricity buildings` 汇总旧 SIMS 和丽湖二期电费系统中的可用校区和楼栋。该命令需要校园内网访问。丽湖二期包括梧桐树、青冈栎、三角梅、冬青树、紫罗兰、B3文韬楼；CLI 从页面实时读取楼栋，不硬编码楼栋 ID。
+
+返回的校区增加 `system` 和 `sourceUrl`，用于区分 `sims` 与 `lihu-phase2`。顶层 `sources` 列出各入口的可用性；`complete: false` 表示部分来源不可用，楼栋列表不完整。一个系统不可用时，仍可查询另一个系统中已列出的楼栋。`--url` 可用于单独检查指定电费入口。
 
 ```json
 {
@@ -891,6 +895,10 @@ szu-cli wanfang download <url> --headed --dir downloads
 ```
 
 `szu-cli electricity query --campus <name> --building <name> --room <room>` 查询用电记录，并返回日期范围内找到的最新剩余电量。默认查询最近 7 天。使用 `--from YYYY-MM-DD --to YYYY-MM-DD` 可覆盖范围。`--campus` 可省略；当 `--building` 能唯一匹配一个楼栋时，CLI 会自动补全校区。校区和楼栋支持唯一的部分匹配。
+
+丽湖二期使用相同命令，例如 `szu-cli electricity query --building 梧桐树 --room <房间号>`，会自动选择对应楼层和页面中实际存在的房间，再查询用电记录。校区名称为“丽湖二期”，也接受“丽湖校区”和“西丽校区”。楼层从三至五位数字房间号的末两位之前的部分识别，再与网页的楼层、房间选项核对；不会猜测或枚举其他房间。
+
+二期 `remainingKwh` 来自页面的当前余额，增加 `balanceScope: "current"`，不表示日期范围结束时的历史余额；允许为零或负数。`--from/--to` 只筛选用电明细，CLI 会跟随页面的“下一页”读取完整范围。二期明细增加 `usedKwh`（当日用量）和 `unitPriceCny`（元/度）；系统未提供的历史余额、累计用量和累计购电量返回 `null`，不以每日用量冒充累计值。
 
 ```json
 {

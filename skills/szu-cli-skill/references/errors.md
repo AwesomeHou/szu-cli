@@ -18,6 +18,7 @@
 - `PROGRAM_NOT_FOUND`：让用户重新运行 `szu-cli program list`。
 - `CLASS_NOT_FOUND`：让用户重新运行 `szu-cli timetable classes`。
 - `MODULE_NOT_FOUND`：让用户重新运行 `szu-cli completion modules`。
+- `ELECTRICITY_ROOM_NOT_FOUND`：确认用户提供的丽湖二期房间号；不要猜测其他房间或循环查询。
 - `CALCULATION_TIMEOUT`：不要激进重试；仅在用户仍需要结果且等待合理时增加 `--timeout <seconds>`。
 - `LECTURE_NOT_FOUND`：让用户重新运行 `szu-cli lecture list`。
 - `SPORTS_CONFIRM_REQUIRED`：使用 `--dry-run` 预览；只有用户明确确认后才能改用 `--confirm`。

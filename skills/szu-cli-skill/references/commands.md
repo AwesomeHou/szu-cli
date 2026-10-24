@@ -38,6 +38,8 @@ szu-cli auth logout
 | 查询时段内可选场馆/场地 | `sports fields --campus <name> --venue <project> --date <date> --slot <slot>` | 将项目名当成场馆/场地名 |
 | 体育预约或取消的预览 | `sports reserve ... --dry-run [--field <venue>]`；`sports cancel --order <orderNo> --dry-run` | 缺少校区、项目、日期、时段或订单号，或未获明确指令就运行 `--confirm`、支付或重复尝试 |
 | 宿舍电费 | 楼栋不确定时用 `electricity buildings`，再 `electricity query --building <name> --room <room>`；校区可由 CLI 根据唯一楼栋匹配推断 | 猜测楼栋/房间或尝试缴费 |
+
+电费覆盖旧 SIMS 和丽湖二期。二期六栋楼从网页实时读取，可直接使用 `electricity query --building 梧桐树 --room <用户提供的房间号>`；CLI 自动核对楼层和房间。`buildings` 的 `complete: false` 表示部分来源不可用。二期 `balanceScope: "current"` 的余额是当前值，日期只过滤明细；不要将 `usedKwh` 当作累计用电量。
 | 图书馆馆藏 | `library search ...`；详情用 `library item <id|url>` | 将检索行当作馆藏册详情 |
 | 知网、万方或文献检索 | 阅读 `academic-databases.md` | 在元数据/引用工作前直接下载 |
 

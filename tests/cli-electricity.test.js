@@ -132,3 +132,41 @@ test('electricity commands return NETWORK_REQUIRED when intranet is unavailable'
   assert.equal(body.ok, false);
   assert.equal(body.error.code, 'NETWORK_REQUIRED');
 });
+
+test('electricity routes a Lihu phase II building to its source and keeps current balance independent of history', () => {
+  for (const balance of [0, -12.5]) {
+    const result = runElectricity(['electricity', 'query', '--campus', '西丽校区', '--building', '梧桐树', '--room', '501'], {
+      env: {
+        SZU_MOCK_ELECTRICITY_JSON: JSON.stringify({
+          campuses: [{
+            name: '丽湖二期', aliases: ['西丽校区', '丽湖校区'], system: 'lihu-phase2',
+            sourceUrl: 'http://172.25.100.105:8010/', buildings: [{ id: 'test-building', name: '梧桐树' }]
+          }],
+          query: { remainingKwh: balance, records: [] }
+        })
+      }
+    });
+    assert.equal(result.status, 0, result.stderr);
+    const data = JSON.parse(result.stdout).data;
+    assert.equal(data.campus, '丽湖二期');
+    assert.equal(data.sourceUrl, 'http://172.25.100.105:8010/');
+    assert.equal(data.balanceScope, 'current');
+    assert.equal(data.remainingKwh, balance);
+    assert.equal(data.totalUsedKwh, null);
+    assert.deepEqual(data.records, []);
+  }
+});
+
+test('electricity reports an unavailable source rather than declaring its missing building unknown', () => {
+  const result = runElectricity(['electricity', 'query', '--building', '梧桐树', '--room', '501', '--json'], {
+    env: {
+      SZU_MOCK_ELECTRICITY_JSON: JSON.stringify({
+        campuses: JSON.parse(mockData).campuses,
+        complete: false,
+        sources: [{ url: 'http://172.25.100.105:8010/', available: false, error: { code: 'NETWORK_REQUIRED' } }]
+      })
+    }
+  });
+  assert.equal(result.status, 12);
+  assert.equal(JSON.parse(result.stdout).error.code, 'NETWORK_REQUIRED');
+});
