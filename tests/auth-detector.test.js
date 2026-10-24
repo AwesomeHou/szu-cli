@@ -40,6 +40,28 @@ test('classifies eHall home as logged in', () => {
   });
 });
 
+test('classifies eHall home with a login prompt as logged out', () => {
+  assert.deepEqual(classifyAuthPage({
+    url: 'https://ehall.szu.edu.cn/new/index.html',
+    title: '深圳大学网上办事服务大厅',
+    text: '深圳大学网上办事服务大厅 登录 服务中心'
+  }), {
+    loggedIn: false,
+    reason: 'ehall-login-prompt'
+  });
+});
+
+test('does not treat the eHall home title alone as proof of login', () => {
+  assert.deepEqual(classifyAuthPage({
+    url: 'https://ehall.szu.edu.cn/new/index.html',
+    title: '深圳大学网上办事服务大厅',
+    text: '加载中'
+  }), {
+    loggedIn: false,
+    reason: 'unknown'
+  });
+});
+
 test('classifies eHall course page as logged in', () => {
   assert.deepEqual(classifyAuthPage({
     url: 'https://ehall.szu.edu.cn/jwapp/sys/wdkb/*default/index.do#/xskcb',

@@ -57,6 +57,22 @@ szu-cli auth status
 
 `auth status` 只检查状态，不会因为没有浏览器或 profile 而自动安装浏览器。
 
+## 登录检查的范围
+
+同一个 CLI profile 保存各网站的浏览器状态，并可复用统一身份认证。公文通、图书馆、eHall 门户和 eHall 子应用仍可能拥有各自的服务端会话；一个网站已登录，不代表其他网站也已登录或允许访问。
+
+`auth status` 的 `scope: "checked-url"` 表示结果只适用于 `checkedUrl` 对应的页面。默认检查公文通；使用 `--url https://ehall.szu.edu.cn/new/index.html` 时检查 eHall 门户，不代表检查所有 eHall 子应用。
+
+`status` 明确区分三种结果：
+
+- `authenticated`：检测到页面的登录依据，`loggedIn: true`。
+- `unauthenticated`：检测到登录入口、CAS 登录页，或档案不存在，`loggedIn: false`。
+- `unknown`：页面无法识别，无法确认是否登录；为兼容保留 `loggedIn: false`，不能据此断言未登录。
+
+eHall 门户只有出现“安全退出”等登录依据才判为已登录。首页能加载、HTTP 200 或页面标题正确，都不能单独证明已登录。门户未登录也不能据此认定成绩、课表等子应用未登录；应分别运行模块命令验证。模块成功读取受保护数据，只能证明该次操作可用。
+
+`course status/list/today` 会先经过 eHall 的 `/login` 入口，复用有效的统一身份认证会话建立门户会话，再从大厅的“我的课表”卡片读取应用 ID，经 `/appShow?appId=...` 打开课表。不会把目录中裸课表地址当成完整启动流程，也不会保存或硬编码 `gid_` 等临时参数。统一认证需要手动登录时返回 `LOGIN_REQUIRED`；大厅应用入口无法识别时返回 `PAGE_CHANGED`。
+
 ## 为什么不保存密码
 
 保存密码会带来不必要风险，而且通常无法真正简化问题：

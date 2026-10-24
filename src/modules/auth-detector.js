@@ -31,10 +31,22 @@ export function classifyAuthPage(pageState) {
     };
   }
 
-  if (title.includes('深圳大学网上办事服务大厅') || (text.includes('深圳大学网上办事服务大厅') && text.includes('安全退出'))) {
+  if (title.includes('深圳大学网上办事服务大厅') || text.includes('深圳大学网上办事服务大厅')) {
+    if (text.includes('安全退出')) {
+      return {
+        loggedIn: true,
+        reason: 'ehall-home-page'
+      };
+    }
+    if (text.includes('登录')) {
+      return {
+        loggedIn: false,
+        reason: 'ehall-login-prompt'
+      };
+    }
     return {
-      loggedIn: true,
-      reason: 'ehall-home-page'
+      loggedIn: false,
+      reason: 'unknown'
     };
   }
 

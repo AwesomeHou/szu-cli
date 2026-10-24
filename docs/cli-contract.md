@@ -101,6 +101,8 @@ szu-cli wanfang download <url> --headed --dir downloads
 - `browser install chromium --yes`：在用户明确确认后安装 Playwright Chromium，下载进度输出到 stderr。
 - `auth logout`：清理当前浏览器对应的 CLI 专用 profile；重复执行安全。
 
+`auth status` 只检查 `checkedUrl` 指定的页面，返回 `scope: "checked-url"`。`status` 为 `authenticated`（有登录依据）、`unauthenticated`（有未登录依据或档案不存在）或 `unknown`（无法确认）。兼容字段 `loggedIn` 仅在 `authenticated` 时为 `true`。默认检查公文通；检查 eHall 首页不代表所有 eHall 子应用的状态。详见 [登录态](login-state.md#登录检查的范围)。
+
 浏览器后端当前支持 Google Chrome、Microsoft Edge 和 Playwright Chromium；Safari、Firefox 及其他浏览器不会被直接复用。
 
 ## JSON 包装结构
@@ -421,6 +423,8 @@ szu-cli wanfang download <url> --headed --dir downloads
 ```
 
 `szu-cli course list` 可用 `--term <termId>`、`--week <n>` 和 `--weekday <1-7>` 过滤当前已读取课表，其中星期一为 `1`、星期日为 `7`。`szu-cli course today` 返回同样的课程 item 结构，但按本机日期和当前教学周过滤；使用 `--date YYYY-MM-DD` 可查询指定日期。`szu-cli course status` 只检查访问状态，返回 `loggedIn`、`reason`、`term` 和 `sourceUrl`。
+
+课表命令会自动经过 eHall 门户认证，再通过大厅“我的课表”的 `/appShow` 入口启动应用。已有统一认证会话时无需重新输入密码；需要人工认证时返回 `LOGIN_REQUIRED`。`--url` 仍可覆盖最终课表地址用于调试。返回的 `sourceUrl` 会移除临时入口参数。
 
 ## 培养方案 Schema
 

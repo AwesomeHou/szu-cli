@@ -7,7 +7,6 @@ import { assertBrowserAvailable } from './browser.js';
 import { classifyAuthPage } from './auth-detector.js';
 
 const DEFAULT_AUTH_CHECK_URL = 'https://www1.szu.edu.cn/board/';
-const LOGIN_HINT = 'Run `szu-cli auth login` and complete login in the opened browser.';
 const WORKBUDDY_LOGIN_TIMEOUT_MS = 5 * 60 * 1000;
 
 export async function loginWithBrowserProfile(options = {}) {
@@ -145,8 +144,8 @@ export async function getAuthStatus(options = {}) {
     return withLoginHint({
       ...mockStatus,
       profilePath,
-      checkedUrl: DEFAULT_AUTH_CHECK_URL,
-      finalUrl: process.env.SZU_MOCK_AUTH_URL ?? DEFAULT_AUTH_CHECK_URL,
+      checkedUrl: options.url ?? DEFAULT_AUTH_CHECK_URL,
+      finalUrl: process.env.SZU_MOCK_AUTH_URL ?? options.url ?? DEFAULT_AUTH_CHECK_URL,
       backend: 'mock'
     });
   }
@@ -156,7 +155,8 @@ export async function getAuthStatus(options = {}) {
       loggedIn: false,
       reason: 'profile-missing',
       profileExists,
-      profilePath
+      profilePath,
+      checkedUrl: options.url ?? DEFAULT_AUTH_CHECK_URL
     });
   }
 
@@ -186,11 +186,12 @@ async function checkAuthWithBrowser(options) {
   try {
     const page = context.pages()[0] ?? await context.newPage();
     await page.goto(options.url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    const pageState = {
-      url: page.url(),
-      title: await page.title(),
-      text: await page.locator('body').innerText({ timeout: 10000 }).catch(() => '')
-    };
+    let pageState = await readAuthPage(page);
+    const deadline = Date.now() + 5000;
+    while (classifyAuthPage(pageState).reason === 'unknown' && Date.now() < deadline) {
+      await page.waitForTimeout(250);
+      pageState = await readAuthPage(page);
+    }
     return {
       ...classifyAuthPage(pageState),
       finalUrl: pageState.url
@@ -211,9 +212,15 @@ async function importPlaywright() {
 }
 
 function withLoginHint(status) {
-  return status.loggedIn ? status : {
+  return {
     ...status,
-    hint: LOGIN_HINT
+    scope: 'checked-url',
+    status: status.loggedIn ? 'authenticated' : status.reason === 'unknown' ? 'unknown' : 'unauthenticated',
+    ...(!status.loggedIn ? {
+      hint: status.reason === 'unknown'
+        ? 'Login could not be confirmed for the checked URL. Check the page in a browser.'
+        : `Run \`szu-cli auth login --url ${status.checkedUrl}\` and complete login in the opened browser.`
+    } : {})
   };
 }
 

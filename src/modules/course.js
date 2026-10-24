@@ -3,11 +3,11 @@ import { existsSync } from 'node:fs';
 import { classifyAuthPage } from './auth-detector.js';
 import { assertBrowserAvailable } from './browser.js';
 import { getLaunchOptions } from './browser-options.js';
-import { resolveEhallEntry, sanitizeEhallSourceUrl } from './ehall-entry.js';
+import { sanitizeEhallSourceUrl } from './ehall-entry.js';
+import { openCourseEntry } from './course-entry.js';
 import { getProfilePath } from './paths.js';
 import { buildCoursePayload, filterCoursePayload, filterTodayCourses } from './course-parser.js';
 
-const EHALL_HOME_URL = 'https://ehall.szu.edu.cn/new/index.html';
 const COURSE_ENTRY_URL = 'https://ehall.szu.edu.cn/jwapp/sys/wdkb/*default/index.do?EMAP_LANG=zh&THEME=cherry#/xskcb';
 const COURSE_ENDPOINTS = new Set([
   'dqxnxq.do',
@@ -98,7 +98,7 @@ function assertCourseAccess(authState, pageState) {
   if (authState.reason === 'ehall-forbidden') {
     const error = new Error('SZU eHall course page returned 403.');
     error.code = 'PERMISSION_DENIED';
-    error.hint = 'Try visiting eHall home first, or confirm this account can access the course timetable.';
+    error.hint = 'Confirm this account can open 我的课表 from the eHall portal.';
     throw error;
   }
 
@@ -151,18 +151,7 @@ async function loadCourseApi(options = {}) {
       }
     });
 
-    await page.goto(EHALL_HOME_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    await page.waitForTimeout(1500);
-    const sourceUrl = await resolveEhallEntry(page, {
-      url: options.url,
-      names: ['我的课表'],
-      expectedPath: '/jwapp/sys/wdkb/',
-      known: {
-        appPath: '/jwapp/sys/wdkb/*default/index.do',
-        hash: '/xskcb'
-      }
-    });
-    const response = await page.goto(sourceUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    const response = await openCourseEntry(page, options);
     await waitForCourseApis(page, api);
 
     const pageState = {

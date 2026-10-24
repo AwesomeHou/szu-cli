@@ -76,7 +76,10 @@ test('auth status reports missing profile as logged out', () => {
     reason: 'profile-missing',
     profileExists: false,
     profilePath: body.data.profilePath,
-    hint: 'Run `szu-cli auth login` and complete login in the opened browser.'
+    checkedUrl: 'https://www1.szu.edu.cn/board/',
+    scope: 'checked-url',
+    status: 'unauthenticated',
+    hint: 'Run `szu-cli auth login --url https://www1.szu.edu.cn/board/` and complete login in the opened browser.'
   });
   assert.equal(body.data.profilePath.includes('szu-cli-test-'), true);
 });
@@ -98,6 +101,8 @@ test('auth status can report checked page through mock backend', () => {
   assert.equal(body.ok, true);
   assert.equal(body.meta.backend, 'mock');
   assert.equal(body.data.loggedIn, true);
+  assert.equal(body.data.status, 'authenticated');
+  assert.equal(body.data.scope, 'checked-url');
   assert.equal(body.data.reason, 'mock-configured');
   assert.equal(body.data.authSource, 'fixture');
   assert.equal(body.data.profileExists, true);
@@ -120,6 +125,38 @@ test('mock auth status does not infer login from page text without a profile or 
   assert.equal(body.data.loggedIn, false);
   assert.equal(body.data.reason, 'profile-missing');
   assert.equal(body.data.profileExists, false);
+});
+
+test('auth status distinguishes an eHall login prompt from an unknown page', () => {
+  const url = 'https://ehall.szu.edu.cn/new/index.html';
+  for (const [text, status, reason] of [
+    ['深圳大学网上办事服务大厅 登录', 'unauthenticated', 'ehall-login-prompt'],
+    ['加载中', 'unknown', 'unknown'],
+    ['深圳大学网上办事服务大厅 个人中心 安全退出', 'authenticated', 'ehall-home-page']
+  ]) {
+    const result = runCli(['auth', 'status', '--url', url], {
+      env: {
+        SZU_BROWSER_BACKEND: 'mock',
+        SZU_MOCK_AUTH_PROFILE_EXISTS: 'true',
+        SZU_MOCK_AUTH_URL: url,
+        SZU_MOCK_AUTH_TITLE: '深圳大学网上办事服务大厅',
+        SZU_MOCK_AUTH_TEXT: text
+      }
+    });
+    assert.equal(result.status, 0, result.stderr);
+    const data = JSON.parse(result.stdout).data;
+    assert.equal(data.scope, 'checked-url');
+    assert.equal(data.checkedUrl, url);
+    assert.equal(data.status, status);
+    assert.equal(data.reason, reason);
+    assert.equal(data.loggedIn, status === 'authenticated');
+    if (status === 'unauthenticated') {
+      assert.match(data.hint, /auth login --url https:\/\/ehall\.szu\.edu\.cn/);
+    }
+    if (status === 'unknown') {
+      assert.match(data.hint, /could not be confirmed/);
+    }
+  }
 });
 
 test('auth login opens configured target with browser profile', () => {
