@@ -1639,7 +1639,6 @@ function handleKnownError(error, command) {
     DOWNLOAD_UNAVAILABLE: 31,
     HEADED_REQUIRED: 2,
     AUTH_LOGOUT_FAILED: 14,
-    AUTH_LOGIN_TIMEOUT: 39,
     BROWSER_UNAVAILABLE: 15,
     BROWSER_INSTALL_CONFIRM_REQUIRED: 16,
     BROWSER_INSTALL_CANCELLED: 17,
@@ -1679,10 +1678,6 @@ function parseLoginOptions(argv) {
     }
     if (arg === '--no-wait') {
       options.waitForClose = false;
-      continue;
-    }
-    if (arg === '--workbuddy') {
-      options.workbuddy = true;
       continue;
     }
     throw new Error(`Unknown option: ${arg}`);

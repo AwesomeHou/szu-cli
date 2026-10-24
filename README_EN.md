@@ -9,7 +9,7 @@
 
 It provides stable commands and structured JSON output for common campus workflows, reuses a local persistent browser login profile, and never stores account passwords.
 
-The connector and Skill are made by Shenzhen University students and are unofficial. If you have any issues, please provide feedback at [github.com/AwesomeHou/szu-cli](https://github.com/AwesomeHou/szu-cli) or contact me by email.
+The CLI and Skill are made by Shenzhen University students and are unofficial. If you have any issues, please provide feedback at [github.com/AwesomeHou/szu-cli](https://github.com/AwesomeHou/szu-cli) or contact me by email.
 
 ## Installation and Quick Start
 
@@ -28,7 +28,7 @@ This command:
 1. Installs `szu-cli@latest` globally through npm so that the `szu-cli` command is available directly.
 2. Runs `npx skills add` with the `skills/szu-cli-skill` directory bundled in the npm package to install the skill globally for mainstream AI Agents detected in the current environment.
 
-See [Supported Agents](https://github.com/vercel-labs/skills/blob/main/README.md#supported-agents) for the supported agents and their project/global skill directories, including Codex, Claude Code, and Cursor. WorkBuddy users can install “Shenzhen University Campus Services” from the Connector marketplace or search for `szu-cli-skill` in the Skill marketplace.
+See [Supported Agents](https://github.com/vercel-labs/skills/blob/main/README.md#supported-agents) for the supported agents and their project/global skill directories, including Codex, Claude Code, and Cursor. After installing the CLI, WorkBuddy users can run `szu-cli skill install --target workbuddy` to install the Skill.
 
 Initialize the browser login profile:
 

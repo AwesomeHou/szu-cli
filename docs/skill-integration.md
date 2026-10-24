@@ -28,8 +28,6 @@ npx szu-cli@latest install
 
 该命令会将 `szu-cli` 安装到 npm 全局路径，并将当前 npm 包内的 `skills/szu-cli-skill` 目录交给 `npx skills add`，全局安装到当前环境中可识别的主流 Agent。Skill 内容随 npm 包发布，不依赖 GitHub 分支同步。支持的 Agent 索引见 [Supported Agents](https://github.com/vercel-labs/skills/blob/main/README.md#supported-agents)。
 
-WorkBuddy 用户应优先从连接器市场安装“深圳大学校园服务”，也可以在技能商店搜索 `szu-cli-skill` 安装 Skill。
-
 AI IDE 使用便携目录：
 
 ```bash
@@ -63,7 +61,7 @@ szu-cli skill install --target codex
 skill 可以声明最低 CLI 版本：
 
 ```text
-Skill Version: 0.2.18
+Skill Version: 0.2.19
 Requires: szu-cli >= 0.2.3
 ```
 
@@ -101,8 +99,6 @@ CLI 默认输出 JSON。浏览器选择优先级为用户选择、已保存选�
 szu-cli auth login
 ```
 
-WorkBuddy 连接器使用 `szu-cli auth login --workbuddy`。该模式由 CLI 自己打开并管理登录浏览器，在登录完成后将认证状态持久化到对应的独立 browser profile。
-
 然后调用只读命令：
 
 ```bash
@@ -116,14 +112,3 @@ szu-cli lecture progress
 ```
 
 agent 不得激进循环，也不得在未经确认时提交状态变更命令。
-
-## WorkBuddy 连接器
-
-WorkBuddy 连接器使用 `connectors/workbuddy` 中的元信息和 CLI 配置。生成上传包：
-
-```bash
-npm run workbuddy:check
-npm run workbuddy:prepare
-```
-
-将 `scratch/workbuddy-connector` 的内容直接打包上传；WorkBuddy 连接器负责安装 CLI 和加载 `szu-cli-skill`，不需要在 Skill 内再次执行 `npx skills add`。

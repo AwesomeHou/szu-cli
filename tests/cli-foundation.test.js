@@ -182,7 +182,7 @@ test('auth login opens configured target with browser profile', () => {
   assert.equal(body.data.profilePath.includes('szu-cli-test-'), true);
 });
 
-test('WorkBuddy auth emits a plain HTTPS login URL on stderr', () => {
+test('auth login rejects the removed connector option', () => {
   const result = runCli([
     'auth',
     'login',
@@ -195,10 +195,10 @@ test('WorkBuddy auth emits a plain HTTPS login URL on stderr', () => {
     }
   });
 
-  assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stderr, /\shttps:\/\/authserver\.szu\.edu\.cn\/authserver\/login\s/);
+  assert.notEqual(result.status, 0);
   const body = JSON.parse(result.stdout);
-  assert.equal(body.ok, true);
+  assert.equal(body.ok, false);
+  assert.match(body.error.message, /Unknown option: --workbuddy/);
   assert.equal(body.meta.command, 'auth login');
 });
 

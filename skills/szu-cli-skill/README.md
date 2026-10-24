@@ -10,7 +10,7 @@
 npx szu-cli@latest install
 ```
 
-该命令会将 CLI 安装到 npm 全局路径，并把本 Skill 全局安装到当前环境中可识别的主流 Agent。WorkBuddy 用户应优先从连接器市场安装“深圳大学校园服务”，也可以在技能商店搜索 `szu-cli-skill` 安装 Skill。
+该命令会将 CLI 安装到 npm 全局路径，并把本 Skill 全局安装到当前环境中可识别的主流 Agent。WorkBuddy 用户安装 CLI 后，可运行 `szu-cli skill install --target workbuddy` 安装 Skill。
 
 上架后，也可以从 SkillHub 或 ClawHub 安装本 skill：
 

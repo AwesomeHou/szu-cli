@@ -7,7 +7,6 @@ import { assertBrowserAvailable } from './browser.js';
 import { classifyAuthPage } from './auth-detector.js';
 
 const DEFAULT_AUTH_CHECK_URL = 'https://www1.szu.edu.cn/board/';
-const WORKBUDDY_LOGIN_TIMEOUT_MS = 5 * 60 * 1000;
 
 export async function loginWithBrowserProfile(options = {}) {
   const profilePath = getProfilePath();
@@ -16,9 +15,6 @@ export async function loginWithBrowserProfile(options = {}) {
   await mkdir(profilePath, { recursive: true });
 
   if (process.env.SZU_BROWSER_BACKEND === 'mock') {
-    if (options.workbuddy) {
-      emitAuthUrl(url);
-    }
     return {
       opened: true,
       closed: options.waitForClose !== false,
@@ -37,63 +33,24 @@ export async function loginWithBrowserProfile(options = {}) {
     const page = context.pages()[0] ?? await context.newPage();
     await page.goto(url, { waitUntil: 'domcontentloaded' });
     const finalUrl = page.url();
-    if (options.workbuddy) {
-      emitAuthUrl(finalUrl);
-    }
-
-    let loginOutcome = null;
     if (options.waitForClose !== false) {
-      loginOutcome = options.workbuddy
-        ? await waitForLoginOrClose(page, context)
-        : await waitForContextClose(context).then(() => 'closed');
+      await waitForContextClose(context);
     }
 
     return {
       opened: true,
-      closed: loginOutcome === null || loginOutcome === 'closed' || loginOutcome === 'authenticated',
-      ...(loginOutcome === 'authenticated' ? { authenticated: true } : {}),
+      closed: true,
       url: finalUrl,
       profilePath,
       browser: browser.id,
       backend: 'playwright',
-      message: options.workbuddy && loginOutcome === 'authenticated'
-        ? 'Login completed and the browser profile is ready.'
-        : options.waitForClose === false
-          ? 'Complete login in the opened browser window, then close it when finished.'
-          : 'Browser was closed. Rerun `szu-cli auth status` to verify login.'
+      message: options.waitForClose === false
+        ? 'Complete login in the opened browser window, then close it when finished.'
+        : 'Browser was closed. Rerun `szu-cli auth status` to verify login.'
     };
   } finally {
     await context.close().catch(() => {});
   }
-}
-
-async function waitForLoginOrClose(page, context) {
-  const deadline = Date.now() + WORKBUDDY_LOGIN_TIMEOUT_MS;
-  const contextClosed = waitForContextClose(context).then(() => 'closed');
-
-  while (Date.now() < deadline) {
-    if (page.isClosed()) {
-      return 'closed';
-    }
-
-    const pageState = await readAuthPage(page);
-    if (classifyAuthPage(pageState).loggedIn) {
-      return 'authenticated';
-    }
-
-    const outcome = await Promise.race([
-      contextClosed,
-      new Promise((resolve) => setTimeout(() => resolve(null), 1000))
-    ]);
-    if (outcome === 'closed') {
-      return outcome;
-    }
-  }
-
-  const error = new Error('Login was not completed within 5 minutes.');
-  error.code = 'AUTH_LOGIN_TIMEOUT';
-  error.hint = 'Complete login in the opened browser window and retry the connection.';
-  throw error;
 }
 
 export function waitForContextClose(context) {
@@ -106,12 +63,6 @@ async function readAuthPage(page) {
     title: await page.title().catch(() => ''),
     text: await page.locator('body').innerText({ timeout: 10000 }).catch(() => '')
   };
-}
-
-function emitAuthUrl(url) {
-  if (/^https:\/\//i.test(url)) {
-    process.stderr.write(`Complete login at ${url}\n`);
-  }
 }
 
 export async function logoutBrowserProfile() {
