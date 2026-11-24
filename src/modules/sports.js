@@ -227,7 +227,7 @@ async function submitSportsReservation(options, slots) {
     await clickRequiredText(page, dryRun.selected.label, 'slot');
     await page.waitForTimeout(1000);
     const afterSlotText = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
-    const field = resolveUniqueSportsField(parseSportsSnapshotFromText(afterSlotText).fields, options.field);
+    const field = resolveUniqueSportsField(parseSportsSnapshotFromText(afterSlotText, { campus: options.campus }).fields, options.field);
     if (!field) {
       throwSportsError('SPORTS_FIELD_NOT_FOUND', 'No bookable sports venue was found for the selected project and time slot.');
     }
@@ -296,7 +296,7 @@ async function loadSportsFieldsPage(options, slotLabel) {
     };
     return {
       pageState,
-      snapshot: parseSportsSnapshotFromText(text),
+      snapshot: parseSportsSnapshotFromText(text, { campus: options.campus }),
       sourceUrl: sanitizeSportsSourceUrl(page.url())
     };
   } finally {
@@ -377,7 +377,7 @@ async function loadSportsPage(options) {
     };
     return {
       pageState,
-      snapshot: parseSportsSnapshotFromText(text),
+      snapshot: parseSportsSnapshotFromText(text, { campus: options.campus }),
       sourceUrl: sanitizeSportsSourceUrl(page.url())
     };
   } finally {
@@ -459,13 +459,13 @@ async function loadSportsSlotsByDate(options) {
     });
     await settleSportsPage(page, options);
     const firstText = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
-    const baseSnapshot = parseSportsSnapshotFromText(firstText);
+    const baseSnapshot = parseSportsSnapshotFromText(firstText, { campus: options.campus });
     const slotsByDate = {};
     for (const date of baseSnapshot.dates) {
       await clickRequiredText(page, date, 'date');
       await page.waitForTimeout(1000);
       const dateText = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
-      slotsByDate[date] = parseSportsSnapshotFromText(dateText).slots;
+      slotsByDate[date] = parseSportsSnapshotFromText(dateText, { campus: options.campus }).slots;
     }
     const text = await page.locator('body').innerText({ timeout: 10000 }).catch(() => firstText);
     const pageState = {

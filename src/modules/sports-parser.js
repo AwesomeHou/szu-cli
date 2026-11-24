@@ -166,7 +166,7 @@ export function buildSportsReserveConfirmPayload(slotsPayload, slotLabel, result
   };
 }
 
-export function parseSportsSnapshotFromText(text) {
+export function parseSportsSnapshotFromText(text, options = {}) {
   const value = String(text ?? '');
   const campuses = ['粤海校区', '丽湖校区'].filter((name) => value.includes(name));
   const venueNames = [
@@ -187,7 +187,7 @@ export function parseSportsSnapshotFromText(text) {
     venues: venueNames
       .filter((name) => value.includes(name))
       .map((name) => ({
-        campus: campuses[0] ?? null,
+        campus: options.campus ?? campuses[0] ?? null,
         name,
         category: name.includes('健身') ? '健身' : null,
         bookable: true

@@ -198,3 +198,14 @@ test('sports parser returns latest bookings with default limit shape', () => {
   assert.equal(JSON.stringify(payload).includes('2023096055'), false);
   assert.equal(JSON.stringify(payload).includes('测试用户'), false);
 });
+
+test('assigns venues to the selected campus when both campuses are visible', () => {
+  const text = '粤海校区\n丽湖校区\n羽毛球';
+  const parsed = parseSportsSnapshotFromText(text, { campus: '丽湖校区' });
+  const payload = buildSportsVenuesPayload(parsed, { campus: '丽湖校区' });
+  assert.deepEqual(parsed.campuses, ['粤海校区', '丽湖校区']);
+  assert.deepEqual(payload.items.map(({ campus, name }) => ({ campus, name })), [
+    { campus: '丽湖校区', name: '羽毛球' }
+  ]);
+  assert.equal(parseSportsSnapshotFromText(text).venues[0].campus, '粤海校区');
+});
