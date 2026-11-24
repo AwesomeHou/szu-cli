@@ -861,7 +861,10 @@ szu-cli wanfang download <url> --headed --dir downloads
 }
 ```
 
-`sports bookings` 的历史记录字段包含 `actions`、`orderNo`、`timeRange`、`bookedAt`、`campus`、`venue`、`field`、`project`、`status`、`orderType` 和 `note`，不输出姓名、学号、学院等身份字段。`sports reserve` 需要校区、项目、日期和时段；多个可预约场馆/场地时通过 `--field <场馆名>` 指定，只有一个时自动选择。`--dry-run` 返回完整预约目标（包括选中的场馆/场地）且不点击“提交预约”。真实提交必须显式传入 `--confirm`；如果没有指定 `--field` 但存在多个候选，返回 `SPORTS_FIELD_SELECTION_REQUIRED` 和候选名称。当前 live MVP 不自动支付、不跳转支付页、不取消支付。预约成功后 CLI 只返回 `payment.required` 和手动支付提醒，不输出支付链接。`sports cancel --order <orderNo> --dry-run` 会验证订单存在但不取消；真实取消必须显式传入 `--confirm`。
+`sports bookings` 的历史记录字段包含 `actions`、`orderNo`、`timeRange`、`bookedAt`、`campus`、`venue`、`field`、`project`、`status`、`orderType` 和 `note`，不输出姓名、学号、学院等身份字段。`sports reserve` 需要校区、项目、日期和时段；多个可预约场馆/场地时通过 `--field <场馆名>` 指定，只有一个时自动选择。`--dry-run` 返回完整预约目标（包括选中的场馆/场地）且不点击“提交预约”。真实提交必须显式传入 `--confirm`；如果没有指定 `--field` 但存在多个候选，返回 `SPORTS_FIELD_SELECTION_REQUIRED` 和候选名称。
+
+`sports cancel --order <orderNo> --dry-run` 会验证订单存在但不取消；真实取消必须显式传入 `--confirm`。
+
 ## 电费 Schema
 
 `szu-cli electricity buildings` 汇总旧 SIMS 和丽湖二期电费系统中的可用校区和楼栋。该命令需要校园内网访问。丽湖二期包括梧桐树、青冈栎、三角梅、冬青树、紫罗兰、B3文韬楼；CLI 从页面实时读取楼栋，不硬编码楼栋 ID。

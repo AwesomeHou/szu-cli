@@ -5,7 +5,7 @@ display_name_en: Shenzhen University — Campus Services Skill
 description: 当用户需要通过本地 szu-cli 查询或操作深圳大学校园事务时使用，包括公文通、课表、成绩、电费、图书馆文献查询、健身房预约和知网论文下载等 10+ 个模块；深大学生自行制作，非官方，可在 github.com/AwesomeHou/szu-cli 反馈问题。
 description_zh: 通过自然语言完成公文通、课表、成绩、电费、图书馆文献查询，健身房预约，知网论文下载等操作，覆盖深圳大学校园服务的 10+ 个模块；深大学生自行制作，非官方，可在 github.com/AwesomeHou/szu-cli 反馈问题或通过电子邮件联系作者。
 description_en: Use natural language with the local szu-cli to query notices, timetables, grades, electricity balances, library literature, CNKI papers, and gym reservations across 10+ Shenzhen University campus modules. Built by Shenzhen University students; unofficial. Report issues at github.com/AwesomeHou/szu-cli or contact the author by email.
-version: 0.2.20
+version: 0.2.21
 author: Awesome
 license: MIT
 metadata:
@@ -83,7 +83,7 @@ szu-cli auth login
 - 每次只运行一条会启动浏览器的命令；如果执行工具显示进程仍在运行，先等待并读取结果，不能因暂时无输出就重启。遇到特定的浏览器启动错误时，先检查是否有前一条命令未结束。
 - 浏览器不可用时，先告知用户可安装 Chrome、Edge 或推荐的 Playwright Chromium；安装 Chromium 必须获得用户明确确认，并使用 `browser install chromium --yes`。
 - 优先只读命令。任何会改变状态的操作都需要用户明确确认。
-- 体育预约遵循上面的“体育预约流程”；`--venue` 参数接收项目名，`--field` 参数接收具体场馆/场地名（多个候选时必填，唯一候选时可省略并自动选择）。除非用户明确指定唯一目标且已完成 dry-run 预览，否则不要运行 `sports reserve --confirm`、`sports cancel --confirm`、支付或重复尝试。
+- 体育预约遵循上面的“体育预约流程”；`--venue` 参数接收项目名，`--field` 参数接收具体场馆/场地名（多个候选时必填，唯一候选时可省略并自动选择）。除非用户明确指定唯一目标且已完成 dry-run 预览，否则不要运行 `sports reserve --confirm`、`sports cancel --confirm`。
 - 不要索取密码、Cookie、令牌或浏览器 profile 文件。
 - 不要绕过认证、验证码、校园网络限制、限流、下载控制或访问控制。
 - 不要激进重试。遇到 `RATE_LIMITED` 立即停止；登录和网络错误各处理一次。

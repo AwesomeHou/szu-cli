@@ -139,7 +139,7 @@ npx --yes skills add https://github.com/AwesomeHou/szu-cli --skill szu-cli-skill
 
 ### 预约健身房
 
-先查询可预约时段并预览预约信息，确认后提交；预约提交后仍需按场馆要求完成支付。
+先查询可预约时段并预览预约信息，确认后提交；预约提交后按场馆要求完成支付。
 
 ![预约健身房：查询时段并选择时间](assets/预约健身房-1.png)
 
@@ -164,7 +164,7 @@ skill 只负责告诉 agent 何时、如何安全调用 `szu-cli`。核心登录
 - 不绕过登录、验证码、校园网络限制、访问控制或频率限制。
 - 默认优先实现只读能力。
 - 不做高频抓取或批量下载。
-- 状态变更命令必须先支持 `--dry-run`。`sports reserve` 和 `sports cancel` 的真实状态变更都必须显式 `--confirm`，不自动支付、不取消支付。
+- 状态变更命令必须先支持 `--dry-run`。`sports reserve` 和 `sports cancel` 的真实状态变更都必须显式 `--confirm`。
 - 不把 cookies、浏览器 profile、截图、HAR、trace 等本地敏感文件提交到 Git。
 
 ## 文档

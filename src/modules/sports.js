@@ -252,7 +252,7 @@ async function submitSportsReservation(options, slots) {
       payment: {
         required: true,
         url: null,
-        message: '预约已提交；请及时到 我的预约 中手动完成支付。'
+        message: '预约已提交；请及时完成支付。'
       }
     });
   } finally {
@@ -303,7 +303,7 @@ async function loadSportsFieldsPage(options, slotLabel) {
     await context.close();
   }
 }
-function classifySportsPage(pageState) {
+export function classifySportsPage(pageState) {
   const base = classifyAuthPage(pageState);
   if (base.reason === 'cas-login-page') {
     return base;
@@ -323,7 +323,7 @@ function classifySportsPage(pageState) {
   return { loggedIn: false, reason: 'unknown' };
 }
 
-function assertSportsAccess(authState, pageState) {
+export function assertSportsAccess(authState, pageState) {
   if (authState.loggedIn) {
     return;
   }
